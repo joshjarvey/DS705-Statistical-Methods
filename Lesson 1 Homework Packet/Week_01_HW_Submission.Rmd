@@ -203,7 +203,8 @@ Find the probability that a random natural pregnancy lasts less than 250 days.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #finding the probability of 250 days, 268 mean, 16 std.
+pnorm(250,268,16)
 
 ```
 
@@ -216,7 +217,8 @@ Compute the probability that a natural human pregnancy lasts between 260 and 280
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #first find the probability of 280 days, then subtract out the probability of 260 days. This remaining "area" is our between prob. 
+pnorm(280,250,16) - pnorm(260,250,16)
 
 ```
 
@@ -229,7 +231,8 @@ How long are the longest 10% of natural human pregnancies?
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #using qnorm to find the 90th quantile, since this is our cutoff to answer the question. The longest 10% are at least 270.5 days or greater. 
+qnorm(.9,250,16)
 
 ```
 
@@ -247,8 +250,10 @@ Use read.csv(...) to read the file into a dataframe.  This is an artificial data
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 4a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
-
+  #read in the body fat data.
+bf = read.csv("bodyfat.csv")
+  #extract the data into a vector.
+bfat = bf$bodyFat
 ```
 
 ---
@@ -260,11 +265,12 @@ Make a histogram of the bodyfat percentages.  Does it appear that the data comes
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 4b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #create a histogram of the body fat data.
+hist(bfat, main = "Body Fat Percentages of 250 Random Men.", xlab = "Percentages")
 
 ```
 
-Replace this text with your written answer.
+Yes, the data does appear to come from a normal distribution. It displays a pretty strong "bell-shaped" curve, and there is no significant skew in either direction. 
 
 ---
 
@@ -275,11 +281,13 @@ Now make a normal probability plot with a fitted line by using qqnorm() and qqli
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 4c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #create a QQ plot of the Body Fat data.
+qqnorm(bfat, ylab = "Percentage")
+qqline(bfat)
 
 ```
 
-Replace this text with your written answer.
+The bottom half of the graph shows that the observed data points are greater than what would be expected, and the top half of the graph shows the observed data points are less than the expected theoritical distribution. This indicates underdispersion in the sample data set, as there doesnt appear to be enough variability vs. what would be expected from a normal distribution. (Thanks Dr. Baumann for helping me further interpret this plot!)
 
 ---
 
