@@ -1,0 +1,284 @@
+---
+title: "Week 1 HW Submission"
+author: "*type your name here*"
+date: "*enter today's date*"
+output: word_document
+---
+
+```{r include=FALSE, cache=FALSE}
+# Don't modify this chunk of code, it is just installing and loading the DS705data package
+if (!require(DS705data)){
+  if (!require(devtools)){
+    install.packages('devtools',repos="http://cran.rstudio.com")
+  }
+  library(devtools)
+  install_github('DataScienceUWL/DS705data')
+}
+require(DS705data)
+# load the HealthExam data set into memory
+data(HealthExam)
+```
+
+## How to complete the homework.
+
+If you've made it this far, then you've already downloaded and unzipped the HW packet for this week.  We suggest that you keep all of the materials, including this .rmd file,  for the week in one folder.  It will help to set the working directory to the folder that contains the HW materials.  You can do this by opening the rmd file in an RStudio editor window and then using the menu commands Session -> Set Working Directory -> To Source File Location.
+
+You'll be adding R code and typing answers in the designated spaces throughout this document.  At the end of the week you'll submit the .rmd file and the "knitted" Word document.  
+
+Reminder:  
+
+## Exercise 1
+
+For this exercise, you'll explore and summarize data on cholesterol levels for 40 randomly selected American women. The dataset for this problem in the DS705data package.  The code on lines 10-17 of this file makes sure that the package is installed when this file is knitted.  The data() command at line 19 loads the dataset.
+
+### Part 1a
+
+From the HealthExam data set, extract the cholesterol level of the 40 women and assign it to the variable fs.  As a safety check, the mean cholesterol level should be 240.875 mg/dl if you've done it correctly.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# This is a comment, change it and add your code below.
+
+```
+
+---
+
+### Part 1b
+
+Apply summary() and sd() to the vector fs to find summary statistics for female cholesterol level.  Based on the summary statistics, does the data appeared to be skewed?  If so, which direction?
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+Replace text with your written answer.
+
+---
+
+### Part 1c
+
+Make a histogram for female cholesterol level.  Label the $x$-axis with "mg/dl" and title the plot "Female cholesterol level".   Does the shape of the distribution agree with your answer to 1b?  Based on the histogram, does the variable female cholesterol level appear to be approximately normally distributed?  Explain.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+Replace text with your written answer.
+
+---
+
+### Part 1d  
+
+Make a boxplot for female cholesterol level.  Label the $y$-axis with "mg/dl" and title it as before.  
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+---
+
+### Part 1e
+
+According to the 1.5 IQR rule, what is the cutoff value for outliers in the upper tail of female cholesterol level?  
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# quantile(fs,.75) gives the third quartile
+# IQR(fs) gives the interquartile range
+
+```
+
+---
+
+### Part 1f
+
+The maximum female cholesterol level is an outlier, find its $z$-score.  You'll need to combine the commands max(), mean(), and sd(). If the data did come from a normal distribution, would the maximum female cholesterol level seem unusually large?  Explain.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+Replace this text with your written answer.
+
+---
+
+### Part 1g
+
+Make a normal probability plot for fs, add a fit line to it, and label the $y$-axis appropriately.  Based on the information in the plot, does this sample data seem to come from a normal distribution?  Explain.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+Replace this text with your written answer.
+
+---
+
+## Exercise 2
+This is essentially problem 3.11 from Chapter 3 in our textbook by Ott.  We want to compare home ownership percentages for three different years: 1985, 1996, 2002.  
+
+###  Part 2a
+The code below loads a data set with randomly sampled test scores from three different instructors.  Modify the code to load and analyze the home ownership percentages in the "homes.csv" file and use the plots to answer the questions below.  Ott says to make relative frequency histograms (divide the frequencies by the sample size to get proportions), but we'll use density histograms instead (add the option prob=TRUE to the appropriate R command) ... this makes it possible to compare histograms using different sample sizes and possibly different bins or classes.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
+
+``` {r}
+# start by copying and pasting this block of code so you can refer to it as you tweak your own code
+# when you no longer want to execute this block you can delete it, or change the {r}
+# to {r, include=FALSE, eval=FALSE}.  You can also minimize the whole block by clicking the little down arrow next to the line number at the beginning of the block.
+
+# load the data and look at it
+testScores <- read.csv("testScores.csv")
+head(testScores)
+
+# summarize the scores for each instructor
+summary(testScores$score[testScores$instructor=="A"])
+summary(testScores$score[testScores$instructor=="B"])
+summary(testScores$score[testScores$instructor=="C"])
+
+# a more advanced version of this summary by instructor would be to use tapply() to loop over the factors.
+# uncomment the next line to try it
+tapply(testScores$score, testScores$instructor, summary)
+
+#  looks like the test scores across all three instructors range from 52 to 87, to make it easier to compare the distributions lets use the same bins for all three histograms
+bins <- seq(50,90,by=5)
+
+```
+
+```{r, fig.width=8, fig.height=3}
+# set up R to expect an array of plots with 1 row and 3 columns
+# the mar parameter adjust white space around the plot, notice that it has covered the axis labels which is OK here
+par(mfrow=c(1,3),mar=c(3,3,2,1))
+hist(testScores$score[testScores$instructor=="A"],main="Scores for Instructor A",breaks = bins,xlab="score", prob=TRUE)
+hist(testScores$score[testScores$instructor=="B"],main="Scores for Instructor B",breaks = bins,xlab="score", prob=TRUE,ylab="")
+hist(testScores$score[testScores$instructor=="C"],main="Scores for Instructor C",breaks = bins,xlab="score", prob=TRUE)
+# reset to one plot
+par(mfrow=c(1,1))
+```
+
+```{r, fig.width=7, fig.height=7}
+# make side-by-side boxplots to make comparisons easier
+boxplot(testScores$score~testScores$instructor,names=c("Instructor A","Instructor B","Instructor C"),ylab="score",main="Test Scores")
+
+```
+
+---
+
+### Part 2b
+Comment on similarities and differences among the distributions of home ownership percentages for the years 1985, 1996, and 2002.  Is there a general trend?
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer.
+
+---
+
+## Exercise 3
+
+Assume that the length of a natural human pregnancy is approximately normally distributed with mean 268 days and standard deviation 16 days.  Use R to answer some questions about this distribution:
+
+### Part 3a
+
+Find the probability that a random natural pregnancy lasts less than 250 days.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 3a -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+---
+
+### Part 3b
+
+Compute the probability that a natural human pregnancy lasts between 260 and 280 days.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 3b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+---
+
+### Part 3c
+
+How long are the longest 10% of natural human pregnancies?
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 3c -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+---
+
+## Exercise 4
+
+This problem is to demonstrate how to use the normal probability plot to help judge the fit of a normal distribution.
+
+### Part 4a
+
+The file bodyFat.csv is included with the weekly download.
+Use read.csv(...) to read the file into a dataframe.  This is an artificial data set meant to be bodyfat percentages of 250 random men.  Show how to load the data and assign the bodyfat percentages to a vector called bfat.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 4a -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+---
+
+### Part 4b
+
+Make a histogram of the bodyfat percentages.  Does it appear that the data comes from a normally distributed random variable?  Explain.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 4b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+Replace this text with your written answer.
+
+---
+
+### Part 4c
+
+Now make a normal probability plot with a fitted line by using qqnorm() and qqline().  Note the "S" shape of the points.  What is this telling you about the distribution of the bodyfat data?
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 4c -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# insert your code here.
+
+```
+
+Replace this text with your written answer.
+
+---
+
+

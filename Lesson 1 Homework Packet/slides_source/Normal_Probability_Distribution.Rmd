@@ -1,0 +1,546 @@
+
+
+---
+title: 'Normal Probability Distributions'
+fontsize: '12pt,notes'
+output:
+  beamer_presentation:
+    colortheme: "seahorse"
+    keep_tex: true
+    template: 'beamer169experimental.tex'
+    fonttheme: default
+---
+
+```{r global_options, include=FALSE, echo=FALSE}
+# use for beamer
+knitr::opts_chunk$set(fig.width=4, fig.height=3, fig.align='center',warning=FALSE, message=FALSE)
+# use for word
+# knitr::opts_chunk$set(fig.width=4, fig.height=3,warning=FALSE, message=FALSE)
+```
+
+## Why? 
+
+
+* \Large Useful model for many data sets
+
+* Important in statistical inference
+
+<div class="notes">
+- can be used as models for many data sets
+- imporant in inference: two reasons
+    1. many procedures require that data is sampled from a normal distributed random variable
+    2. some inference procedures use the normal probability distribution directly
+</div>
+
+## Men's Height Data
+
+```{r, echo=FALSE, message=FALSE}
+require(DS705data);
+data(HealthExam)
+h<- HealthExam$Height[HealthExam$Sex=="M"]
+xbar <- round(mean(h),digits=2)
+s <- round(sd(h),digits=2)
+llim <- xbar-3.5*s
+ulim <- xbar+3.5*s
+HealthExamMen <- HealthExam[HealthExam$Sex=="M",]
+par(mar=(c(4,4,2,1)),yaxs="i",bty="l",xaxs="i",yaxt="n")
+hist(h,main=" ",xlab="inches",prob=TRUE,xlim=c(llim,ulim),ylab="")
+abline(h=0,xlim=c(llim,ulim),col="black",lwd=2)
+```
+
+<div class="notes">
+- Here are heights, in inches, of a random sample of 40 US adult men
+- Notice that the shape is symmetric and mound-shaped
+- Many data sets have distributions shpaed like this
+</div>
+
+----
+
+## Men's Height with Model
+
+```{r, echo=FALSE, message=FALSE}
+
+par(mar=(c(4,4,2,1)),yaxs="i",bty="l",xaxs="i",yaxt="n")
+hist(h,main="",xlab="inches",prob=TRUE,ylab="",xlim=c(llim,ulim))
+curve(dnorm(x, mean=xbar, sd=s),col="darkblue", lwd=2, add=TRUE)
+abline(h=0,xlim=c(llim,ulim),col="black",lwd=2)
+```
+
+<div class="notes">
+- Density curve for a normal probability distribution.  
+- It's a good fit to do this data.
+- The normal probability distribution is a model for the height random variable
+- We can use the model to answer questions about men's heights.
+</div>
+
+----
+
+## Use Model for Questions
+
+```{r, echo=FALSE, message=FALSE}
+par(mar=(c(4,4,2,1)),yaxs="i",bty="l",xaxs="i",yaxt="n")
+hist(h,main="",xlab="inches",prob=TRUE,ylab="",border="white",xlim=c(llim,ulim))
+curve(dnorm(x, mean=xbar, sd=s),col="darkblue", lwd=2, add=TRUE)
+a = llim;
+b = 65;
+xpts=seq(a,b,length=200)
+ypts=dnorm(xpts,mean=xbar,sd=s)
+polygon(c(a,xpts,b),c(0,ypts,0),col="gray")
+abline(h=0,xlim=c(llim,ulim),col="black",lwd=2)
+```
+
+<div class="notes">
+- The question:  what is the probability that a random man is shorter than 65 inches?
+- The total area under any density curve is 1.  The shaded area corresponding to less than 65 represents the probability a randomly selected man is less than 65 inches.  
+- Using this model, we can calculate that the probability is about .08.
+- About 8\% of men are shorter than 65 inches.
+</div>
+
+----
+
+## Use Model for Questions
+
+```{r, echo=FALSE, message=FALSE}
+par(mar=(c(4,4,2,1)),yaxs="i",bty="l",xaxs="i",yaxt="n")
+hist(h,main="",xlab="inches",prob=TRUE,ylab="",border="white",xlim=c(llim,ulim))
+curve(dnorm(x, mean=xbar, sd=s),col="darkblue", lwd=2, add=TRUE)
+a = qnorm(.8,mean=xbar,sd=s);
+b = ulim;
+xpts=seq(a,b,length=200)
+ypts=dnorm(xpts,mean=xbar,sd=s)
+polygon(c(a,xpts,b),c(0,ypts,0),col="gray")
+text(73,.01,'20%',col='blue')
+text(67,.01,'80%',col='blue')
+abline(h=0,xlim=c(llim,ulim),col="black",lwd=2)
+```
+
+<div class="notes">
+- Another type of question is to go "backwards" from a probability or percentile to a measurement value
+- How tall are the tallest 20% of men?  Same question as what is the 80th percentile of mens heights?
+- Calculation shows About \textbf{72} inches.
+</div>
+
+---- 
+
+## Normal Probability Notation
+
+
+\hfill \scalebox{3}{$X \sim N(\mu, \sigma)$} \hspace*{\fill} 
+
+\vspace{.25in}
+
+\hfill \scalebox{3}{$X \sim N(75,8)$} \hspace*{\fill}
+
+<div class="notes">
+- Shorthand is often used to describe a normally distributed random variable
+- Read the ~ as "is distributed as"
+- So the first line read as ...
+- and the second line reads as ... X here could represent a model for test scores ...
+- Watch out - it's rare, but some sources take the second number to be the variance!
+</div>
+
+----
+
+## Many Different Normal Distributions
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+set.seed(1);
+x <- rnorm(100000);
+pdf(NULL)
+hold <- hist(x, breaks=50, prob=T);
+dev.off()
+```
+
+$$ N(0, 1) \hspace{2.4in} N(23, 5)$$
+\vspace{-.5in}
+```{r echo=FALSE, fig.width=6, fig.height=1}
+# draw two diff normals side by side
+
+#===> plot <===#
+par(mfrow=c(1,2), las=1, mar=c(2,1,0,1))
+
+# curve 1
+X <- seq(-4,4,0.01)
+Y <- dnorm(X)
+plot(X, Y, type='l', axes=F, xlim=c(-3.4,3.4))
+axis(1, at=-3:3)
+for(i in 1:length(hold$counts)){
+  rect(hold$breaks[i], 0, hold$breaks[i+1], hold$density[i],
+  	border='#DDDDDD', col='#F4F4F4')
+}
+lines(X, Y)
+abline(h=0)
+
+mean2 <- 23
+sd2 <- 5
+# curve 2
+X <- seq(mean2-4*sd2,mean2+4*sd2,0.01)
+Y <- dnorm(X, mean2, sd2)
+par(mar=c(2,0,0,0))
+plot(X, Y, type='l', axes=F, xlim=c(mean2-3.4*sd2,mean2+3.4*sd2))
+axis(1, at=mean2+sd2*(-3:3))
+
+for(i in 1:length(hold$counts)){
+	rect(mean2+sd2*hold$breaks[i], 0, mean2+sd2*hold$breaks[i+1], hold$density[i]/sd2,
+		border='#DDDDDD', col='#F4F4F4')
+}
+lines(X, Y)
+abline(h=0)
+```
+
+```{r echo=FALSE, fig.width=3, fig.height=1.5}
+
+
+#===> plot <===#
+par(mfrow=c(1,1), las=1, mar=c(2.5,1,0.5,1))
+
+# curve 1
+X <- seq(-4,4,0.01)
+Y <- dnorm(X)
+plot(X, Y, type='l', axes=F, xlim=c(-4,36))
+axis(1, at=seq(-10, 40, 10))
+lines(X, Y)
+abline(h=0)
+
+# curve 2
+mean2 <- 23
+sd2 <- 5
+X <- seq(mean2-4*sd2,mean2+4*sd2,0.01)
+Y <- dnorm(X, mean2, sd2)
+lines(X, Y)
+```
+
+<div class="notes">
+- We tend to draw the same picture for every normal distribution, but they can have different centers and  spreads
+- The second plot shows the two density curves plotted on the same axis to illustrate the differing scales.
+- However, if we think about normal distributions in the right way, then they **ARE** all the same.
+</div>
+
+----
+
+## Standard Normal Distribution
+
+\columnsbegin
+\column{.3\textwidth}
+
+\scalebox{2}{$ z = \frac{\mbox{x} - \mbox{mean} }{\mbox{SD}} $}
+
+\vspace{3in}
+
+\column{.7\textwidth}
+
+```{r echo=FALSE,fig.width=4,fig.height=1.5}
+mean = 0
+sd = 1
+minx = mean-3.5*sd;
+maxx = mean+3.5*sd;
+x=seq(minx,maxx,length=200)
+y=dnorm(x,mean=mean,sd=sd)
+par(mar=(c(.5,4,2,0)),bty="n",xaxs="i",yaxt="n",yaxs="i")
+plot(x,y,type="l", lwd=2, col="blue",xlab="",ylab="",main=""
+     ,ylim=c(0,.42))
+```
+
+\vspace{3in}
+
+\columnsend
+
+<div class="notes">
+- movie again
+- standard normal distribution important in statistical inference 
+- many diff norm dist with diff means and standard deviations, but with the right scale, they are all the same
+- *label dist with N(75,8), X, a few ticks*
+- measure std devs from the ctr, *label ticks, axis Z, Z~N(0,1)*
+- z-scores measure ..., *circle formula*, example x = 65
+- z-scores work for *any* dist, in case of Normal, converts to std. norm
+</div>
+
+--- 
+
+## Classic Calculations
+
+\begin{center}
+\def\arraystretch{1.4}
+\scalebox{1.5}
+{
+\begin{tabular}{c}
+$ \Large X \sim ~ N(\mu,\sigma)$ \\
+$\updownarrow$ \\
+$ Z = \frac{X - \mu}{\sigma} \sim N(0,1)$ \\
+$\updownarrow$ \\
+probability table \\
+$\updownarrow$ \\
+$P$
+\end{tabular}
+}
+\end{center}
+
+<div class="notes">
+- The classic way to answer normal probability problems
+- use $z$-scores to go between normal distribution of interest and the standard normal
+- use cumulative probability table to go convert between the standard normal and probability
+- You'll find this approach in almost any textbook, including ours.
+- It doesn't hurt to know this approach, but using software makes it unnecessary to do any of the middle steps.
+</div>
+
+----
+
+## Using R for Normal Probability
+
+```{r, echo=FALSE, message=FALSE,fig.width=2.5,fig.height=2.5,fig.align='left'}
+mean <- 70
+sd <- 5
+par(mar=(c(6,0,0,0)),yaxs="i",bty="n",xaxs="i",yaxt="n",xaxt="n")
+curve(dnorm(x, mean=mean, sd=sd),col="darkblue", lwd=2, add=FALSE,xlim=c(mean-3.5*sd,mean+3.5*sd),xlab="")
+abline(h=0,xlim=c(llim,ulim),col="black",lwd=2)
+```
+
+\vspace{2in}
+
+<div class="notes">
+- This is a movie slide
+- Supppose we have a normal distribution with mean mu and standard deviation sigma (label the picture, mu, mu+sigma, ...)
+- If we have a measurement q (label) we might want to know the probability p (draw and shade) or vice versa
+- p is for probability of course, but q stands for "quantile", for instance, the .25 quantile is the value of the measurement that has cumulative probability .25
+- write q and p with two map arrows
+- introduce pnorm() and qnorm()
+</div>
+
+
+# Assessing Normality
+
+## Tools for Assessing Normality
+
+* \Huge Outliers
+
+* Histograms
+
+* Normal Probability Plots 
+
+<div class="notes">
+
+- Often we need to know if a normal probability distribution is a good fit for our random variable 
+- No real life random variable has a probability distribution that is exactly normal, but many are approximately normal 
+- Inspecting sample data using these tools can help determine if a normal distribution is a good fit
+- In addition to these tools, later in the course you'll learn about a test for normality called the Shapiro Wilk test.
+</div>
+
+----
+
+## Outliers
+
+```{r, echo=FALSE,message=FALSE, fig.height=2.5, fig.width=5}
+require(DS705data);
+data(HealthExam)
+h<- HealthExam$Height[HealthExam$Sex=="M"]
+xbar <- round(mean(h),digits=2)
+s <- round(sd(h),digits=2)
+llim <- xbar-3.5*s
+ulim <- xbar+3.5*s
+par(mfrow=c(1,2),mar=(c(4,4,2,.5)))
+boxplot(h,ylab='inches',main="Height")
+cholesterol <- HealthExam$Cholesterol[HealthExam$Sex=="M"]
+mean2 <- mean(cholesterol)
+sd2 <- sd(cholesterol)
+llim2 <- -200
+ulim2 <- 1410
+boxplot(cholesterol,ylab='mg',main="Cholesterol")
+```
+
+<div class="notes">
+
+- Data from a normal distribution shouldn't have too many outliers.  If there are any, they shouldn't be very extreme.
+- A boxplot is a quick way to inspect for outliers (using the 1.5 IQR rule).  
+- on the left is the boxplot for the height of the 40 randomly sampled American men.  There is a single outlier, but its z-score shows it is about 2.6 standard deviations above average which is not all that unusual.  Men's height could be described as a normally distributed random variable
+- On the right is cholesterol level for the same sample of men.  There are no outliers, but there is clear skewness ... so this data suggests that the normal distribution is not a good fit for men's cholesterol.
+
+</div>
+
+----
+
+## Histogram
+
+```{r, echo=FALSE, message=FALSE,fig.width=5,fig.height=2.5}
+
+par(mfrow=c(1,2),mar=(c(4,.5,0,.5)),yaxs="i",bty="l",xaxs="i",yaxt="n")
+hist(h,main="",xlab="inches",prob=TRUE,ylab="",xlim=c(llim,ulim))
+curve(dnorm(x, mean=xbar, sd=s),col="darkblue", lwd=2, add=TRUE)
+abline(h=0,xlim=c(llim,ulim),col="black",lwd=2)
+
+hist(cholesterol,prob=TRUE,main="",ylab="",xlab="mg",xlim=c(llim2,ulim2))
+curve(dnorm(x, mean=median(cholesterol), sd=sd2),col="darkblue", lwd=2, add=TRUE)
+abline(h=0,xlim=c(llim2,ulim2),col="black",lwd=2)
+
+```
+
+<div class="notes">
+
+Presenter Notes
+
+- Want a symmetric mound shaped distribution.
+- OK for height, not OK for cholesterol.
+
+</div>
+
+----
+
+## Normal Probability Plot
+
+```{r, echo=FALSE,fig.width=5,fig.height=2.5}
+par(mfrow=c(1,2),mar=(c(4,5,0,.5)))
+qqnorm(h,main="",ylab='oberved heights (inches)')
+#qqline(h)
+qqnorm(cholesterol,main="",ylab='observed chol (mg)')
+#qqline(cholesterol)
+
+```
+
+<div class="notes">
+- Usually a histogram is enough,  but sometimes it can be hard to tell if the data is too spread out (tails too long) or data is too bunched up (tails too short).  (Kurtosis)
+- A normal probability plot compares the observed values, plotted vertically, to the theoretical normally distributed values, plotted horizontally
+- (R compares against the standard normal distribution.  
+- If the normal distribution is a good model, then the points should lie roughly along a line.
+- For the men's height data on the left, a line is a good fit so ...
+- For the cholesterol data the points bend upward at both ends meaning the values are larger than expected at both ends of the data.  The line is not a good fit so  ...
+</div>
+
+## Probability Distributions in R
+
+- Normal, exponential, chi-square, t, etc.
+- Each distribution is accompanied by the same 4 basic commands for working with probabilities and random samples.
+- For the normal distribution the commands are pnorm(), qnorm(), rnorm(), and dnorm().
+- We'll show examples over the next few slides for the normal distribution, but other distributions are similar.
+
+
+## Cumulative Probability
+
+$$ \mbox{baby weight} \sim N( \mu = 8, \sigma = .7)$$
+What is the probability that a randomly chosen baby weighs more than 8 pounds?
+
+```{r echo = TRUE}
+pnorm( 8, mean = 7, sd = .8, lower.tail = FALSE)
+```
+
+Statisticians call this the \textit{distribution function}.
+
+<div class='notes'>
+- Audio in new audio folder - audio01.mp3
+- According to our model a little more than 10% of babies will weigh more than 8 pounds.
+- Among other things, distribution functions get used a lot to compute P-values for hypothesis tests.  We will start hypothesis testing next week.
+</div>
+
+## Inverse Probability 
+
+What is the weight of a baby in the 40th percentile?
+
+```{r echo = TRUE}
+qnorm( 0.40, mean = 7, sd = .8)
+```
+
+Statisticians call this the \textit{quantile function}.
+
+<div class='notes'>
+- Audio in new audio folder - audio02.mp3
+- According to our model a baby in the 40th percentile of weights will weigh about 6.8 pounds.
+- Quantile functions are often used in statistical inference to compute critical values for the construction of confidence intervals.  
+- We will start learning about confidence intervals starting next week.
+</div>
+
+
+## Random Number Generation
+
+Simulate a sample of 10 baby weights randomly selected from this distribution.
+
+```{r echo = TRUE}
+weights <- rnorm( 10, mean = 7, sd = .8)
+weights
+```
+
+Statisticians call this \textit{random number generation}.
+
+<div class='notes'>
+- - Audio in new audio folder - audio03.mp3
+- Random sampling from a probability distribution is widely used to simulate data.  
+- In particular we can study how statistics and plots vary if we repeatedly sample from the same population.
+</div>
+
+## Probability Density Function
+
+```{r echo = TRUE}
+dnorm( 8, mean = 7, sd = .8 )
+```
+
+Statisticians call this a \textit{probability density function}.
+
+<div class="notes">
+- - Audio in new audio folder - audio04.mp3
+- For a continuous probability distribution, it is rare that we'd want to know the probability density but we often use the density function to overlay curves on plots for comparison.  
+- We'll show an example on the next couple of slides.
+- For discrete probability distributions such as the binomial, the density function can be used to compute the probability of individual outcomes.
+- PUT BELOW SLIDE: For more information about continuous and discrete probability distributions, see Sections 4.6-4.10 in Ott.
+</div>
+
+## Density Example - Code
+
+Plot a histogram of the 10 random baby weights and add a density curve.
+```{r echo = TRUE, eval = FALSE}
+hist( weights, probability = TRUE)
+x <- seq( 5, 9, length = 50)
+y <- dnorm( x, mean = 7, sd = .8 ) 
+points( x, y, type = 'l', , col = 'red')
+```
+
+## Density Example  - Result
+
+Plot a histogram of the 10 baby weights from the previous slide and add a density curve.
+```{r echo = FALSE, eval = TRUE}
+hist( weights, probability = TRUE)
+x <- seq( 5, 9, length = 50)
+y <- dnorm( x, mean = 7, sd = .8 ) 
+points( x, y, type = 'l', col = 'red')
+```
+
+## Random Simulation - Code
+
+Sample 10 random baby weights and make a histogram and a normal probability plot. 
+
+```{r echo = TRUE, eval = FALSE}
+w <- rnorm( 10, mean = 7, sd = .8 )
+par( mfrow = c( 1, 2) )
+hist(w)
+qqnorm(w)
+qqline(w)
+par( mfrow = c( 1, 1))
+```
+
+<div class='notes'>
+- - Audio in new audio folder - audio05.mp3
+- When you're assessing whether a sample of data could reasonably have come from a normally distributed population we often look at histograms and normal quantile plots as shown in some of the slides above.
+- How imperfect do the plots have to be before we conclude that a normal distribution is a bad model for the population?
+- One way to develop some intution is to simulate samples from normal distributions and look at the plots. 
+- Here is the code, the plots are shown on the next slide.
+- Better yet, run this code multiple times in the console and look at the resulting plots.  See how much they vary.  You have to allow for considerable variation in these plots, especially for small samples, before you reject a normal distribution as plausible.
+- Add a note below the slide - Technically the plots we are making are called normal quantile plots not normal probability plots, but I use the terms interchangeably as only the scales on the axes change, but not the meaning or interpretation.  
+</div>
+
+## Random Simulation - Result
+
+Sample 10 random baby weights and make a histogram and a normal probability plot. 
+
+```{r echo = FALSE, eval = TRUE}
+set.seed(123)
+w <- rnorm( 10, mean = 7, sd = .8 )
+par( mfrow = c( 1, 2) )
+hist(w)
+qqnorm(w)
+qqline(w)
+par( mfrow = c( 1, 1))
+```
+
+<div class='notes'>
+- Audio in new audio folder - audio06.mp3
+The data plotted here really is from a normal distribution, but we can see that we can't expect the histogram to be perfectly bell shaped.
+- Nor can we expect the points in the normal probability plot to exactly follow a line.
+</div>
+
+
+

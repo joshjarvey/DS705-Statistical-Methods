@@ -1,0 +1,232 @@
+---
+title: 'Day 1 Orientation'
+author: "DS705"
+fontsize: '12pt,notes'
+output:
+  beamer_presentation:
+    colortheme: "seahorse"
+    keep_tex: true
+    template: 'beamer169experimental.tex'
+    fonttheme: default
+---
+
+
+
+```{r global_options, include=FALSE, echo=FALSE}
+# use for beamer
+knitr::opts_chunk$set(fig.width=4, fig.height=3, warning=FALSE, message=FALSE)
+# use for word
+# knitr::opts_chunk$set(fig.width=4, fig.height=3,warning=FALSE, message=FALSE)
+```
+
+## Course Intro Video
+
+up to Ryan and Bryan to include here or not
+
+## Instructor Intro Video
+
+up to Ryan and Bryan
+
+## R
+
+\large 
+
+- Computational engine for DS705.
+- Very popular for Data Science.
+- Open-source, free, packages for nearly everything.
+
+<div class='notes'>
+- audio-01.mp3
+- You'll be learning a lot about R and Python throughout the data science program, but for statistical analysis R is rapidly becoming the tool of choice.
+- The greatest strength of R is that it's open source and there are thousands of user-contributed packages to perform all kinds of data science tasks.  
+- Occassionally the open-source nature of R is also a weakness as sometimes packages aren't updated regularly or perhaps updates to packages cause problems in existing code.  
+- Check out the links below this slide to learn more about the popularity of R in data science.
+
+- Add in box below slide:  "For more info about top software tools for datascience visit ..." https://www.kdnuggets.com/2017/05/poll-analytics-data-science-machine-learning-software-leaders.html and http://www.burtchworks.com/2017/06/19/2017-sas-r-python-flash-survey-results/
+</div>
+
+## RStudio
+ 
+- Development environment for R
+\begin{center}
+\includegraphics[width=3in]{figures/RStudio-Screenshot.png}
+\end{center}
+
+<div class="notes">
+- no audio
+- put below slide or on the side of the slide itself:
+
+Check out the Cheatsheets built into the RStudio IDE.  They can be accessed in the Help menu.  
+</div>
+
+## RStudio Overview Video
+
+* please embed this video*
+
+- suggest HD and fullscreen
+- https://vimeo.com/97166163
+
+## Accessing R and RStudio
+
+\large
+
+- Available in the virtual desktop.  Instructions in D2L.
+- Install on your own machine (free, but unsupported):
+    - R: http://cran.rstudio.com
+    - RStudio:  start at http://www.rstudio.com
+- For convenience we suggest you install on your own machine, but keep the virtual desktop in mind if things go wrong.
+
+## swirl
+
+\begin{center}\includegraphics[width=5in]{figures/swirl_logo.png}\end{center}
+
+<div class='notes'>
+- audio02.mp3
+- We'll use swirl extensively, mostly in the first half of the course, to help you learn not only how to conduct simple statistical analyses in R but also about programming in R.
+- You're not required to submit any work from swirl, but it will definitely help you with the R part of this class
+
+- Put link to http://swirlstats.com below slide
+</div>
+
+## Installing swirl and swirl courses
+
+At the console in the R-studio:
+```{r eval=FALSE}
+install.packages('swirl') 
+library(swirl)
+install_course('R_Programming')
+install_course_github('DataScienceUWL','UW_Stat_Methods') 
+```
+
+If you have trouble installing the UW_Stat_Methods course, see the next slide for different installation instructions.
+
+## Install swirl and swirl course alternate
+
+If the course installed correctly, you can ignore this slide.
+
+Download the UW_Stat_Methods repository as a zip file from https://github.com/DataScienceUWL/, name it 'UW_Stat_Methods.zip', then:
+
+```{r eval=FALSE}
+install.packages('swirl') # only need if you didn't already do this
+library(swirl)
+install_course_zip( file.choose() ) 
+```
+
+## Using swirl
+
+At the R console:
+
+```{r eval=FALSE}
+library(swirl)
+swirl()
+```
+
+- type `info()` at anytime.
+- choose the R_Programming or the UW_Stat_Methods course to get started.
+
+## R Markdown
+
+\large
+
+- Great tool for reproducible research.
+- In RStudio:
+    - \large open .Rmd file.
+    - Add chunks of R code and text to complete exercises
+    - 'knit' a Word .docx file
+    - Upload or enter results in D2L.
+- http://rmarkdown.rstudio.com for getting started and documentation.
+- Cheatsheet: within RStudio go to Help $\rightarrow$ Cheatsheets $\rightarrow$ R Markdown Cheatsheet.
+
+<div class='notes'>
+- no audio
+</div>
+
+## Try R Markdown now
+
+\large 
+
+- In RStudio
+    - \large Choose File $\rightarrow$ New File $\rightarrow$ R Markdown.
+    - Fill in the title and author fields and select Word document.
+    - At the top of the editor window, click on 'Knit Word'.
+    
+## Using R Markdown
+
+\large
+
+- Goal: build a dynamic document that can change with the data.
+- Cheatsheets and other documentation built into Rstudio (Help -> Cheatsheets)
+- Caution: R Markdown uses a separate instance of R from the console.  All the code for loading and analyzing data has to be in the .RMD file.
+
+<div class='notes'>
+- audio03.mp3
+- R markdown can be used to make reports and presentations
+- The power of R markdown is that all of the analysis and reporting occurs in one document.  Ideally the document is completely dynamic so that any changes to the data are reflected throughout the document when it is compiled.
+- It's super important to understand that the R code that is in the markdown document is executed separately from the R code in the console window.  If you load a dataset in the console it won't be available in the markdown document unless you load it there also.
+</div>
+    
+## Piazza
+
+- Shared question and answer forum.
+- Instructions and links to Piazza in D2L.
+- All course content related questions go here.  Don't email instructor or course authors.
+- Privacy options
+    1. post publicly
+    2. post publicly but appear anonymous to classmates
+    3. post privately to instructors
+- Personal requests: email instructor or post privately on Piazza.
+
+<div class="notes">
+- audio04.mp3 
+- Piazza allows us to combine multiple class sections and instructors in one forum so that more instructors and students can work together to answer common questions.
+- Any question about course content for homework, projects, quizzes, etc. should go here
+- Most posts should simply be public with your name attached, but you can elect to appear anonymously to your classmates if you want.  Keeping most posts public allows your classmates to respond in addition to intructors.
+- we'll talk about what to post and not post in the next slide.
+</div>
+
+## Piazza Etiquette
+
+- Keep public questions general.
+- Don't give away answers or share detailed code.
+- Use a private post to share code or answer details with instructors.
+- Link to other posts using `@123`.  This number can be found in a drop-down menu of the post in the left column.
+- Responding to posts is encouraged.
+
+## Seeking Help
+
+- Post question on Piazza.
+- Search at Cross Validated at https://stats.stackexchange.com (my favorite).
+- Search at Stack Overflow at https://stackoverflow.com (programming).
+- Google.
+
+<div class='notes'>
+- audio05.mp3
+- My "go to" source for all things R and statistical is Cross Validated.  
+- Stack Overflow also has a lot of information about R but tends toward more general R and programming types of questions.
+</div>
+
+
+## Class Structure
+
+- Every Week: presentations, readings,  assessment including work submitted through D2L.
+- Many Weeks: swirl lessons, submit R markdown assignment.
+- Occassionally: project with submitted R markdown report.
+- Once:  comprehensive assessment submitted in D2L.
+
+
+## Work Flow
+
+- Create a directory for each lesson.
+- If available, put contents of lesson zip file in this directory.
+- Use Rstudio menu (Session -> Set Working Directory) to point to your this directory.
+- For reprocibility put work into an R script (.R file) or in R markdown (.RMD file).
+- IDEAL:  run one script to create all your HW answers for the week.
+
+<div class='notes'>
+- audio06.mp3
+- To keep all your work together you should create a working directory for each lesson.
+- Instead of using R like a calculator where you do all your work interactively in the consolve, focus on creating an R script or R markdown file that will create all of the HW answers when the script is executed.  
+- This may be uncomfortable at first, but in the end it is much more efficient and has the benefit of making your work reproducible.
+</div>
+
+    
