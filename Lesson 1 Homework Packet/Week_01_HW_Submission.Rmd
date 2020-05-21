@@ -158,44 +158,26 @@ This is essentially problem 3.11 from Chapter 3 in our textbook by Ott.  We want
 The code below loads a data set with randomly sampled test scores from three different instructors.  Modify the code to load and analyze the home ownership percentages in the "homes.csv" file and use the plots to answer the questions below.  Ott says to make relative frequency histograms (divide the frequencies by the sample size to get proportions), but we'll use density histograms instead (add the option prob=TRUE to the appropriate R command) ... this makes it possible to compare histograms using different sample sizes and possibly different bins or classes.
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
+```{r}
+homeownership <- read.csv("homes.csv")
 
-``` {r}
-# start by copying and pasting this block of code so you can refer to it as you tweak your own code
-# when you no longer want to execute this block you can delete it, or change the {r}
-# to {r, include=FALSE, eval=FALSE}.  You can also minimize the whole block by clicking the little down arrow next to the line number at the beginning of the block.
-
-# load the data and look at it
-testScores <- read.csv("testScores.csv")
-head(testScores)
-
-# summarize the scores for each instructor
-summary(testScores$score[testScores$instructor=="A"])
-summary(testScores$score[testScores$instructor=="B"])
-summary(testScores$score[testScores$instructor=="C"])
-
-# a more advanced version of this summary by instructor would be to use tapply() to loop over the factors.
-# uncomment the next line to try it
-tapply(testScores$score, testScores$instructor, summary)
-
-#  looks like the test scores across all three instructors range from 52 to 87, to make it easier to compare the distributions lets use the same bins for all three histograms
-bins <- seq(50,90,by=5)
-
+tapply(homeownership$PercentOwned, homeownership$Year, summary)
+bins = seq(30,80,by=5)
 ```
 
 ```{r, fig.width=8, fig.height=3}
 # set up R to expect an array of plots with 1 row and 3 columns
 # the mar parameter adjust white space around the plot, notice that it has covered the axis labels which is OK here
 par(mfrow=c(1,3),mar=c(3,3,2,1))
-hist(testScores$score[testScores$instructor=="A"],main="Scores for Instructor A",breaks = bins,xlab="score", prob=TRUE)
-hist(testScores$score[testScores$instructor=="B"],main="Scores for Instructor B",breaks = bins,xlab="score", prob=TRUE,ylab="")
-hist(testScores$score[testScores$instructor=="C"],main="Scores for Instructor C",breaks = bins,xlab="score", prob=TRUE)
+hist(homeownership$PercentOwned[homeownership$Year=="year1985"],main="Percent Homes Owned 1985",breaks = bins,xlab="Percent", prob=TRUE)
+hist(homeownership$PercentOwned[homeownership$Year=="year1996"],main="Percent Homes Owned 1996",breaks = bins,xlab="Percent", prob=TRUE,ylab="")
+hist(homeownership$PercentOwned[homeownership$Year=="year2002"],main="Percent Homes Owned 2002",breaks = bins,xlab="Percent", prob=TRUE)
 # reset to one plot
 par(mfrow=c(1,1))
 ```
-
 ```{r, fig.width=7, fig.height=7}
 # make side-by-side boxplots to make comparisons easier
-boxplot(testScores$score~testScores$instructor,names=c("Instructor A","Instructor B","Instructor C"),ylab="score",main="Test Scores")
+boxplot(homeownership$PercentOwned~homeownership$Year,names=c("Year 1985","Year 1996","Year 2002"),ylab="Percentage Owned",main="Percentage of Home Ownership")
 
 ```
 
@@ -206,7 +188,7 @@ Comment on similarities and differences among the distributions of home ownershi
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer.
+The home ownership amongst all groups (year) are left-skewed, with multiple outliers in that direction. Additionally, there does appear to be a slight positive linear increase to ownership rate, indicating that as the years go by more individuals are owning their home (vs. renting).
 
 ---
 
