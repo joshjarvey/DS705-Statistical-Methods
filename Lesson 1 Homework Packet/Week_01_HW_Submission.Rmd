@@ -1,7 +1,7 @@
 ---
 title: "Week 1 HW Submission"
-author: "*type your name here*"
-date: "*enter today's date*"
+author: "Josh Jarvey"
+date: "5/21/2020"
 output: word_document
 ---
 
@@ -38,7 +38,11 @@ From the HealthExam data set, extract the cholesterol level of the 40 women and 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# This is a comment, change it and add your code below.
+  #return the row of the observations that are Female from the HealthExam dataset - stored into fs.
+fs = HealthExam[HealthExam$Sex=="F",]
+
+  #calculate the mean cholesterol of the new (female) dataset. 
+mean(fs$Cholesterol)
 
 ```
 
@@ -51,11 +55,15 @@ Apply summary() and sd() to the vector fs to find summary statistics for female 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #summarize the cholesterol variable for the female dataset
+summary(fs$Cholesterol)
+
+  #calculate the standard deviation for the cholesterol variable
+sd(fs$Cholesterol)
 
 ```
 
-Replace text with your written answer.
+Yes the data appears to be skewed to the right, as the mean is greater than the median. 
 
 ---
 
@@ -66,11 +74,12 @@ Make a histogram for female cholesterol level.  Label the $x$-axis with "mg/dl" 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #create a histogram of female cholesterol levels
+hist(fs$Cholesterol, xlab = "mg/dl", main = "Female Cholesterol Level")
 
 ```
 
-Replace text with your written answer.
+The shape of the histogram further indicates my suspicion that the data is right-skewed. As for normality, the data does not appear to be bell-shaped. Furthermore, there will be no observations below 0, since an individual cannot have a negative cholesterol level. Could this be a Poisson distribution?
 
 ---
 
@@ -81,7 +90,8 @@ Make a boxplot for female cholesterol level.  Label the $y$-axis with "mg/dl" an
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #create a boxplot for female cholesterol levels
+boxplot(fs$Cholesterol, ylab = "mg/dl",main = "Female Cholesterol Level")
 
 ```
 
@@ -96,6 +106,7 @@ According to the 1.5 IQR rule, what is the cutoff value for outliers in the uppe
 ```{r}
 # quantile(fs,.75) gives the third quartile
 # IQR(fs) gives the interquartile range
+quantile(fs$Cholesterol,0.75) + 1.5*IQR(fs$Cholesterol)
 
 ```
 
@@ -108,11 +119,18 @@ The maximum female cholesterol level is an outlier, find its $z$-score.  You'll 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #z-score = (x-mean)/sd
+(max(fs$Cholesterol) - mean(fs$Cholesterol)) / sd(fs$Cholesterol)
+
+  #calculate the probability of a z-score of this magnitude from a normal distribution (using either tail).
+  #Multiply the probability by the 40 observations, and review the expected number of observations with this z-score.
+prob=2*pnorm(-3.65)
+prob
+prob*40
 
 ```
 
-Replace this text with your written answer.
+The 920 mg/dl cholesterol observation does appear unusually large, given that it is ~3.65 standard deviations away from the mean. If this were a normal distribution, a z-score this large in probability terms would be ~0.00026. So in 40 observations from a normal distribution we should expect 40*0.00026 = ~0.01 observations that have this z-score. To have one is very rare. 
 
 ---
 
@@ -123,11 +141,13 @@ Make a normal probability plot for fs, add a fit line to it, and label the $y$-a
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# insert your code here.
+  #Create a QQ Plot using the cholesterol data.
+qqnorm(fs$Cholesterol, ylab="mg/dl")
+qqline(fs$Cholesterol)
 
 ```
 
-Replace this text with your written answer.
+The data does not appear to come from a normal distribution because the tails on the QQ plot tend to shift upward away from the theoritical normal distribution (the line). The lower portion of the tail indicates skew to the right (since its above the line), and the top tail indicates a longer than normal tail in the distribution (since its above the line) - further indicating a right-skew dataset that does not come from the normal distribution. 
 
 ---
 
