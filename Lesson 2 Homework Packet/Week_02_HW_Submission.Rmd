@@ -1,7 +1,7 @@
 ---
 title: "Lesson 2 HW Submission"
-author: "Professor Stats - *change this*"
-date: "mm/dd/yyyy"
+author: "Josh Jarvey"
+date: "05/25/2020"
 output: word_document
 ---
 
@@ -43,7 +43,8 @@ First, draw a random sample of 1000 observations from the exponential distributi
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# This is a comment, remove or change it and add your code below.
+  #generate 1000 samples from exponential distribution. Wrapped in hist() to display it as a histogram.
+hist(rexp(1000), main = "Histogram of 1,000 Samples from Exponential Distribution")
 
 ```
 
@@ -56,10 +57,23 @@ Copy the block of code at the top and use it to simulate the sampling distributi
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
 ```{r}
-# replace with your code
+  #setting 1000 reps of sample size 10.
+reps <- 1000
+n <- 10
+
+  #using the for-loop to calculate the mean of the current rep and store it into a vector
+sampleStat <- numeric(reps) # initialize the vector
+for (i in 1:reps){
+  sampleStat[i] <- mean( rexp(n) )
+}
+hist(sampleStat)
+
+  #plotting a QQ plot to access normality. 
+qqnorm(sampleStat)
+qqline(sampleStat)
 ```
 
-Replace this text with your written answer.
+Based on the QQPlot, the data does appear to be skewed to the right (lower & upper tail above the line).
 
 ----
 
@@ -70,10 +84,23 @@ Repeat 1b for samples of size 200.  Do the sample means appear to closer to norm
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
 ```{r}
-# replace with your code.
+  #setting 1000 reps of sample size 200.
+reps <- 1000
+n <- 200
+
+  #using the for-loop to calculate the mean of the current rep and store it into a vector
+sampleStat <- numeric(reps) # initialize the vector
+for (i in 1:reps){
+  sampleStat[i] <- mean( rexp(n) )
+}
+hist(sampleStat)
+
+  #plotting a QQ plot to access normality. 
+qqnorm(sampleStat)
+qqline(sampleStat)
 ```
 
-Replace this text with your written answer.
+Based on the QQPlot, when the sample size is greater (200 in this case), the data is a much better fit to the theoritical normal as its more closely aligned with the theoritical normal line. 
 
 ----
 
@@ -87,7 +114,9 @@ Using the data $\bar{x} = 5.0, s = 0.7, n = 50$ we can determine that the 95% $t
 
 ###  -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
 ```{r}
-# replace with your code
+  #first, find the t-value using the qnorm at 97.5%
+  #second, using the formula n = t^2*s^2/E^2, we find the sample size required is 784.
+ceiling(qnorm(.975)^2)*(0.7^2)/(0.05^2)
 ```
 
 ---- 
@@ -100,7 +129,16 @@ Use R to build a fake data set with exactly the same statistics (as shown in the
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# replace with your code
+  #generate 50 observations from the normal distribution using mean 0, sd 1.
+fakeData = rnorm(50,0,1)
+  #"standardize" the observations using the z-score formula: (obs - mean(dataset))/sd(dataset).
+  #the scale() function does this automatically, just provide it the vector of observations. 
+fakeData = scale(fakeData)
+  #now, rescale and shift the data to match the dataset described in the paragraph above. 
+fakeData = fakeData*0.68 + 5.03
+
+  #finally, perform the t.test and pull out the 95% confidence interval. 4.8 to 5.2, which matches the above in part a.
+t.test(fakeData, conf.level = .95)$conf.int
 ```
 
 ----
@@ -125,10 +163,10 @@ Before using a t distribution based procedure we need to determine if it is plau
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# replace with your code
+hist(lead, main = "Distribution of Lead Concentrations of Inshore Waters Around Mombasa", xlab = "Lead (mg/kg dry weight)")
 ```
 
-Replace this text with your written answer.
+Based on the histogram, the data does not appear to be normally distributed. 
 
 ----
 
@@ -139,10 +177,10 @@ Use `t.test` in R to construct a 80% CI for the population mean lead concentrati
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# replace with your code
+t.test(lead, conf.level = 0.80)$conf.int
 ```
 
-Replace this text with your written answer.
+At an 80% significance level, we expect the true population mean of lead concentration levels of inshore waters around Mombasa to fall within 29.28 mg/kg - 45.21 mg/kg (dry weight). 
 
 ---- 
 
@@ -151,7 +189,7 @@ Note that your 80% CI for the population mean also gives you a 90% lower confide
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3c -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your written answer.
+It does not suggest that the true population mean is larger than 30 mg/kg, since the lower bounds of the confidence interval is below 30, it could take on any value in the range of 29.28 to 45.21. Even if we switched to a 90% confidence interval, the bounds will get larger (in range) since we're asking for more confidence.
 
 ----
 
@@ -161,16 +199,16 @@ Use R to conduct a one-sample $t$-test to determine if the population mean lead 
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3d -|-|-|-|-|-|-|-|-|-|-|-
 
-(Step 1) The hypotheses $H_0: \mu = 17$ and $H_a: \mu < 17$  (change!)
+(Step 1) The hypotheses $H_0: \mu <= 30$ and $H_a: \mu > 30$  (change!)
 
 (Step 2) Already did this in 3a.
 
 (Step 3) Compute:  
 ```{r}
-
+t.test(lead, mu = 30, alternative = "greater", conf.level = 0.9)
 ```
 
-(Step 4) Conclusion:
+(Step 4) Conclusion: At a 90% significance level, there is not enough evidence to reject that the true population mean of lead concentration of inshore water around Mombasa is greater than 30 mg/kg (dry weight).
 
 ----
 
@@ -181,7 +219,14 @@ Since the lead concentrations are very skewed and the sample size is relatively 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3e -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-
+  #set number of bootstraps to generate
+B = 5000
+  #sampling with replacement from the lead data set. Replicate this B number of times (5000). This is my resampling dataset.
+rs = replicate(B, sample(lead,replace = TRUE))
+  #apply the mean() function to the columns in the resampled matrix. 
+bd = apply(rs,2,mean)
+  #pull the quantile values from the 10th and 90th percentile, thus covering 80% of the range. This is my confidence interval.
+quantile(bd, c(0.10, 0.90))
 ```
 
 ---
@@ -193,7 +238,19 @@ Use the `boot` package to make an 80% percentile BCa CI for the population mean 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3f -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #load the necessary boot library
+library(boot)
 
+  #create the auxillary function that returns the mean of the passed in replicated sample.
+bootMean <- function(x, i){
+  return(mean(x[i]))
+}
+
+  #complete 5000 sampling distributions of the mean statistic from the lead data set. 
+bootObject = boot(lead,bootMean,R=5000)
+
+  #create an 80% confidence interval, of type BCa (bias corrected & accelerated) from the bootstrapped distribution.
+boot.ci(bootObject,conf = 0.80,type = 'bca')
 ```
 
 ----
@@ -204,7 +261,7 @@ Based on your BCa interval in Part 3f, what is the the lower 90% confidence boun
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3g -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your written answer.
+The lower 90% bound (one-sided) for the population mean lead concentration is 31.19 mg/kg (dry weight).
 
 ---
 
@@ -214,7 +271,7 @@ We'd like to do a hypothesis test at the 10% significance level ($\alpha = 0.10$
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3h -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your written answer.
+At a 90% significance level, there is not enough evidence to reject that the true population mean of lead concentration of inshore water around Mombasa is greater than 30 mg/kg (dry weight).
 
 ----
 
@@ -224,8 +281,7 @@ Which do you trust more and why?  The results of the bootstrap procedures or the
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3i -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your written answer.
-
+I trust the bootstrapped version a bit more because the original data set was not normally distributed, therefore in using a t.test() we violate the normality assumption. Bootstrapping the data provides a more normal sampling distribution and statistic (mean), and therefore a stronger measure of the true population parameter. 
 ----
 
 ### Part 3j
@@ -237,7 +293,11 @@ Suppose it would be worthwhile to be able to detect an alternative mean lead con
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3j -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# your code goes here
+  #calculate the power of the t.test(), using a significance at 0.10. 
+  #so about 63% chance that population mean is 40 mg/kg.
+power.t.test(n = 37, sd = 37.1, delta = 10, sig.level = 0.10,
+             type = "one.sample",
+             alternative = "one.sided")$power
 ```
 
 ----
@@ -249,7 +309,11 @@ Suppose we need the power to be 0.9 to be able to detect an alternative mean lea
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3k -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# your code goes here
+  #this time placing in a power, but leaving sample size blank.
+  #if we want a 90% chance that population mean is 40 mg/kg, then we need a sample size of 92. 
+ceiling(power.t.test(power = 0.90, sd = 37.1, delta = 10, sig.level = 0.10,
+             type = "one.sample",
+             alternative = "one.sided")$n)
 ```
 
 ----
