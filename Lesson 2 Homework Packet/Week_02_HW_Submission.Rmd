@@ -205,10 +205,11 @@ Use R to conduct a one-sample $t$-test to determine if the population mean lead 
 
 (Step 3) Compute:  
 ```{r}
+  #perform a t.test() to see if population mean is greater than 30, at an alpha of 0.10.
 t.test(lead, mu = 30, alternative = "greater", conf.level = 0.9)
 ```
 
-(Step 4) Conclusion: At a 90% significance level, there is not enough evidence to reject that the true population mean of lead concentration of inshore water around Mombasa is greater than 30 mg/kg (dry weight).
+(Step 4) Conclusion: At a 90% significance level, there is not enough evidence (p-value=0.1215) to reject that the true population mean of lead concentration of inshore water around Mombasa is greater than 30 mg/kg (dry weight).
 
 ----
 
@@ -248,8 +249,7 @@ bootMean <- function(x, i){
 
   #complete 5000 sampling distributions of the mean statistic from the lead data set. 
 bootObject = boot(lead,bootMean,R=5000)
-
-  #create an 80% confidence interval, of type BCa (bias corrected & accelerated) from the bootstrapped distribution.
+  #create an 80% confidence interval, of type BCa (bias corrected & accelerated) from the bootstrapped sampling distribution.
 boot.ci(bootObject,conf = 0.80,type = 'bca')
 ```
 
@@ -261,7 +261,7 @@ Based on your BCa interval in Part 3f, what is the the lower 90% confidence boun
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3g -|-|-|-|-|-|-|-|-|-|-|-
 
-The lower 90% bound (one-sided) for the population mean lead concentration is 31.19 mg/kg (dry weight).
+The lower 90% bound (one-sided) for the population mean lead concentration is 31.19 mg/kg (dry weight). It is the same thing as the two-sided 80%'s lower bound (since 10% discard is in the lower tail).
 
 ---
 
@@ -271,7 +271,7 @@ We'd like to do a hypothesis test at the 10% significance level ($\alpha = 0.10$
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3h -|-|-|-|-|-|-|-|-|-|-|-
 
-At a 90% significance level, there is not enough evidence to reject that the true population mean of lead concentration of inshore water around Mombasa is greater than 30 mg/kg (dry weight).
+At a 90% significance level, there is enough evidence to support that the true population mean of lead concentration of inshore water around Mombasa is greater than 30 mg/kg (dry weight).
 
 ----
 
@@ -310,7 +310,8 @@ Suppose we need the power to be 0.9 to be able to detect an alternative mean lea
 
 ```{r}
   #this time placing in a power, but leaving sample size blank.
-  #if we want a 90% chance that population mean is 40 mg/kg, then we need a sample size of 92. 
+  #if we want a 90% chance that population mean is 40 mg/kg, then we need a sample size of 92 to confirm this delta
+  #using ceiling since you always want the nearest integer rounded up for sample size. 
 ceiling(power.t.test(power = 0.90, sd = 37.1, delta = 10, sig.level = 0.10,
              type = "one.sample",
              alternative = "one.sided")$n)
