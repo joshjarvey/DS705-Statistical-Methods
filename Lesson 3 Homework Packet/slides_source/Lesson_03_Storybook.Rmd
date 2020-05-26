@@ -1,0 +1,820 @@
+---
+title: "Two-Sample Inference Procedures for Population Central Values"
+author: "DS705"
+output:
+  beamer_presentation:
+    colortheme: seahorse
+    keep_tex: yes
+    template: ../beamer169.tex
+  slidy_presentation: default
+fontsize: 12pt,notes
+---
+
+
+## Pooled vs. Unpooled
+
+
+Pooled-variance t-procedures
+
+  * var.equal=TRUE
+  
+  \vspace{3em}
+  
+Separate-variance (Welch, Unpooled) t-procedures 
+
+  * var.equal=FALSE
+  
+<div class="notes">
+
+Pooled vs Unpooled – that is the question when it comes to two–sample t-tests and intervals for population means.
+
+Pooled and unpooled procedures both require independent, random samples from normally distributed populations.
+
+The difference between the two is that the pooled procedures have the additional data requirement that the populations have equal variances.  In R, the option to specify this in the t.test function is var.equal=TRUE.
+
+The separate-variance or unpooled t-procedures require no such stipulation that the population variances be equal.  In R, the option to specify this in the t.test function is var.equal=FALSE and this is the default case if the var.equal option is omitted.
+
+Please recognize that just because we don’t assume the population variances are equal does not mean that they must be different – we simply place no conditions on them at all.  
+
+In other words, As long as the conditions of independent random samples from normal populations are met, the separate-variance t-procedures are applicable, whereas the pooled t-procedures are only reliable when the population variances are equal.
+
+The benefit of placing this extra condition on the data is that the sampling distribution that the pooled t-procedures are based on is exact, whereas the sampling distribution that the separate-variance t-procedures are derived from are only approximate.
+
+NEW AUDIO (add to the end of existing)
+
+We will use the Welch t-test and t-interval exclusively in this course when we can reasonably conclude that the population distributions are at least approximately normally distributed.
+
+</div>
+  
+----
+
+## Interpreting CI’s for a Difference: $\mu_1 - \mu_2 = ?$
+
+The importance of 0 in the interval . . . or not in the interval
+
+<div class="notes">
+
+With the two-sample t-intervals, the purpose is to estimate the difference between two unknown population means.  We’re estimating the answer to a subtraction problem, and so of course it will be important to determine if the difference is positive, negative, or if it could be 0. 
+
+</div>
+
+----
+
+## Interpreting CI’s for a Difference: $\mu_1 - \mu_2 = ?$
+
+The importance of 0 in the interval . . . or not in the interval.
+
+Then for a given level of confidence:
+
+\vspace{2em}
+
+If $(-3, 2)$, then "...the difference in population means is between -3 and 2..."
+
+<div class="notes">
+
+When 0 is in the interval, which is evident when the lower bound is negative and the upper bound is positive, then there is insufficient evidence to conclude that the population means are different, such as in this example here.
+
+</div>
+
+----
+
+## Interpreting CI’s for a Difference: $\mu_1 - \mu_2 = ?$
+
+The importance of 0 in the interval . . . or not in the interval.
+
+Then for a given level of confidence:
+
+\vspace{2em}
+
+If $(-3, 2)$, then "...the difference in population means is between -3 and 2..."
+
+If $(-7,-4)$, then "...population mean 1 is 4 to 7 units less than population mean 2..."
+
+<div class="notes">
+
+If the interval is entirely negative, then we can conclude that mu 1 is less than mu 2 by the amount given by the interval with whatever level of confidence was used.  Notice that the negative signs are not needed in the written interpretation because they have been interpreted by the word “less” in the comparison.
+
+</div>
+
+----
+
+## Interpreting CI’s for a Difference: $\mu_1 - \mu_2 = ?$
+
+The importance of 0 in the interval . . . or not in the interval.
+
+Then for a given level of confidence:
+
+\vspace{2em}
+
+If $(-3, 2)$, then "...the difference in population means is between -3 and 2..."
+
+If $(-7,-4)$, then "...population mean 1 is 4 to 7 units less than population mean 2..."
+
+If $(5,9)$, then "...population mean 1 is 5 to 9 units more than population mean 2..."
+
+<div class="notes">
+
+If the interval falls entirely in the positive part of the number line, then it can be concluded that mu 1 is greater than mu 2 by the amount given by the interval with whatever level of confidence was used.  It makes sense in the order of subtraction that when the answer is positive the first number is bigger than the second number.
+
+</div>
+
+----
+
+## Shapiro-Wilk Test
+
+$H_0$: The sample was drawn from a normally distributed population.
+
+$H_a$: The sample was not drawn from a normally distributed population.
+
+<div class="notes">
+
+While we won’t formally be teaching the mathematical details of the Shapiro-Wilk test and it isn’t presented in the textbooks we’re using, it is easily performed in R and it is important to understand what is being tested.
+
+The null hypothesis is simply that a particular random sample was drawn from a normally distributed population, while the alternative hypothesis is that it was not.
+
+</div>
+
+
+
+## Example: The Scenario
+
+Suppose a national car rental agency wants to compare the average number of miles their customers put on luxury car rentals versus sports car rentals and estimate their difference.  The company selects independent, random samples of 15 luxury car rentals and 15 sports car rentals and record the daily mileage for each.  
+
+```{r,echo=FALSE}
+mileage <- c(50,58,43,48,50,66,32,73,55,78,43,66,57,40,54,26,33,21,37,39,23,48,58,28,39,22,38,41,50,43);
+cartype <- c(rep("sports",15),rep("luxury",15));
+cardata <- data.frame(mileage,cartype)
+sports_cars <-mileage[cartype=="sports"]
+luxury_cars <-mileage[cartype=="luxury"]
+```
+
+<div class="notes">
+
+When reading a problem scenario like this, it is very important for us to be able to pick out the key pieces of information.  For example, we should be able to identify the two populations of interest.  
+
+Here, we see that there is some national car rental agency that has both luxury car rentals and sports car rentals.  And we read that they want to compare the average number of miles for each – this is the response variable.
+
+It also says that the company has selected independent random samples.  This is important because these are conditions for both the separate-variance t-procedures and the pooled t-procedures.  If these conditions were not clearly stated, we would be in the position of having to assume them in order to proceed.
+
+The sample sizes are also given and we see that they are relatively small, but equal.
+
+</div>
+
+----
+
+## Example: The Request
+
+Conduct a hypothesis test at a 10% level of significance to compare the population means miles per day for luxury car and sports car rentals. Also construct a 90% confidence interval to estimate the difference in population means.
+
+<div class="notes">
+
+There is no audio for this slide.
+
+</div>
+
+----
+
+## Sample Statistics
+
+```{r}
+mean(luxury_cars); sd(luxury_cars)
+mean(sports_cars); sd(sports_cars)
+```
+
+<div class="notes">
+
+Before doing any statistical inference, it is always a good idea to examine the sample statistics.  The R code for generating the sample means and standard deviations is shown as well as the output that is generated by each.
+
+We’ll assume that we have already loaded the data into R and that the names luxury cars and sports cars identify vectors that contain each sample.
+
+Clearly the sample mean for the sports cars is higher, but that doesn’t necessarily mean that the population means are different.  However, with this in mind, if we do find a significant difference in population means, it would stand to reason that the sample with the higher mean would correspond to population with the higher mean.
+
+DELETE THIS FROM AUDIO:
+
+"We can also see that the sample standard deviations are not too far apart and that they satisfy the general guideline that if the larger standard deviation is no more than twice the smaller one, then it is reasonable to assume equal population variances.  We will test it formally with Levene’s test as we proceed."
+
+</div>
+
+----
+
+## Assessing Conditions: Normality (Visually)
+
+```{r,echo=FALSE,fig.height=3,fig.width=3,fig.align='center'}
+boxplot(mileage~cartype,data=cardata,ylab="Miles",main="Rental Car Mileage")
+```
+
+<div class="notes">
+
+To assess the normality of the samples it is wise to make a visual assessment of boxplots and histograms in addition to conducting a goodness-of-it test such as the Shapiro-Wilk test for normality.
+
+No outliers are seen in these boxplots and both boxplots are relatively symmetric.  Once again, however, we can see that the mileage for sports car rentals tends to be higher in the sample, though we have yet to compare population means formally.
+
+</div>
+
+----
+
+## Assessing Conditions: Normality (Visually)
+
+```{r,echo=FALSE,fig.height=3,fig.width=4,fig.align='center'}
+par(mfrow=c(1,2))
+hist(luxury_cars,main="Luxury Cars",xlab="Miles")
+hist(sports_cars,main="Sports Cars",xlab="Miles")
+```
+
+<div class="notes">
+
+The histograms are a little blocky and may have a very slight skewness to the right.  However, we should keep in mind that the samples contain random variation simply from the process of random sampling and that they are also relatively small samples.  
+
+We should not be too hasty to declare them to be non-normal.  We would only be skeptical normality if we see heavy skewness, extreme outliers, or a large number of outliers.
+
+</div>
+
+----
+
+## Assessing Conditions: Normality (numerically)
+
+```{r}
+shapiro.test(luxury_cars)
+shapiro.test(sports_cars)
+```
+
+<div class="notes">
+
+When assessing the condition numerically that both samples come from normally distributed populations, the Shapiro-Wilk test is applied to each sample individually.  
+
+A p-value of 0.6395 for the luxury cars is large enough that normality for the daily  mileage for the population of all luxury cars at this company would not be rejected at a 5% level of significance, and similarly the large p-value of .966 for the sports cars indicates that it would not be unreasonable at all to consider the population of mileage for all sports cars to be normally distributed as well.
+
+</div>
+
+---- 
+
+## Define the Parameters
+
+Let $\mu_1$ represent the population mean miles per day that customers put on all luxury car rentals.
+
+Let $\mu_2$ represent the population mean miles per day that customers put on all sports car rentals.
+
+<div class="notes">
+
+Since we were given in the problem statement that the samples were independent and randomly selected and we have determined that the underlying populations are normally distributed with equal variance, we can proceed with either the separate variance t-test or the pooled t-test.
+
+In either case, we should begin by being clear about defining the mathematical symbols we use and identifying the populations for the parameters we are comparing.
+
+</div>
+
+----
+
+## State the Hypotheses
+
+$$H_0: \mu_1 = \mu_2$$
+
+$$H_a: \mu_1 \ne \mu_2$$
+
+<div class="notes">
+
+Every hypothesis test must begin with a null and alternative hypothesis.  Since the problem statement did not specify a particular direction to test, that is, it did not say “test that the mean for sports cars is higher than for luxury cars – it simply said to compare the population means, so we choose the two-tailed alternative, which states that the population means are not equal to each other.
+
+</div>
+
+----
+
+## R Code and Output
+
+```{r}
+t.test(mileage~cartype,data=cardata,conf.level=0.90)
+```
+
+<div class="notes">
+
+In order to get the t-test and t-interval output using R the t.test function is used.  I’ll show you the structure of the data and the variable names in just a few more slides.
+
+The Welch procedure is the default setting in t.test, so there is no reason to specifically enter the option var.equal=TRUE.
+
+Since a 90% confidence interval was requested, I also had to specify the option conf.level=0.90.  If this was not specified, the function uses .95 as the default level of confidence.
+
+The test statistic, degrees of freedom, and p-value for the two-sample t-test are given as well as a note indicating the default option of the two-tailed alternative that the difference in population means is not 0.
+
+The lower and upper bounds of the 90% confidence interval are stated, followed by a printing of the sample means.  Another important detail of the output of sample means is the order in which they are printed because this also indicates the order of subtraction that R has used, which is very important to keep in mind when interpreting the results.  
+
+Note that the order here is luxury car miles minus sports car miles.
+
+</div>
+
+----
+
+## Test Conclusions
+
+Statistical conclusion:  Reject $H_0$ at $\alpha = 0.10$.
+
+Interpretation:  There is sufficient evidence to claim that the population mean miles per day customers put on all of this company's luxury cars is different from the population mean miles per day customers put on all of their sports cars (P = 0.0003).
+
+<div class="notes">
+
+Hypothesis test conclusions can be written as a statistical conclusion, simply stating whether or not the null hypothesis was rejected and reporting the level of significance.  Here H0 is rejected at a 10% level of significance since the p-value, 0.0003, is less than 0.10.
+
+In order to clearly communicate the result of the hypothesis, a practical conclusion, or interpretation, is also given in the context of the problem.  Please take a moment to read the interpretation and go back and compare it to the wording in the original problem statement.  Stating the p-value in parenthesis is commonly done in research publications.
+
+</div>
+
+----
+
+## Interpreting the Confidence Interval
+
+With 90% confidence, the population mean mileage per day on all luxury cars is 10.44 to 25.16 miles less than for all sports cars for this rental company.
+
+<div class="notes">
+
+A typical confidence interval interpretation is shown here.  Note that the inference is in reference to population means, not sample means.  Also note that negative signs are not brought into the interpretation with the numerical values of the lower and upper bounds of the confidence interval, but rather have been interpreted in that we are claiming that the population mean mileage per day for luxury cars is less than for sports car rentals for this company.  
+
+Since we know the order of subtraction was luxury car minus sports car, and we see the interval in the output from R that is entirely negative, we can conclude that the population mean for luxury cars must be less than the mean for sports cars by somewhere between 10.44 and 25.16 miles, that is, with 90% confidence.
+
+</div>
+
+----
+
+## Structuring the Data in R
+
+```{r}
+mileage <- c(50,58,43,48,50,66,32,73,55,78,43,66,57,40,54,
+             26,33,21,37,39,23,48,58,28,39,22,38,41,50,43);
+cartype <- c(rep("sports",15),rep("luxury",15));
+cardata <- data.frame(mileage,cartype)
+sports_cars <-mileage[cartype=="sports"]
+luxury_cars <-mileage[cartype=="luxury"]
+```
+
+<div class="notes">
+
+Though it wasn’t shown in the problem statement, the data for this example would have been provided in some way.  If it was simply printed in a book and it was up to me to get it into R, I would have to create a data frame as shown here.
+
+In the data frame, which I called cardata, the data are entered and stored in two vectors, one called mileage and one called cartype.  Mileage stores the 30 observed miles per day of all the cars in the sample with the 15 sports car mileage values  entered first followed by the 15 luxury car values.  Think of a matrix with 2 columns and 30 rows.
+
+Cartype stores a categorical indicator of which type of rental car, thus identifying which population each sample value was selected from.
+
+Some procedures in R, such histograms and the Shapiro-Wilk test, only handle one vector at a time, so the data for each sample was pulled out into separate vectors using the last two lines of R code for this purpose.  The 15 values for sports cars identified by the cartype “sports” and the 15 values for the luxury cars identified by the cartype “luxury.”
+
+</div>
+
+----
+
+
+## Wilcoxon Rank Sum Test
+
+Rationale:
+
+- Rank pooled data from two independent random samples
+- Average the ranks for each sample
+- Compare mean ranks
+
+Note 1: To detect different population **medians**, the population distributions must have the same shape and scale (equal variances required).
+
+Note 2: There are no shape or scale requirements in the population distributions to detect anything that makes the mean ranks different.
+
+Note 3: This procedure works well as long as there are not too many ties in the sample data.
+
+<div class="notes">
+No audio.
+</div>
+
+
+## Wilcoxon Rank Sum Example: Repair Times   
+
+Consider two independent, random samples of repair times (in minutes) for Macs and PC reported by an IT department at a major corporation. The data set is called **repair** and can be found in the **DS705data** package.
+
+The variable **type** is a factor indicating if the computer repair was made to a Mac or a PC.  
+
+The variable **time** is a numeric variable containing the repair time in minutes for each computer.
+
+
+<div class="notes">
+Suppose our task here is to compare the population central values and construct a 95% confidence interval for the difference in average repair time between Macs and PCs for the population of all computer repairs at this corporation.
+
+It is wise to begin by looking at some graphs to evaluate the shape of the distributions.  If they are approximately normally distributed or even if they are mildly skewed and don't have any extreme outliers, then the t-test will be appropriate because of its robustness.  If not, then maybe the Wilcoxon Rank Sum test would be a better choice.
+
+
+Bottom panel note:
+
+
+</div>
+
+----
+
+## Examination of the Repair Time Data
+
+```{r echo=FALSE}
+#library(DS705data)
+#data(repair)
+load("repair.rda")
+boxplot(time~type,data=repair,horizontal=T,xlab="Repair Time")
+```
+
+<div class="notes">
+Side-by side boxplots show the samples to be quite skewed to the right with a several outliers on the upper end, some of which are pretty extreme.
+</div>
+
+----
+
+## Examination of the Repair Time Data
+
+```{r echo=FALSE}
+par(mfrow=c(2,2))
+par(mar=c(1.8,1.8,1.8,1.8)*1.3)
+par(oma=c(1,1,0,0),
+    mgp=c(1.5,.75,0))
+hist(repair$time[repair$type=="Mac"],xlab="Repair Time (min)",ylab="Frequency",main="Mac Repairs")
+hist(repair$time[repair$type=="PC"],xlab="Repair Time (min)",ylab="Frequency",main="PC Repairs")
+qqnorm(repair$time[repair$type=="Mac"])
+qqline(repair$time[repair$type=="Mac"])
+qqnorm(repair$time[repair$type=="PC"])
+qqline(repair$time[repair$type=="PC"])
+```
+
+<div class="notes">
+
+The histograms and normal probability plots for the distributions of repair times for the different type of computer are strongly skewed to the right.
+
+You can try the shapiro-wilk test for yourself to see that normality is indeed rejected.  If we can be reasonably assured that these are independent, random samples, these samples lend themselves well to the Wilcoxon Rank Sum test to see if one distribution in the population is shifted from the other.  Since they have the same basic shape, the test can either  be reported a shift in distributions or specifically a test for a difference in population medians.
+
+</div>
+
+----
+
+##  Wilcoxon Rank Sum Test Hypotheses
+
+$H_0$: The distributions of repair times are identical for all Macs and PCs at this corporation.
+
+$H_a$: The distributions of repair times are shifted from each other for all Macs and PCs at this corporation.
+
+These can also be written in terms of distribution shift (Diff = Mac - PC) in distributions, $\Delta$, as 
+ 
+$$H_0: \Delta = 0$$
+$$H_0: \Delta \neq 0$$
+
+<div class="notes">
+
+No audio.
+
+</div>
+
+----
+
+##  Wilcoxon Rank Sum Test R Code and Output
+
+```{r}
+wilcox.test(time~type,data=repair,conf.int=TRUE)
+```
+
+
+<div class="notes">
+
+The test statistic and P-value for the Wilcoxon Rank Sum test and a confidence interval for the size of the shift are produced using the function wilcox.test.  The confidence interval must specifically be requested as shown here because the default in this function is to not give the confidence interval.
+
+Unfortunately, there is nothing in the output to indicate what order the subtraction was done to get the difference in location.  You can figure it out by looking at the graphs or by computing descriptive statistics like means or medians.
+
+I have noticed that the functions in R tend to do things in alphabetical order, so here the difference in location is Mac minus PC.
+
+</div>
+
+----
+
+##  Wilcoxon Rank Sum Test Conclusions
+
+Hypothesis test conclusions:
+
+\begin{quote}
+Do not reject $H_0$ at a 5\% level of significance. There is sufficient evidence to conclude that the distributions of repair times for Macs and PCs are not shifted from each other for all computer repairs at this corporation ($P=0.1451$).
+\end{quote}
+
+Confidence interval interpretation:
+
+\begin{quote}
+With 95\% confidence, the shift in the distributions of repair times for all Macs and PCs at this corporation is between -1.3 and 0.2 minutes.
+\end{quote}
+
+
+<div class="notes">
+
+Note that the conclusions for both the hypothesis test and the confidence interval are in reference to the population of all Mac and PC repairs at this corporation.  This is what is meant by statistical inference.
+
+Since the samples comes only from a particular corporation, the population that the inference is being made to should not be extended beyond that.
+
+Since the distribution shapes were very similar in this example, these hypotheses and conclusions could have also been stated in terms of comparing population medians rather than a generic shift in distributions.  There is no significant differences in medians in this case.
+
+</div>
+
+----
+
+## Computations for the Wilcoxon Rank Sum Test in R
+
+- exact=TRUE vs exact=FALSE (exact or approximate *p*-value) 
+- exact=FALSE matches the textbook computations in the examples
+- correct=TRUE vs correct=FALSE (continuity correction in the normal approximation)
+- correct=FALSE matches the textbook computations in the examples
+- The defaults are exact=TRUE and correct=TRUE (we recommend using these)
+- R displays the *Mann-Whitney statistic*, not the Wilcoxon statistic shown in the textbook, but these tests are equivalent and the *P*-value is the same for both
+- R documentation (for this one, type **?wilcox.test** in the console)
+
+<div class="notes">
+No audio.
+</div>
+
+----
+
+## Bootstrap CI for a Difference in Population Means
+
+To use the "boot" package, an auxiliary function that creates the statistic to be bootstrapped must first be defined.
+
+```{r}
+bootMeanDiff <- function(d,i){
+  means <- tapply(d[i,1],d[,2],mean)
+  means[1]-means[2]
+  }
+```
+
+<div class='notes'>
+Bootstrapping is also an option when trying to estimate the difference between two unknown population means. This is another non-parametric method because there is no requirement that the underlying distributions must be normally distributed.  
+
+In order to use the boot package to construct a bootstrap confidence interval for a difference in population means, it is first necessary to create an auxiliary function to define what sample statistics to use.  
+
+In order to compare population means, we will use the difference in sample means as an estimator.  In this function, tapply is employed to compute the sample means for the two groups for each individual bootstrap sample generated and then the difference in those means is captured.  
+
+The data should be stacked in order to correspond with the way this auxiliary function was built.
+
+This way, a bootstrap distribution consisting of a very large number of repetitions can be created and use to estimate the true sampling distribution of the difference in sample means, which is used to create a confidence interval for the difference in population means.
+
+</div>
+
+----
+
+## Using the Boot Package on Your Function
+
+```{r}
+library(boot)
+boot.object <- boot(cardata, bootMeanDiff, R = 5000, 
+                    strata = cardata$cartype)
+boot.ci(boot.object,conf=.90,type='bca')$bca[4:5]
+```
+
+<div class='notes'>
+The boot package resamples from the original samples, with replacement, an very large number of times to estimate the sampling distribution of the difference in sample means for the given sample sizes.  
+
+When the strata option is used, the sampling is done separately within each group.  Here, the mileage example in the data frame cardata seen previously is used to construct a 95% boostrap interval for the difference in population mean mileage for sports and luxury cars. 
+
+The function bootMeanDiff which was defined previously, is fed into the boot function. A bootstrap sample size of 5000 was chosen, somewhat arbitrarily, but bootstrap sample sizes in the thousands are typically adequate.  Because there are two samples, we are stratifying on the type of rental car.  Recall that this was luxury cars vs sports cars for this example. 
+
+To generate the interval, the boostrap distribution of differences in boostrap sample means, stored in boot.object, is fed into the boot.ci function, which extracts the lower and upper bound for a confidence interval at the specified level of confidence.  95% is the default, but I specified 90% here so that we can compare the result to the Welch t-interval previously calculated.  
+
+The type bca stands for bias corrected and accelerated.  Without delving into the details on this, I'll just say that this is a good method for constructing the confidence interval from the bootstrap distribution.
+
+Because it based on repeated random sampling, the bootstrap confidence interval will have slightly different results every time you run it.  The variation in the results will decrease as the bootstrap sample size is increased.
+
+In this run, since 0 is not captured in the interval, we can say there is sufficient evidence to claim that the population means are different
+and specifically that with 90% confidence, the population mean mileage per day on all luxury cars is (  ) to  (  )  miles less than for all sports cars for this rental company. 
+
+For comparison, the Welch t-interval for this sample was -25.16 to -10.44.
+
+</div>
+
+----
+
+## Bootstrap Difference for a Given Percentile
+
+```{r}
+bootPctDiff <- function(d,i,p=.5){
+  pct <- tapply(d[i,1],d[,2],quantile,prob=p)
+  pct[1]-pct[2]
+  }
+
+boot.object <- boot(repair, bootPctDiff, R = 5000,p=.5,
+                    strata=repair$type)
+boot.ci(boot.object,type='bca')$bca[4:5]
+```
+
+
+<div class='notes'>
+Another nice feature of the general nature of bootstrapping, is that we're not limited to means or medians, but we could choose to estimate the difference between any unknown population parameter for the two populations - such as the minimum, maximum, range, standard deviation, or the percentile of our choice.
+
+The function shown here is sufficiently general to compare any percentile for two populations.  I have set the percentile to the default value of .5, which corresponds to the median and fed the repair time data from a previous example.  
+
+Since the variables were part of a larger data frame, it was necessary to separate them out to a new data frame first in order to feed only the response variable and the group identifier variable.  Note that the data should be stacked in order to correspond with the way the auxiliary function was built.
+
+Again, in this run, since 0 is not captured in the interval, we can say there is sufficient evidence to claim that the population medians are different and specifically that with 95% confidence, the distribution of salaries for all faculty in departments that are considered theoretical are shifted somewhere between (  ) and (  ) dollars less than for faculty in departments that are considered applied.
+
+Recall that the interval for population medians that is produced by the wilcox,test function was from 1.3 to 0.2 minutes.
+
+Suppose we were interested in comparing the 75th percentile for two populations.  It can easily be done by specifying p as .75.
+
+
+</div>
+
+----
+
+## Stacked vs Side-by-Side Data Structure
+
+```{r echo=FALSE}
+cardata2 <- data.frame(cbind(sports_cars,luxury_cars))
+```
+
+
+<div class="notes">
+
+</div>
+
+----
+
+## Use *t* for Distributions Like These
+
+```{r,echo=FALSE,fig.width=5,fig.height=2.5,fig.align='center'}
+n <- 50
+par(mfrow=c(3,3))
+par(mar=c(.25,.25,.25,.25))
+for (i in 1:3){
+  x <- rnorm(n)
+  hist(x,xaxt='n',yaxt='n',main="")
+}
+for (i in 1:3){
+  x <- rweibull(n,2.3,3)
+  hist(x,xaxt='n',yaxt='n',main="")
+}
+for (i in 1:3){
+  x <- rt(n,20)
+  hist(x,xaxt='n',yaxt='n',main="")
+}
+par(mfrow=c(1,1))
+```
+
+
+<div class='notes'>
+
+</div>
+
+----
+
+
+
+## Use Wilcoxon for Distributions Like These
+
+```{r,echo=FALSE,fig.width=5,fig.height=2.5,fig.align='center'}
+
+n <- 50
+par(mfrow=c(3,3))
+par(mar=c(.25,.25,.25,.25))
+for (i in 1:3){
+  x <- rlnorm(n,.5,1)
+  hist(x,xaxt='n',yaxt='n',main="")
+}
+for (i in 1:3){
+  x <- -rexp(n,.1)
+  hist(x,xaxt='n',yaxt='n',main="")
+}
+for (i in 1:3){
+  x <- rcauchy(n)
+  hist(x,xaxt='n',yaxt='n',main="")
+}
+par(mfrow=c(1,1))
+```
+
+<div class='notes'>
+
+</div>
+
+----
+
+Insert Power Videos here (summary of simulation in book) - take from old Lesson 4 slides 3-10.  My slide title is "Power.mp4".
+
+----
+
+## Distribution Shapes
+
+```{r echo=FALSE}
+library(distr)
+curve(d(DExp(1))(x),xlim=c(-5,5),,ylim=c(0,.5),
+      ylab="", xlab="",main="Heavy Tails")
+curve(dnorm(x,0,1),lty="dotted",lwd=2,add=TRUE)
+legend("topright",c("Normal","Double Expo"),lty=c("dotted","solid"),lwd=c(2,1))
+
+curve(dcauchy(x,0,1),xlim=c(-5,5),ylim=c(0,.40),
+      ylab="", xlab="",main="Really Heavy Tails")
+curve(dnorm(x,0,1),lty="dotted",lwd=2,add=TRUE)
+legend("topright",c("Normal","Cauchy"),lty=c("dotted","solid"),lwd=c(2,1))
+
+curve(dweibull(x,1.5,3),xlim=c(-2,9),ylim=c(0,.33),
+      ylab="", xlab="",main="Skewed Right")
+curve(dnorm(x,2.71,1.84),lty="dotted",lwd=2,add=TRUE)
+legend("topright",c("Normal","Weibull"),lty=c("dotted","solid"),lwd=c(2,1))
+
+```
+
+<div class='notes'>
+
+</div>
+
+----
+
+## Fast Facts: Welch *t* Procedures
+
+\begin{table}
+        \centering
+        \begin{tabular}{ll}
+        \bf{Why}: & Hypothesis test - To $compare$ two unknown population means, $\mu_1$ and $\mu_2$ \\ 
+                  & Confidence Interval - To $estimate$ the difference between two unknown \\
+                  & population means, $\mu_1 - \mu_2$\\
+                  &  \\
+        \bf{When}: & The following conditions are necessary for these procedures to be \\
+                  & accurate and valid.  Some may have to be assumed, but be careful \\
+                  & in doing so.  \\
+                  & \hspace{1em} 1. The samples are selected randomly \\
+                  & \hspace{1em} 2. The samples are selected independently  \\
+                  & \hspace{1em} 3. The populations are approximately normally distributed \\
+                  &  \\
+        \bf{How}: & Use R function \bf{t.test()}  \\
+        \end{tabular}
+\end{table}
+
+
+<div class="notes">
+
+No audio
+
+</div>
+
+----
+
+## Fast Facts: Wilcoxon Rank Sum Test
+
+\begin{table}
+        \centering
+        \begin{tabular}{ll}
+        \bf{Why}: & To determine if one distribution is shifted from another \\ 
+                  &  \\
+        \bf{When}: & The following conditions are necessary for this procedure to be \\
+                  & accurate and valid.  Some may have to be assumed, but be careful \\
+                  & in doing so.  \\
+                  & \hspace{1em} 1. The samples are selected randomly \\
+                  & \hspace{1em} 2. The samples are selected independently  \\
+                  & \hspace{1em} 3. The distributions of the variables have approximately the same shape  \\
+                  &  \\
+        \bf{How}: & Use R function \bf{wilcox.test()}  \\
+        \end{tabular}
+\end{table}
+
+
+<div class="notes">
+
+No audio
+
+</div>
+
+----
+
+## Fast Facts: Bootstrap CI for Difference of Means
+
+\begin{table}
+        \centering
+        \begin{tabular}{ll}
+        \bf{Why}: & To estimate a difference of unknown population means,  $\mu_1 - \mu_2$ \\
+                  &   \\                
+        \bf{When}: & The following conditions are necessary for these procedures to be \\
+                  & accurate and valid.  Some may have to be assumed, but be careful \\
+                  & in doing so.  \\
+                  & \hspace{1em} 1. The samples are selected randomly \\
+                  & \hspace{1em} 2. The samples are selected independently  \\
+                  &  \\
+        \bf{How}: & Use R functions \bf{boot()} and \bf{boot.ci()} \\
+        \end{tabular}
+\end{table}
+
+<div class="notes">
+
+No audio.
+
+</div>
+
+----
+
+## Our 2 Cents
+
+- Must have independent, random samples. Some may have to be assumed, but be careful in doing so.
+- The Welch $t$ test and $t$ interval are the go-to procedures for means.
+    + The pooled $t$ procedures are not usually necessary.
+- The $t$ tests are not greatly affected to mild skewness and a few mild outliers.
+    + $t$ tests are not so good when there is strong skewness and numerous or extreme outliers.
+- Confidence intervals for differences can provide hypothesis test type conclusions. If the interval doesn't cover 0, there is a difference.
+
+<div class="notes">
+No audio.
+</div>
+
+----
+
+## Our 2 Cents (Continued)
+
+- If distributions are not at least approximately normal:
+    + Modern approach: Bootstrap
+    + Traditional approach: Wilcoxon Rank Sum 
+- If unsure, run all procedures; if results agree report $t$ (since it is the most widely recognized). If they don't agree, report the one for which conditions are most closely satisfied.
+- There is no “fix” for small sample sizes.
+
+<div class="notes">
+No audio.
+</div>

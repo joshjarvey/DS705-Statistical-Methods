@@ -1,0 +1,307 @@
+---
+title: 'Two-Sample Inference Procedures for Population Central Values'
+author: "Your name here"
+date: "mm/dd/yyyy"
+output: 
+  html_document: 
+    self_contained: no
+fontsize: 12pt
+---
+
+```{r include=FALSE, cache=FALSE}
+# Don't modify this chunk of code, it is just installing and loading the DS705data package
+if (!require(DS705data)){
+  if (!require(devtools)){
+    install.packages('devtools',repos="http://cran.rstudio.com")
+  }
+  library(devtools)
+  install_github('DataScienceUWL/DS705data')
+}
+require(DS705data)
+```
+   
+## Exercise 1  
+
+An experiment was conducted to evaluate the effectiveness of a drug treatment for tapeworm in the stomachs of sheep. A random sample of 24 worm-infected lambs of approximately the same age was randomly divided into two groups. Twelve of the lambs were injected with the drug and the remaining twelve were left untreated. After a 6-month period the lambs were slaughtered and the worm counts recorded.
+
+### Part 1a
+
+Load the dataset WormSheep from the DS705data package. Note that the package is loaded above at line 18.  You just need the data() command.  To see all the data sets in the package, type data(package='DS705data').
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+---
+
+### Part 1b	
+
+Create boxplot, histograms, and normal probability plots for each group (treated vs. untreated).  Be sure that each plot is labeled appropriately.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+---
+
+### Part 1c  
+
+Do the boxplots show any outliers? 
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer here.
+
+---
+
+### Part 1d  
+
+Describe the shapes of the histograms for the sample data for each sample.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer here.
+
+---
+
+### Part 1e  
+
+Do either of the normal probability plots show evidence of non-normality?  Explain.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer here.
+
+---
+
+### Part 1f 
+
+Conduct an appropriate test to determine if the worm counts in each population can be considered as normally distributed.  Provide the p-value and the conclusion of the test at a 5% level of significance.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+---
+
+### Part 1g	
+    
+Conduct the test of your choice to determine if the population mean worm count for all sheep treated with the drug is less than the mean worm count for the population of untreated sheep.  Let $\alpha = 0.05$.
+
+#### Step 1
+
+State the null and alternative hypotheses for the test.  If you use symbols, please define them.
+ 
+#### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g.step1 -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer here.
+
+NOTE: You can typeset hypotheses like this (using LaTeX):
+$$H_0: \mu_\mbox{boys} = \mu_\mbox{girls}$$
+$$H_a: \mu_\mbox{boys} \neq \mu_\mbox{girls}$$
+
+
+#### Step 2
+
+Use R to generate the output for the test you selected.
+
+#### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g.step2 -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+#### Step 3
+
+State both a statistical conclusion at $\alpha=0.05$ and interpret it in the context of the problem.
+
+#### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g.step3 -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer here.
+
+---
+
+### Part 1h  
+
+Compute a 95% confidence interval for the difference in population means.  Write an interpretation in the context of the problem for this interval.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1h -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+
+Replace this text with your answer here.
+
+---
+
+### Part 1i  
+
+Did you use the Welch t-test or the Wilcoxon rank sum test?  Justify your choice, including some discussion of how well the conditions for the hypothesis test and confidence interval procedures were met.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1i -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer here.
+
+---
+
+## Problem 2
+
+Consider two independent, random samples of delay times (in hour) for two airlines over the past 10 years. The task here is to compare the population central values by conducting a hypothesis test and constructing a 95% confidence interval for the difference in average delay time between the airlines for the population of all delays in the past 10 years.
+
+### Part 2a  
+
+Load the dataset delays from the DS705data package.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+---
+
+### Part 2b
+
+Begin by exploring the sample means, medians, and standard deviations for each airline. That is, find the sample means, medians, and standard deviations. 
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+---
+
+### Part 2b
+
+Produce boxplots, histograms, and normal probability plots for the delay times of both airlines.  
+
+Discuss the aspects of the plots that are relevant to the construction of the best type of test and confidence interval to compare the population central values.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+
+Replace this text with your answer.
+
+---
+
+### Part 2c
+
+Conduct hypothesis tests for the normality of the delay times for both Skybird and Omega using a 5% level of significance in each case.
+
+Use R to compute the test statistic and P-value.  
+
+State the hypotheses and conclusion of the test. Include the P-value in your conclusion.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2c -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your answer.
+ 
+---
+
+### Part 2d	
+
+Perform the most appropriate test to compare population central values for all Skybird and Omega delay times for the past 10 years.  Use a 10% level of significance.
+
+#### Step 1
+
+State the null and alternative hypotheses for the test (in words).
+ 
+#### -|-|-|-|-|-|-|-|-|-|-|- Answer 2d.step1 -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer.
+
+
+#### Step 2
+
+Use R to generate the output for the test you selected.
+
+#### -|-|-|-|-|-|-|-|-|-|-|- Answer 2d.step2 -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+#### Step 3
+
+State both a statistical conclusion at $\alpha=0.1$ and interpret it in the context of the problem.
+
+#### -|-|-|-|-|-|-|-|-|-|-|- Answer 2d.step3 -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer.
+
+---
+
+### Part 2e
+
+Construct the most appropriate 95% confidence interval to compare population central values.  Write a sentence to interpret the interval in the context of the problem.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2e -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your answer.
+
+---
+
+### Part 2f
+
+Did you use the Welch t-test and interval or the Wilcoxon rank sum test with the corresponding interval?  Justify your choice, including some discussion of how well the conditions for the hypothesis test and confidence interval procedures were met.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2f -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer.
+
+---
+
+### Part 2g
+
+What type of hypothesis testing error could have been made here?  Describe it in the context of the problem.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2g -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer.
+
+---
+
+### Part 2h
+
+Construct a 95% bootstrap confidence interval to compare population medians for the delay times over the past 10 years for the two airlines. Use the Bca method and a bootstrap sample size of 2000. Compare it to the interval produced by the wilcox.test function.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2h -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your answer.
