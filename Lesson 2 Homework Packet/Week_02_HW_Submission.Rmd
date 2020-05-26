@@ -163,7 +163,7 @@ Before using a t distribution based procedure we need to determine if it is plau
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-hist(lead, main = "Distribution of Lead Concentrations of Inshore Waters Around Mombasa", xlab = "Lead (mg/kg dry weight)")
+hist(lead, main = "Distribution of Lead Concentrations of Inshore Waters Around Mombasa", xlab = "Lead Concentration (mg/kg dry weight)")
 ```
 
 Based on the histogram, the data does not appear to be normally distributed. 
@@ -189,7 +189,7 @@ Note that your 80% CI for the population mean also gives you a 90% lower confide
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3c -|-|-|-|-|-|-|-|-|-|-|-
 
-It does not suggest that the true population mean is larger than 30 mg/kg, since the lower bounds of the confidence interval is below 30, it could take on any value in the range of 29.28 to 45.21. Even if we switched to a 90% confidence interval, the bounds will get larger (in range) since we're asking for more confidence.
+It does not suggest that the true population mean is larger than 30 mg/kg, since the lower bounds of the confidence interval is below 30, it could take on any value in the range of 29.28 to 45.21 kg/mg.
 
 ----
 
@@ -209,7 +209,7 @@ Use R to conduct a one-sample $t$-test to determine if the population mean lead 
 t.test(lead, mu = 30, alternative = "greater", conf.level = 0.9)
 ```
 
-(Step 4) Conclusion: At a 90% significance level, there is not enough evidence (p-value=0.1215) to reject that the true population mean of lead concentration of inshore water around Mombasa is greater than 30 mg/kg (dry weight).
+(Step 4) Conclusion: At a 90% significance level, there is not enough evidence to reject that the true population mean of lead concentration of inshore water around Mombasa is greater than 30 mg/kg (p-value=0.1215).
 
 ----
 
