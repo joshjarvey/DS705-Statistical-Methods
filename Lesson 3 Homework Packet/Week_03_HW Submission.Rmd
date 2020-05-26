@@ -1,7 +1,7 @@
 ---
 title: 'Two-Sample Inference Procedures for Population Central Values'
-author: "Your name here"
-date: "mm/dd/yyyy"
+author: "Josh Jarvey"
+date: "05/26/2020"
 output: 
   html_document: 
     self_contained: no
@@ -31,8 +31,8 @@ Load the dataset WormSheep from the DS705data package. Note that the package is 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #load in the WormSheep dataset from the DS705data package
+data("WormSheep")
 ```
 
 ---
@@ -44,7 +44,22 @@ Create boxplot, histograms, and normal probability plots for each group (treated
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #create a boxplot of worms by treatment type.
+boxplot(worms~treated, data = WormSheep, main = "Distribution of Worms in Treated vs. Untreated Sheep", xlab = '', ylab = "Number of Worms")
+
+  #pull the appropiate data into their own vectors - treated vs. untreated
+treated = WormSheep[WormSheep$treated == "treated",1]
+untreated = WormSheep[WormSheep$treated == "untreated",1]
+
+  #create histograms of the treated and untreated sheep
+hist(treated, main = "Distribution of Worms in Treated Sheep", xlab = "Number of Worms")
+hist(untreated, main = "Distribution of Worms in Untreated Sheep", xlab = "Number of Worms")
+
+  #create QQ plots to access normality in the samples
+qqnorm(treated, main = "Normal Q-Q Plot for Treated Sheep")
+qqline(treated)
+qqnorm(untreated, main = "Normal Q-Q Plot for Untreated Sheep")
+qqline(untreated)
 
 ```
 
@@ -56,7 +71,7 @@ Do the boxplots show any outliers?
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+In reviewing the boxplots, there do not appear to be any outliers in either samples. 
 
 ---
 
@@ -66,7 +81,9 @@ Describe the shapes of the histograms for the sample data for each sample.
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+The treated sheep sample appears to be bivariate, with two bumps on either end of the sample There does not appear to be any skew to the data.
+
+The untreated sheep sample appears to have a heavy number of observations on the left hand side of the sample, and the data appears to be skewed to the right. 
 
 ---
 
@@ -76,7 +93,7 @@ Do either of the normal probability plots show evidence of non-normality?  Expla
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+The observations in both samples generally follow the theoritical normal distribution. There's slight indication of right-skew in the untreated group (there are a few observations hovering above the line in the lower tail). But it's fair to say they do not show evidence of non-normality. 
 
 ---
 
@@ -87,10 +104,14 @@ Conduct an appropriate test to determine if the worm counts in each population c
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #using the shapiro test to test the normality of the sample for treated sheep.
+shapiro.test(treated)
+  #using the shapiro test to test the normality of the sample for untreated sheep.
+shapiro.test(untreated)
 ```
+At a 95% significance level, there is not enough evidence to reject that the sample of "treated" sheep from the WormSheep dataset is normally distributed (p-value=0.6504).
 
+At a 95% significance level, there is not enough evidence to reject that the sample of "untreated" sheep from the WormSheep dataset is normally distributed (p-value=0.5491).
 ---
 
 ### Part 1g	
@@ -102,12 +123,13 @@ Conduct the test of your choice to determine if the population mean worm count f
 State the null and alternative hypotheses for the test.  If you use symbols, please define them.
  
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g.step1 -|-|-|-|-|-|-|-|-|-|-|-
+$$ \mu1 \ = Population\ mean\ of\ treated\ sheep.\\
+ \mu2 \ = Population\ mean\ of\ untreated\ sheep.\\
+H_0: \mu_\mbox{1} \ >= \mu_\mbox{2}\\
+H_a: \mu_\mbox{1} \ < \mu_\mbox{2}$$
 
-Replace this text with your answer here.
 
-NOTE: You can typeset hypotheses like this (using LaTeX):
-$$H_0: \mu_\mbox{boys} = \mu_\mbox{girls}$$
-$$H_a: \mu_\mbox{boys} \neq \mu_\mbox{girls}$$
+
 
 
 #### Step 2
