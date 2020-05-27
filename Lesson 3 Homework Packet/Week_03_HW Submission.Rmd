@@ -6,6 +6,7 @@ output:
   word_document: default
   html_document:
     self_contained: no
+  pdf_document: default
 fontsize: 12pt
 ---
 
@@ -125,10 +126,10 @@ State the null and alternative hypotheses for the test.  If you use symbols, ple
  
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g.step1 -|-|-|-|-|-|-|-|-|-|-|-
 
-$$ \mu_\mbox{1} \ = Population\ mean\ of\ treated\ sheep.\\
- \mu_\mbox{2} \ = Population\ mean\ of\ untreated\ sheep.\\
-H_0: \mu_\mbox{1} \ >= \mu_\mbox{2}\\
-H_a: \mu_\mbox{1} \ < \mu_\mbox{2}$$
+$$\mu_\mbox{1} \ = Population\ mean\ of\ treated\ sheep.%$$
+$$\mu_\mbox{2} \ = Population\ mean\ of\ untreated\ sheep.%$$
+$$H_0: \mu_\mbox{1} \ >= \mu_\mbox{2}%$$
+$$H_a: \mu_\mbox{1} \ < \mu_\mbox{2}%$$
 
 #### Step 2
 
@@ -266,13 +267,13 @@ shapiro.test(omega)
 shapiro.test(skybird)
 
 ```
-$$H_0: \ The\ sample\ of\ delay\ times\ from\ Omega\ airlines\ was\ drawn\ from\ a\ normally\ distributed\ population.\\
-H_a: \ The\ sample\ of\ delay\ times\ from\ Omega\ airlines\ was\ not\ drawn\ from\ a\ normally\ distributed\ population.$$
+$$H_0: \ The\ sample\ of\ delay\ times\ from\ Omega\ airlines\ was\ drawn\ from\ a\ normally\ distributed\ population.%$$
+$$H_a: \ The\ sample\ of\ delay\ times\ from\ Omega\ airlines\ was\ not\ drawn\ from\ a\ normally\ distributed\ population.%$$
 
 At a 95% signficance level, there is enough evidence to conclude that the distribution of delay times for the last 10 year's worth of flights from Omega Airlines are not normally distributed (p-value = 6.027e-05).
 
-$$H_0: \ The\ sample\ of\ delay\ times\ from\ Skybird\ airlines\ was\ drawn\ from\ a\ normally\ distributed\ population.\\
-H_a: \ The\ sample\ of\ delay\ times\ from\ Skybird\ airlines\ was\ not\ drawn\ from\ a\ normally\ distributed\ population.$$
+$$H_0: \ The\ sample\ of\ delay\ times\ from\ Skybird\ airlines\ was\ drawn\ from\ a\ normally\ distributed\ population.%$$
+$$H_a: \ The\ sample\ of\ delay\ times\ from\ Skybird\ airlines\ was\ not\ drawn\ from\ a\ normally\ distributed\ population.%$$
 
 At a 95% signficance level, there is enough evidence to conclude that the distribution of delay times for the last 10 year's worth of flights from Skybird Airlines are not normally distributed (p-value = 6.031e-04).
  
@@ -288,8 +289,8 @@ State the null and alternative hypotheses for the test (in words).
  
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 2d.step1 -|-|-|-|-|-|-|-|-|-|-|-
 
-$$H_0: \ The\ distributions\ of\ delay\ times\ are\ identical\ for\ both\ Omega\ and\ Skybird\ airlines.\\
-H_a: \ The\ distributions\ of\ delay\ times\ are\ shifted\ from\ each\ other\ for\ both\ Omega\ and\ Skybird\ airlines.$$
+$$H_0: \ The\ distributions\ of\ delay\ times\ are\ identical\ for\ both\ Omega\ and\ Skybird\ airlines.%$$
+$$H_a: \ The\ distributions\ of\ delay\ times\ are\ shifted\ from\ each\ other\ for\ both\ Omega\ and\ Skybird\ airlines.%$$
 
 
 #### Step 2
