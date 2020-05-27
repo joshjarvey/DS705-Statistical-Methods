@@ -1,9 +1,10 @@
 ---
-title: 'Two-Sample Inference Procedures for Population Central Values'
+title: "Two-Sample Inference Procedures for Population Central Values"
 author: "Josh Jarvey"
 date: "05/26/2020"
-output: 
-  html_document: 
+output:
+  word_document: default
+  html_document:
     self_contained: no
 fontsize: 12pt
 ---
@@ -55,7 +56,7 @@ untreated = WormSheep[WormSheep$treated == "untreated",1]
 hist(treated, main = "Distribution of Worms in Treated Sheep", xlab = "Number of Worms")
 hist(untreated, main = "Distribution of Worms in Untreated Sheep", xlab = "Number of Worms")
 
-  #create QQ plots to access normality in the samples
+  #create QQ plots to assess normality in the samples
 qqnorm(treated, main = "Normal Q-Q Plot for Treated Sheep")
 qqline(treated)
 qqnorm(untreated, main = "Normal Q-Q Plot for Untreated Sheep")
@@ -123,14 +124,11 @@ Conduct the test of your choice to determine if the population mean worm count f
 State the null and alternative hypotheses for the test.  If you use symbols, please define them.
  
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g.step1 -|-|-|-|-|-|-|-|-|-|-|-
-$$ \mu1 \ = Population\ mean\ of\ treated\ sheep.\\
- \mu2 \ = Population\ mean\ of\ untreated\ sheep.\\
+
+$$ \mu_\mbox{1} \ = Population\ mean\ of\ treated\ sheep.\\
+ \mu_\mbox{2} \ = Population\ mean\ of\ untreated\ sheep.\\
 H_0: \mu_\mbox{1} \ >= \mu_\mbox{2}\\
 H_a: \mu_\mbox{1} \ < \mu_\mbox{2}$$
-
-
-
-
 
 #### Step 2
 
@@ -139,7 +137,8 @@ Use R to generate the output for the test you selected.
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g.step2 -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #conducting t-test.
+t.test(treated,untreated,alternative = "less")
 
 ```
 
@@ -149,7 +148,7 @@ State both a statistical conclusion at $\alpha=0.05$ and interpret it in the con
 
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g.step3 -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+At a 95% significance level, there is enough evidence to support the claim that sheep treated with the drug have less worms on average than those sheep who are not treated (p-value=0.01665)
 
 ---
 
@@ -160,12 +159,13 @@ Compute a 95% confidence interval for the difference in population means.  Write
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1h -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #conducting a t-test for difference in means, testing mu1 - mu2. 
+t.test(treated,untreated,alternative = "two.sided")
 
 ```
 
 
-Replace this text with your answer here.
+With 95% confidence, the population mean worm count in treated sheep is 25.58 to 1.13 less worms than the population mean worm count of sheep without treatment. 
 
 ---
 
@@ -175,7 +175,7 @@ Did you use the Welch t-test or the Wilcoxon rank sum test?  Justify your choice
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1i -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+I used the Welch t-test for the testing of population means in question 1. While both tests assume a simple random sample, it was stated in the intro that these sheep were randomly selected and randomly divided. However, I chose the Welch test over the Wilcoxon rank sum test because the samples were approximately normally distributed, and the sample size was above 10 in both groups. There were also no outliers in the sample, and although the sample of untreated was mildly skewed - the Welch test will still perform fine. 
 
 ---
 
@@ -190,7 +190,8 @@ Load the dataset delays from the DS705data package.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #loading the "delays" dataset from the DS705data package.
+data("delays")
 
 ```
 
@@ -203,7 +204,17 @@ Begin by exploring the sample means, medians, and standard deviations for each a
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #pulling delay times into their own vectors, by airport
+omega = delays[delays$airline == "Omega",1]
+skybird = delays[delays$airline == "Skybird",1]
+
+  #calculating the mean, median and sd for omega
+summary(omega)[3:4]
+print(paste("Standard Devidation:",sd(omega)))
+
+  #calculating the mean, median and sd for skybird
+summary(skybird)[3:4]
+print(paste("Standard Devidation:",sd(skybird)))
 
 ```
 
@@ -218,12 +229,23 @@ Discuss the aspects of the plots that are relevant to the construction of the be
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #create a boxplot of delay times by airline. 
+boxplot(delay~airline, data = delays, main = "Distribution of Delay Times by Airport", xlab = '', ylab = "Delay (in Hours)")
+
+  #create histograms of the delay times of omega and skybird
+hist(omega, main = "Distribution of Delay Times in Omega Airlines", xlab = "Delay (in Hours)")
+hist(skybird, main = "Distribution of Delay Times in Skybird Airlines", xlab = "Delay (in Hours)")
+
+  #create QQ plots to assess normality in the samples
+qqnorm(omega, main = "Normal Q-Q Plot for Delay Times in Omega Airlines")
+qqline(omega)
+qqnorm(skybird, main = "Normal Q-Q Plot for Delay Times in Skybird Airlines")
+qqline(skybird)
 
 ```
 
 
-Replace this text with your answer.
+Because the mean is greater than the median when reviewing the summary statistics of both sample data sets, this indicates a right-skew. This is further corroborated by reviewing the boxplot (shows outliers), histograms, and QQ Plots of both sample sets. Since the data demonstrates these characteristics, the Wilcoxon Rank Sum test will be more appropiate here.
 
 ---
 
@@ -238,11 +260,21 @@ State the hypotheses and conclusion of the test. Include the P-value in your con
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #perform a shapiro test to assess the normality of the omega sample.
+shapiro.test(omega)
+  #perform a shapiro test to assess the normality of the skybird sample.
+shapiro.test(skybird)
 
 ```
+$$H_0: \ The\ sample\ of\ delay\ times\ from\ Omega\ airlines\ was\ drawn\ from\ a\ normally\ distributed\ population.\\
+H_a: \ The\ sample\ of\ delay\ times\ from\ Omega\ airlines\ was\ not\ drawn\ from\ a\ normally\ distributed\ population.$$
 
-Replace this text with your answer.
+At a 95% signficance level, there is enough evidence to conclude that the distribution of delay times for the last 10 year's worth of flights from Omega Airlines are not normally distributed (p-value = 6.027e-05).
+
+$$H_0: \ The\ sample\ of\ delay\ times\ from\ Skybird\ airlines\ was\ drawn\ from\ a\ normally\ distributed\ population.\\
+H_a: \ The\ sample\ of\ delay\ times\ from\ Skybird\ airlines\ was\ not\ drawn\ from\ a\ normally\ distributed\ population.$$
+
+At a 95% signficance level, there is enough evidence to conclude that the distribution of delay times for the last 10 year's worth of flights from Skybird Airlines are not normally distributed (p-value = 6.031e-04).
  
 ---
 
@@ -256,7 +288,8 @@ State the null and alternative hypotheses for the test (in words).
  
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 2d.step1 -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer.
+$$H_0: \ The\ distributions\ of\ delay\ times\ are\ identical\ for\ both\ Omega\ and\ Skybird\ airlines.\\
+H_a: \ The\ distributions\ of\ delay\ times\ are\ shifted\ from\ each\ other\ for\ both\ Omega\ and\ Skybird\ airlines.$$
 
 
 #### Step 2
@@ -266,7 +299,8 @@ Use R to generate the output for the test you selected.
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 2d.step2 -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #perform a wilcoxon rank sum test to assess if the distributions between omega and skybird are different
+wilcox.test(omega,skybird,conf.level = 0.90)
 
 ```
 
@@ -276,7 +310,7 @@ State both a statistical conclusion at $\alpha=0.1$ and interpret it in the cont
 
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 2d.step3 -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer.
+At a 90% significance level, there is not enough evidence to claim that the distribution of delay times for the last 10 year's worth of flights between Omega and Skybird airlines are shifted from each other (p-value = 0.8173).
 
 ---
 
@@ -287,11 +321,12 @@ Construct the most appropriate 95% confidence interval to compare population cen
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2e -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #perform a wilcoxon rank sum test to calculate the confidence interval at the 95% significance level. 
+wilcox.test(omega,skybird,conf.level = 0.95, conf.int = TRUE)
 
 ```
 
-Replace this text with your answer.
+With 95% confidence, the shift in distributions of delay times for the last 10 year's worth of flights from Omega and Skybird airlines is between -0.39 and 0.28 hours. 
 
 ---
 
@@ -301,7 +336,7 @@ Did you use the Welch t-test and interval or the Wilcoxon rank sum test with the
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2f -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer.
+I decided to use the Wilcoxon Rank Sum test in this exercise because the samples were not normally distributed, which is a requirement for the Welch t-test. The distribution of the samples did appear approximately similar in shape, further indicating support for the Wilcoxon test.  
 
 ---
 
@@ -311,7 +346,7 @@ What type of hypothesis testing error could have been made here?  Describe it in
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2g -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer.
+Because we did not reject the null, we have the chance of creating a Type II error if the null is actually false in reality. This would mean that the difference in population median delay times for the last 10 year's worth of flights between Omega and Skybird were actually different (i.e. the confidence interval didnt include 0 within its range).
 
 ---
 
@@ -322,8 +357,21 @@ Construct a 95% bootstrap confidence interval to compare population medians for 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2h -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #import required packages
+library(boot)
+
+  #create an auxilliary function to caculate the difference in medians.
+bootMedianDiff <- function(d,i){
+  medians = tapply(d[i,1], d[,2], median)
+  medians[1]-medians[2]
+}
+
+  #complete the bootstrapping to create a sampling distribution of 2000 median differences using the delay times. Group by airline. 
+boot.object = boot(delays, bootMedianDiff, R = 2000, strata = delays$airline)
+
+  #create a 95% bca confidence interval using the bootstrapped data.
+boot.ci(boot.object, conf = 0.95, type = 'bca')
 
 ```
 
-Replace this text with your answer.
+The 95% confidence interval using the bootstrap medians and BCa method is wider than the Wilcoxon Rank Sums test. 
