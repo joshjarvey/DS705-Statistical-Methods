@@ -205,7 +205,7 @@ Begin by exploring the sample means, medians, and standard deviations for each a
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-  #pulling delay times into their own vectors, by airport
+  #pulling delay times into their own vectors, by airline
 omega = delays[delays$airline == "Omega",1]
 skybird = delays[delays$airline == "Skybird",1]
 
@@ -246,7 +246,7 @@ qqline(skybird)
 ```
 
 
-Because the mean is greater than the median when reviewing the summary statistics of both sample data sets, this indicates a right-skew. This is further corroborated by reviewing the boxplot (shows outliers), histograms, and QQ Plots of both sample sets. Since the data demonstrates these characteristics, the Wilcoxon Rank Sum test will be more appropiate here.
+Because the mean is greater than the median when reviewing the summary statistics of both sample data sets, this indicates a right-skew. This is further corroborated by reviewing the boxplot (shows outliers), histograms, and QQ Plots of both sample sets. Since the both samples demonstrate these non-normal characteristics, the Wilcoxon Rank Sum test will be more appropiate here.
 
 ---
 
