@@ -1,7 +1,7 @@
 ---
 title: 'Inference for Paired Data'
-author: "Your name here"
-date: "mm/dd/yyyy"
+author: "Josh Jarvey"
+date: "05/29/2020"
 output: word_document
 fontsize: 12pt
 ---
@@ -21,8 +21,8 @@ Load the data set AnkleMovement.rda from the DS705 package.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+library(DS705data)
+data("AnkleMovement")
 ```
 
 ---
@@ -34,7 +34,8 @@ Create a new variable of the differences, with the perceptions of the spatted an
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #creating a vector of the differences: tape - spat
+movement_difference = AnkleMovement$tape - AnkleMovement$spat
 
 ```
 
@@ -47,7 +48,9 @@ Create a boxplot and histogram for the sample of differences.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+boxplot(movement_difference, main = "Distribution of Percived Ankle Movement difference of Tape vs. Spatting", ylab = "Movement Difference")
+
+hist(movement_difference,main = "Distribution of Percived Ankle Movement difference of Tape vs. Spatting", xlab = "Movement Difference")
 
 ```
 
@@ -59,7 +62,7 @@ Comment on the suitability of this data for the paired t-test, the Wilcoxon sign
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+Although the sample shows an outlier, the sample does appear to be generally normal, and the whiskers of the boxplot are of equal size. Because of this, I lean more toward the t-test with this sample over the Wilcoxon Rank Sign test since the sample does not appear symmetric with the median being skewed. 
 
 ---
 
@@ -75,7 +78,7 @@ Define the parameter in words in the context of the problem.
 
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step1 -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+mu_d: The mean difference in percieved ankle movement score between Tape vs. Spatting for UWL athletes.
 
 
 #### Step 2
@@ -84,7 +87,8 @@ State the null and alternative hypotheses for the test using the symbol you defi
  
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step2 -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+H_0: mu_d  = 0
+H_a: mu_d != 0
 
 #### Step 3
 
@@ -93,7 +97,7 @@ Use R to generate the output for the test you selected.
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step3 -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+t.test(AnkleMovement$tape,AnkleMovement$spat, alternative = "two.sided", paired = TRUE)
 
 ```
 
@@ -103,7 +107,7 @@ State a statistical conclusion at $\alpha=0.10$ and interpret it in the context 
 
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step4 -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+At a 90% level of significance, there is not enough evidence to suggest that there is a difference between the percieved movement score of taped ankles vs. spatted ankles for UWL athletes. 
 
 #### Step 5
 
@@ -111,7 +115,7 @@ Write an interpretation in the context of the problem for the 90% CI for the pop
 
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step5 -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+At a 90% level of significance, the population mean difference of percieved ankle movement scores among tape and spatting lie within -0.31 to 1.02 units for UWL athletes, thus indicating no significant difference. 
 
 #### Step 6
 
@@ -120,11 +124,11 @@ Perform the Wilcoxon Signed Rank Test.
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step6 -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+wilcox.test(AnkleMovement$tape, AnkleMovement$spat, alternative = "two.sided", conf.level = 0.90, conf.int = TRUE, paired = TRUE)
 
 ```
 
-Replace this text with your answer here.
+At a 90% level of significance, the population mean difference of percieved ankle movement scores among tape and spatting lie within -0.50 to 2.00 units for UWL athletes, thus indicating no significant difference. 
 
 
 
@@ -135,11 +139,11 @@ Perform the sign test.
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step7 -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+library(signmedian.test)
+signmedian.test(movement_difference, mu=0, alternative = "greater", conf.level = 0.90)
 ```
 
-Replace this text with your answer here.
+At a 90% level of significance, the population mean difference of percieved ankle movement scores among tape and spatting lie within -1.00 to 2.00 units for UWL athletes, thus indicating no significant difference. 
 
 ---
 
@@ -150,11 +154,18 @@ Construct a bootstrap confidence interval at a 90% level of confidence for the m
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step8 -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+bootMeanPaired <- function(x,i){
+  return(mean(x[i]))
+}
+
+library(boot)
+boot.object <- boot(movement_difference, bootMeanPaired, R = 5000)
+
+boot.ci(boot.object, type = "bca", conf = 0.90)
 
 ```
 
-Replace this text with your answer here.
+At a 90% level of significance, the population mean difference of percieved ankle movement scores among tape and spatting lie within -0.21 to 0.79 units for UWL athletes, thus indicating no significant difference. 
 
 ---
 
@@ -164,7 +175,7 @@ Compare the results of the three hypothesis tests and also whether or not the 90
 
 #### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e.step9 -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+All three hypothesis tests agree with each other, as well as the bootstrapped version - there doesnt appear to be a significance in the mean population mean difference of percieved ankle movement scores among tape and spatting for UWL athletes. Because they all agree with each other, I will report the t.test() since this is the most widely recognized test. 
 
 
 ## Exercise 2
@@ -182,7 +193,7 @@ Load the data SmallAuto from the DS705 package.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+data("SmallAuto")
 
 ```
 
@@ -195,11 +206,16 @@ Construct histograms and boxplots for both the estimated claims and actual for t
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+estimated = SmallAuto[SmallAuto$Category == "Estimate",1]
+actual = SmallAuto[SmallAuto$Category == "Actual",1]
 
+boxplot(SmallAuto$Claim~SmallAuto$Category, main = "Distribution of Small Auto Claims", ylab = "Price in $", xlab = "Claim Type")
+
+hist(estimated,main = "Distribution of 'Estimated' Insurance Claims", xlab = "Price in $")
+hist(actual,main = "Distribution of 'Actual' Insurance Claims", xlab = "Price in $")
 ```
 
-Replace this text with your answer here.
+The data in both categories display a skew to the right, with the whisker on the boxplot being more heavily weighted to the right. The data also have a moderate amount of outliers. 
 
 
 ---
@@ -211,7 +227,7 @@ Create a new variable of the differences for small vehicles, with the difference
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+claim_difference = estimated - actual
 
 ```
 
@@ -224,7 +240,15 @@ Create a boxplot, histogram, and normal probability plot for the sample of diffe
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+boxplot(claim_difference, main = "Distribution of Small Auto Claims", ylab = "Price in $", xlab = "Claim Type")
+
+hist(claim_difference,main = "Distribution of 'Estimated' Insurance Claims", xlab = "Price in $")
+
+qqnorm(claim_difference)
+qqline(claim_difference)
+
+
+
 
 ```
 
