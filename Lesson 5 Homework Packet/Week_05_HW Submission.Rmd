@@ -14,7 +14,7 @@ Suppose independent, random samples of credit unions and banks had the following
 
 | | Outstanding | Not Outstanding | 
 | --- | :---: | :---: | :---: |
-| Bank | 70 | 150 | 
+| Bank         | 70 | 150| 
 | Credit Union | 66 | 81 | 
 
 ### Part 1a
@@ -24,7 +24,9 @@ Create the table in R from the data and display it with the margins. Include the
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #create a matrix to store the data within. first is bank by outstanding and not, then by credit union in the 2nd row.
 financial_ratings = matrix(c(70,150,66,81),nrow = 2, byrow=TRUE)
+  #label the columns and rows accordingly.
 colnames(financial_ratings) = c("Outstanding", "Not Outstanding")
 rownames(financial_ratings) = c("Bank", "Credit Union")
 
@@ -37,10 +39,11 @@ For the population of all credit unions, construct and interpret a 95% confidenc
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #perform a prop.test to check for the true population of credit unions that recieve an outstanding rating.
 prop.test(66,81, correct = TRUE)
 ```
 
-At a 95% significance level, the true population proportion of outstanding ratings for credit unions lies between 70.98 to 88.93 percent. 
+At a 95% significance level, the true population proportion of outstanding ratings for credit unions lies between 70.98% to 88.93%.
 
 
 ### Part 1c  
@@ -50,12 +53,17 @@ Compare the proportions of credit unions that are rated as Outstanding to the pr
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-financial_ratings[,1]
-#prop.test(c())
+  #re-jigging the matrix: this puts credit union's outstanding first, then bank's outstanding
+outstanding = c(financial_ratings[2,1],financial_ratings[1,1])
+  #re-jigging the matrix: this puts credit union's not outstanding first, then bank's not outstanding
+not_outstanding = c(financial_ratings[2,2],financial_ratings[1,2])
+
+  #prop.test for cu/bank outstanding, vs cu/bank not outstanding.
+prop.test(outstanding,not_outstanding, correct = FALSE)
 
 ```
 
-Replace this text with your answer here.
+At a 95% significance level, the  population proportion of outstanding ratings for credit unions is 23.18% to 46.44% greater than the proportion of outstanding ratings for banks.  
 
 
 ### Part 1d
@@ -65,11 +73,16 @@ If one bank is selected randomly, what is the estimated risk of not being rated 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #pull the number of not outstanding ratings for banks
+bank_not_outstanding = financial_ratings[1,2]
+  #pull the number of outstanding ratings for banks
+bank_outstanding = financial_ratings[1,1]
 
+  #not outstanding / row total (i.e. outstanding + not outstanding). Multiply by 100 to get percent.
+bank_not_outstanding/(bank_outstanding + bank_not_outstanding)*100
 ```
 
-Replace this text with your answer here.
+A bank has a 68.18% chance of reciving a non-outstanding rating. 
 
 
 ### Part 1e 
@@ -79,11 +92,16 @@ If one credit union is selected randomly, what is the estimated risk of not bein
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #pull the number of not outstanding ratings for credit unions
+creditUnion_not_outstanding = financial_ratings[2,2]
+  #pull the number of outstanding ratings for credit unions
+creditUnion_outstanding = financial_ratings[2,1]
 
+  #not outstanding / row total (i.e. outstanding + not outstanding). Multiply by 100 to get percent.
+creditUnion_not_outstanding/(creditUnion_outstanding + creditUnion_not_outstanding)*100
 ```
 
-Replace this text with your answer here.
+A credit union has a 55.10% chance of reciving a non-outstanding rating. 
 
 
 ### Part 1f
@@ -93,11 +111,18 @@ Compute the relative risk of not being rated as Outstanding for banks compared t
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #storing the proportion of "not outstanding" risk into variables.
+bank_prop_not_outstanding = (bank_not_outstanding/(bank_outstanding + bank_not_outstanding))
+creditUnion_prop_not_outstanding = (creditUnion_not_outstanding/(creditUnion_outstanding + creditUnion_not_outstanding))
+
+  #interpreting the relative risk ratio as a percentage. 
+  #take the absolute value of 1 minus the resulting ratio calculation.
+  #then multiply this by 100, and you have a percentage. 
+abs(1-(bank_prop_not_outstanding/creditUnion_prop_not_outstanding))*100
 
 ```
 
-Replace this text with your answer here.
+There is a 23.73% greater chance for banks to be rated "not outstanding" relative to credit unions. 
 
 
 ### Part 1g
@@ -107,11 +132,13 @@ What are the estimated odds of a credit union being rated as Outstanding?
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #load mosaic package.
+library(mosaic) 
+ #credit union is the 'odds2' value here. 
+oddsRatio(financial_ratings, verbose = TRUE)
 ```
 
-Replace this text with your answer here.
+The odds of a credit union being rated as Outstanding are 0.8148 to 1.
 
 
 ### Part 1h
@@ -121,11 +148,12 @@ What are the estimated odds of a bank being rated as Outstanding?
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1h -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #bank is the 'odds1' value here. 
+oddsRatio(financial_ratings, verbose = TRUE)
 
 ```
 
-Replace this text with your answer here.
+The odds of a bank being rated as Outstanding are 0.4667 to 1.
 
 
 ### Part 1i
@@ -135,11 +163,17 @@ Compute the estimated odds ratio of being rated as Outstanding for credit unions
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1i -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+#!!!IS THIS NEEDED????!!!! 
+ #swap outstanding and not outstanding columns. To get proper odds ratio for "outstanding
+#financial_ratings = matrix(c(150,70,81,66),nrow = 2, byrow=TRUE)
+#colnames(financial_ratings) = c("Not Outstanding", "Outstanding")
+#rownames(financial_ratings) = c("Bank", "Credit Union")
 
+  #odds ratio is setting credit union as the numerator (odds2), and bank as the denominator (odds1). 
+oddsRatio(financial_ratings, verbose = TRUE)
 ```
 
-Replace this text with your answer here.
+The odds of being rated as outstanding for credit unions are 1.746 times the odds of an outstanding rating for banks. 
 
 
 ### Part 1j
@@ -148,8 +182,7 @@ Write an interpretation of the odds ratio of being rated as Outstanding for cred
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1j -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
-
+The odds of being rated as outstanding for credit unions are 74.6% more than the odds of an outstanding rating for banks. 
 
 ### Part 1k
 
@@ -158,11 +191,12 @@ Construct a 95% confidence interval for the population odds ratio of being rated
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1k -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #check the confidence interval of the OR.
+oddsRatio(financial_ratings, verbose = TRUE)
 
 ```
 
-Replace this text with your answer here.
+At a 95% significance level, the odds of an outstanding rating for a credit union are 1.134 to 2.688 times the odds of an outstanding rating for a bank.
 
 
 ### Part 1l
@@ -171,7 +205,7 @@ Based on the 95% CI for the odds ratio, is there significant evidence of an asso
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1l -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+The confidence interval displayed above does not contain 1 which would be interpreted as being "equally likely", therefore yes, there does appear to be significant evidence to support that if it is a rating is outstanding, it's more likely to be a credit union than a bank. 
 
 
 ## Exercise 2
@@ -194,11 +228,25 @@ Use $\alpha = 0.05$.  State the hypotheses for the test and use R to compute the
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #create a matrix storing the data.
+market_purchase = matrix(c(28,44,54,39), nrow = 1, byrow=TRUE)
+colnames(market_purchase) = c("Under 18", "18 to 35", "36 to 50", "Over 50")
+rownames(market_purchase) = c("Count")
+
+  #pull out the observations into a vector.
+observed = market_purchase[1,]
+  #specify the stated probability proportions.
+prob = c(0.13,0.32,0.38,0.17)
+
+  #perform the chi-sq test with the observations and probabilities. 
+chisq.test(x=observed,p=prob)
 
 ```
 
-Replace this text with your answer here.
+H_null: Under18 = 0.13, 18 to 35 = 0.32, 36 to 50 = 0.38, Over 50 = 0.17
+H_Alternative: At least one of these proportions differs.
+
+At a 95% significance level, there is enough evidence to reject that the population proportion of all online shopping by customer's age groups is equal to the following: Under18 = 0.13, 18 to 35 = 0.32, 36 to 50 = 0.38, Over 50 = 0.17 (p-value = 0.02998)
 
 ### Part 2b  
 
@@ -207,11 +255,11 @@ Compute the expected cell counts and verify that they are all large enough for t
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #to check expected counts, we must first take the sum of all the observations. We then multiple the sum against each claimed probabilty and ensure they are at least 5 or greater. 
+sum(market_purchase)*prob
 ```
 
-Replace this text with your answer here.
+The expected cell counts are all greater than 5, therefore it is appropiate to perform the chi-squared goodness of fit test to this data. 
 
 ### Part 2c
 
@@ -220,11 +268,13 @@ Display the data in a bar graph and comment on its features.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #create a barplot using the observed values sorted by age bracket. Set colors. 
+barplot(observed, names.arg = c("Under 18", "18 to 35", "36 to 50", "Over 50"),
+        ylab = "Count", col = c("purple", "blue", "red","green"))
 
 ```
 
-Replace this text with your answer here.
+There is an increasing trend that as an individuals age increases, so does their likeliness of making online purchases - this is true until age 50 or over, which shows a decline.
 
 ## Exercise 3
 
@@ -237,7 +287,10 @@ Create a 2x2 matrix with the correct cell counts.  Arrange it so that the column
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #create a matrix storing the data.
+seatbelt = matrix(c(17,12,2,8), nrow = 2, byrow=TRUE)
+colnames(seatbelt) = c("Teen", "Senior")
+rownames(seatbelt) = c("Always Wear","Not Always Wear")
 
 ```
 
@@ -248,11 +301,14 @@ With the small cell counts in mind, use the appropriate test to determine if pro
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #perform a fisher exact test since the observations are too small for a chi-sq test. 
+fisher.test(seatbelt)
 ```
 
-Replace this text with your answer here.
+H_null: The proportion of Teens who wear seatbelts is equal to the proportion of Seniors who wear seatbelts.
+H_alternative: The proportion of Teens who wear seatbelts is not equal to the proportion of Seniors who wear seatbelts.
+
+At a 95% level of significance, there is not enough evidence to conclude that the proportion of Teens who wear seatbelts is equal to the proportion of Seniors that wear seatbelts (p-value = 0.06483).
 
 ## Exercise 4
 
@@ -273,12 +329,22 @@ Comment on any potential relationships between nausea and type of anesthetic you
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 4a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #load in the anesthesia data set.
+library(DS705data)
+data("anesthesia")
 
+  #pull a subset of the data - anesthetic and nausea, as a 2x2 table.
+drug_nausea = table(anesthesia$anesthetic,anesthesia$nausea)
+
+  #display table with flanking total margins.
+addmargins(drug_nausea)
+
+  #create a barplot using the 2x2 table. Each bar "set" is a column based on nausea. Within the set, we use side-by-side for the given anesthetic. We set distinct colors, and add a legend using the rownames from the table as the setting. 
+barplot(drug_nausea,xlab = "Nausea", ylab = "Frequency", col = c("blue", "green"), legend = rownames(drug_nausea), beside = TRUE, main = "Observations of nausea per a given anesthetic")
 ```
 
 
-Replace this text with your answer here.
+It appears that the anesthetic A (blue) is more likely to cause nausea than anesthetic B (green).
 
 ---
 
@@ -291,10 +357,14 @@ State the hypotheses (in words) and conclusion of the test. Use R to compute the
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 4b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #perform chi-sq() test for independence between the type of anesthetic used and if nausea is experienced. This uses the original dataset, and will automatically calculate sums and totals. 
+chisq.test(anesthesia$anesthetic,anesthesia$nausea)
 
 ```
 
 
-Replace this text with your answer here.
+H_null: For patients undergoing reconstructive knee surgery, the type of anesthetic administered and having nausea are independent.
+H_alternative: For patients undergoing reconstructive knee surgery, the type of anesthetic administered and having nausea are associated.
+
+At a 90% significance level, there is enough evidence to reject claim that the type of anesthetic used is independent of experiencing nausea for patients undergoing reconstructive knee surgery (p-value = 0.004535).
 
