@@ -1,0 +1,512 @@
+mean(wm)
+t.test(wm,mu=165,alternative='greater')
+t.test(wm,mu=166,alternative='greater')
+t.test(wm,mu=167,alternative='greater')
+power.t.test(n=40,delta=3,sd=sd(wm),sig.level=.05,type='one.sample',alternative='one.sided')
+power.t.test(n=40,delta=4,sd=sd(wm),sig.level=.05,type='one.sample',alternative='one.sided')
+t.test(wm,mu=166,alternative='greater')
+sd(wm)
+power.t.test(n=40,delta=3,sd=26,sig.level=.05,type='one.sample',alternative='one.sided')
+ls()
+chol <- HealthExam$Cholesterol(HealthExam$Sex=="M")
+chol <- HealthExam$Cholesterol[HealthExam$Sex=="M"]
+qqnorm(chol)
+hist(chol)
+mean(chol)
+sum(chol>mean(chol))
+t.test(chol,mu=300,alternative="greater")
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+hist(t_sim,prob=true)
+hist(t_sim,prob=TRE)
+hist(t_sim,prob=TRUE)
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+tcrit_est
+tcrit_model <- qt(df=39,p=c(.025,.975))
+tcrit_model
+?boot
+require('boot')
+?boot
+min(chol)
+max(chol)
+n = length(c)
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/bootstrap_chol.R')
+xbar
+t_ci_bootstrap-xbar
+install.packages("sign.median")
+install.packages("signmedian")
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+p0
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p0
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p0
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p0
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/randomizeTest_chol.R')
+p1
+?t.test
+install.packages('BDSA')
+install.packages('BSDA')
+?BSDA
+library(BSDA)
+?BSDA
+?tsum.test
+tsum.test
+x <- rnorm(30); x <- (x-mean(x))/sd(x)
+mean(x)
+sd(x)
+x <- rnorm(30); x <- (x-mean(x))/sd(x); x <- 13*x + 28
+mean(x)
+sd(x)
+hist(x)
+xbar <- 13
+s <- 3
+x <- rnorm(30)
+x <- (x-mean(x))/sd(x)
+x <- rnorm(30,mean=xbar,sd=s)
+mean(x)
+sd(x)
+t.test(x)
+p.test
+?binom.test
+?prop.test
+prop.test(16,20)
+?binom.test
+binom.test(16,20)
+binom.test(160,200)
+prop.test(160,200)
+binom.test(1600,2000)
+prop.test(1600,2000)
+binom.test(16000,20000)
+binom.test(160000,200000)
+prop.test(160000,200000)
+power.prop.test
+power.binom.test
+?power.prop.test
+shiny::runApp('Google Drive/Gdrive_snap_May_15/DS705 - Resources/shiny_apps/samplingShiny-master')
+shiny::runApp('Google Drive/Gdrive_snap_May_15/DS705 - Resources/shiny_apps/samplingShiny-master')
+install.packages('WRS2')
+require(WRS2)
+who
+?require(WRS2)
+?WRS2
+x
+clear
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/exploreMultiPop.R')
+t1 <- t1waybt(x~group,tr=0,nboot=1000)
+t1
+t1 <- t1waybt(x~group,tr=0,nboot=1000)
+t1
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/exploreMultiPop.R')
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/exploreMultiPop.R')
+t1 <- t1waybt(x~group,tr=0,nboot=1000)
+t1
+m1 <- mcppb20(x~group,tr=0,nboot=1000)
+m1 <- mcppb20(x~group,tr=0,nboot=1000,crit=.05)
+m1
+by(x,group,mean)
+tapply(x,group,mean)
+source('~/Google Drive/Gdrive_snap_May_15/DS705 - Resources/class_scripts/anovaBoot.R')
+install.packages(lsmeans)
+install.packages('lsmeans')
+anboot(x~group)
+df <- data.frame(x,groujp)
+df <- data.frame(x,group)
+anboot(x~group,data=df)
+anboot(x~group,data=df,pw.comp=NULL)
+tmp <- anboot(x~group,data=df,pw.comp=NULL)
+tmp
+tmp <- anboot(x~group,data=df,pw.comp=c("A","B","C"))
+install.packages('asbio')
+require(asbio)
+remove.packages("asbio", lib="~/Library/R/3.2/library")
+install.packages(file.choose(),repos=NULL,type="source")
+library(asbio)
+eggs<-c(11,17,16,14,15,12,10,15,19,11,23,20,18,17,27,33,22,26,28)
+trt<-as.factor(c(1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,4))
+pairw.anova(y = eggs, x = trt, method = "lsd")##LSD method
+pairw.anova(y = eggs, x = trt, method = "bonf")##Bonferroni
+pairw.anova(y = eggs, x = trt, method = "scheffe")##Sheffe
+tukey <- pairw.anova(y = eggs, x = trt, method = "tukey")##Tukey HSD
+eggs<-c(11,17,16,14,15,12,10,15,19,11,23,20,18,17,27,33,22,26,28)
+trt<-as.factor(c(1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,4))
+pairw.anova(y = eggs, x = trt, method = "lsd")##LSD method
+pairw.anova(y = eggs, x = trt, method = "bonf")##Bonferroni
+pairw.anova(y = eggs, x = trt, method = "scheffe")##Sheffe
+tukey <- pairw.anova(y = eggs, x = trt, method = "tukey")##Tukey HSD
+eggs<-c(11,17,16,14,15,12,10,15,19,11,23,20,18,17,27,33,22,26,28)
+trt<-as.factor(c(1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,4))
+pairw.anova(y = eggs, x = trt, method = "lsd")##LSD method
+pairw.anova(y = eggs, x = trt, method = "bonf")##Bonferroni
+pairw.anova(y = eggs, x = trt, method = "scheffe")##Sheffe
+tukey <- pairw.anova(y = eggs, x = trt, method = "tukey")##Tukey HSD
+tukey
+plot(tukey)
+plot(tukey)
+tukey
+bonf.cont(y = eggs, x = trt, lvl = c(1,3), comps = 2)
+pairw.kw
+?pairw.kw
+pairw.kw(eggs,trt)
+kw <- pairw.kw(eggs,trt)
+plot(kw)
+# You can also use the p.adjust function in the stats: library, but I
+# haven't wuite figured that out to my satisfaction. See also p.adjust in stats package
+p <- c(.0717, 5e-05, .0124, .04525, .83208, .02122, .88829, .05305, 3e-05, .03277) # p from LSD
+p.adjust.methods <- c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")
+p.adjust(p = p, method = p.adjust.methods, n = length(p))
+p.adjust(p = p, method = "fdr", n = length(p))
+?complete.cases
+?comb
+?combn
+?TukeyHSD
+require(graphics)
+summary(fm1 <- aov(breaks ~ wool + tension, data = warpbreaks))
+TukeyHSD(fm1, "tension", ordered = TRUE)
+plot(TukeyHSD(fm1, "tension"))
+install.packages('userfriendlyscience')
+library(userfriendlyscience)
+ChickenWeight
+data(ChickenWeight)
+x
+y
+x <- c(rnorm(20),rnorm(20)+1,rnorm(20)+2)
+g <- factor(rep(letters[1:3],each=20))
+posthocTGH(x,g)
+posthocTGH(x,g,'tukey')
+remove.packages("DS705data", lib="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+install.packages('swirl')
+?install_course_zip
+library(swirl)
+rm(list=ls())
+?install_course_zip
+- http://rmarkdown.rstudio.com for getting started and documentation
+install_course_github('DataScienceUWL','Statistical_Methods')
+swirl()
+swirl()
+uninstall_course('Statistical Methods')
+install_course_github('DataScienceUWL','Statistical_Methods')
+swirl()
+install_course_github('DataScienceUWL','Statistical_Methods')
+uninstall_course('Statistical Methods')
+install_course_github('DataScienceUWL','Statistical_Methods')
+swirl
+swirl()
+detach("package:swirl", unload=TRUE)
+require(devtools)
+library("DS705data", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+remove.packages("DTK", lib="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+remove.packages("DS705data", lib="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+if (!require(DS705data)){
+if (!require(devtools)){
+install.packages('devtools')
+}
+install_github('DataScienceUWL/DS705data')
+}
+install.
+install.packages('devtools')
+install.packages("devtools")
+detach(devtools)
+remove.packages("devtools", lib="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+if (!require(DS705data)){
+if (!require(devtools)){
+install.packages('devtools')
+}
+install_github('DataScienceUWL/DS705data')
+}
+if (!require(DS705data)){
+if (!require(devtools)){
+install.packages('devtools')
+}
+library(devtools)
+install_github('DataScienceUWL/DS705data')
+}
+if (!require(DS705data)){
+if (!require(devtools)){
+install.packages('devtools')
+}
+library(devtools)
+install_github('DataScienceUWL/DS705data')
+}
+require(DS705data)
+data()
+libarry(DS705data)
+library(DS705data)
+uninstall.packages('DS705data')
+detach("package:DS705data", unload=TRUE)
+remove.packages("DS705data", lib="~/Library/R/3.2/library")
+date: "September 2, 2015"
+set.seed(123)
+P     <- 3
+Nj    <- c(15, 25, 20)
+Sigma <- matrix(c(16,-2, -2,9), byrow=TRUE, ncol=2)
+mu11  <- c(-4,  4)
+mu21  <- c( 3,  3)
+mu31  <- c( 1, -1)
+library(mvtnorm)
+Y11 <- round(rmvnorm(Nj[1], mean=mu11, sigma=Sigma))
+Y21 <- round(rmvnorm(Nj[2], mean=mu21, sigma=Sigma))
+Y31 <- round(rmvnorm(Nj[3], mean=mu31, sigma=Sigma))
+dfMan1 <- data.frame(Y =rbind(Y11, Y21, Y31),
+IV=factor(rep(1:P, Nj)))
+manRes1 <- manova(cbind(Y.1, Y.2) ~ IV, data=dfMan1)
+summary(manRes1, test="Wilks")
+source('~/Google Drive/Gdrive_snap_May_15/MS Data Science/DS 705 CEOEL Folder/class_material/lessons/week 12/instructor_resources/heightWeight.R')
+install.packages('sm')
+require(sm)
+source('~/Google Drive/Gdrive_snap_May_15/MS Data Science/DS 705 CEOEL Folder/class_material/lessons/week 12/instructor_resources/heightWeight.R')
+ggplot(df) + geom_histogram(aes(x=height, fill=species))
+require(gridExtra)
+?grid.arrange
+ggplot(df) + geom_histogram( aes(x=height[species=='A',]))
+?unstack
+unstack(df)
+dfunstack <- unstack(df,form=height~species)
+head(dfunstack)
+h1 <- ggplot(dfunstack) + geom_histogram( aes(x=A))
+ggplot(dfunstack) + geom_histogram( aes(x=A))
+ggplot(df) + geom_histogram(aes(x=height, fill=species))
+ggplot(dfunstack) + geom_histogram( aes(x=A,color=1) )
+ggplot(dfunstack) + geom_histogram( aes(x=A,fill=red) )
+ggplot(dfunstack) + geom_histogram( aes(x=A,fill='red') )
+ggplot(dfunstack) + geom_histogram( aes(x=A,fill='red',binwidth=5) )
+ggplot(dfunstack) + geom_histogram( aes(x=A,fill='red',binwidth=5) , binwidth=5)
+ggplot(dfunstack) + geom_histogram( aes(x=A,,color='black',fill='red') , binwidth=5)
+ggplot(df) + geom_histogram(aes(x=height, fill=species))
+h1 <- ggplot(dfunstack) + geom_histogram( aes(x=A,fill='red') , binwidth=5)
+h2 <- ggplot(dfunstack) + geom_histogram( aes(x=A,fill='green') , binwidth=5)
+h3 <- ggplot(dfunstack) + geom_histogram( aes(x=A,fill='blue') , binwidth=5)
+grid.arrange(h1,h2,h3)
+dfunstack <- unstack(df,form=height~species)
+h1 <- ggplot(dfunstack) + geom_histogram( aes(x=A,fill='red') , binwidth=5)
+h2 <- ggplot(dfunstack) + geom_histogram( aes(x=B,fill='green') , binwidth=5)
+h3 <- ggplot(dfunstack) + geom_histogram( aes(x=C,fill='blue') , binwidth=5)
+grid.arrange(h1,h2,h3)
+h1 <- ggplot(dfunstack) + geom_histogram( aes(x=A,fill='red') , binwidth=5)
++ coord_cartesian(xlim = c(140, 210))
+h2 <- ggplot(dfunstack) + geom_histogram( aes(x=B,fill='green') , binwidth=5)
++ coord_cartesian(xlim = c(140, 210))
+h3 <- ggplot(dfunstack) + geom_histogram( aes(x=C,fill='blue') , binwidth=5)
++ coord_cartesian(xlim = c(140, 210))
+grid.arrange(h1,h2,h3)
+h1 <- ggplot(dfunstack) + geom_histogram( aes(x=A,fill='red') , binwidth=5) + xlim(140, 210)
+h2 <- ggplot(dfunstack) + geom_histogram( aes(x=B,fill='green') , binwidth=5)+ xlim(140, 210)
+h3 <- ggplot(dfunstack) + geom_histogram( aes(x=C,fill='blue') , binwidth=5)+ xlim(140, 210)
+grid.arrange(h1,h2,h3)
+bw <- 4
+h1 <- ggplot(dfunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(140, 210)
+h2 <- ggplot(dfunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(140, 210)
+h3 <- ggplot(dfunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(140, 210)
+grid.arrange(h1,h2,h3)
+source('~/Google Drive/Gdrive_snap_May_15/MS Data Science/DS 705 CEOEL Folder/class_material/lessons/week 12/instructor_resources/heightWeight.R')
+bw <- 4
+h1 <- ggplot(dfunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(150, 205)
+h2 <- ggplot(dfunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(150, 205)
+h3 <- ggplot(dfunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(150, 205)
+bw <- 4
+h1 <- ggplot(dfunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(150, 205)
+h2 <- ggplot(dfunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(150, 205)
+h3 <- ggplot(dfunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(150, 205)
+grid.arrange(h1,h2,h3)
+dfwunstack <- unstack(df,form=weight~species)
+bw <- 4
+h1 <- ggplot(dfwunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(150, 205)
+h2 <- ggplot(dfwunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(150, 205)
+h3 <- ggplot(dfwunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(150, 205)
+grid.arrange(h1,h2,h3)
+dfwunstack <- unstack(df,form=weight~species)
+bw <- 4
+h1 <- ggplot(dfwunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(150, 205)
+h2 <- ggplot(dfwunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(150, 205)
+h3 <- ggplot(dfwunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(150, 205)
+w1 <- ggplot(dfwunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(50, 150)
+w2 <- ggplot(dfwunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(50, 150)
+w3 <- ggplot(dfwunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(50, 150)
+grid.arrange(w1,w2,w3)
+dfwunstack <- unstack(df,form=weight~species)
+bw <- 4
+low <- 55
+hi <- 90
+w1 <- ggplot(dfwunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(low,hi)
+w2 <- ggplot(dfwunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(low,hi)
+w3 <- ggplot(dfwunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(low,hi)
+grid.arrange(w1,w2,w3)
+dfwunstack <- unstack(df,form=weight~species)
+bw <- 3
+low <- 55
+hi <- 90
+w1 <- ggplot(dfwunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(low,hi)
+w2 <- ggplot(dfwunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(low,hi)
+w3 <- ggplot(dfwunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(low,hi)
+grid.arrange(w1,w2,w3)
+dflunstack <- unstack(df,form=ld1~species)
+bw <- .5
+low <- -3
+hi <- 3
+w1 <- ggplot(dflunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(low,hi)
+w2 <- ggplot(dflunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(low,hi)
+w3 <- ggplot(dflunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(low,hi)
+dflunstack <- unstack(df,form=ld1~species)
+bw <- .5
+low <- -3
+hi <- 3
+w1 <- ggplot(dflunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(low,hi)
+w2 <- ggplot(dflunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(low,hi)
+w3 <- ggplot(dflunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(low,hi)
+dflunstack <- unstack(df,form=ld1~species)
+bw <- .5
+low <- -3
+hi <- 3
+w1 <- ggplot(dflunstack) + geom_histogram( aes(x=A),fill='red'  , binwidth=bw) + xlim(low,hi)
+w2 <- ggplot(dflunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(low,hi)
+w3 <- ggplot(dflunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(low,hi)
+grid.arrange(w1,w2,w3)
+dflunstack <- unstack(df,form=ld1~species)
+bw <- .5
+low <- -3
+hi <- 3
+w1 <- ggplot(dflunstack) + geom_histogram( aes(x=A,y=..density..),fill='red'  , binwidth=bw) + xlim(low,hi)
+w2 <- ggplot(dflunstack) + geom_histogram( aes(x=B),fill='green', binwidth=bw) + xlim(low,hi)
+w3 <- ggplot(dflunstack) + geom_histogram( aes(x=C),fill='blue' , binwidth=bw) + xlim(low,hi)
+grid.arrange(w1,w2,w3)
+dflunstack <- unstack(df,form=ld1~species)
+bw <- .5
+low <- -3
+hi <- 3
+w1 <- ggplot(dflunstack) + geom_histogram( aes(x=A,y=..density..),fill='red'  , binwidth=bw) + xlim(low,hi)
+w2 <- ggplot(dflunstack) + geom_histogram( aes(x=B,y=..density..),fill='green', binwidth=bw) + xlim(low,hi)
+w3 <- ggplot(dflunstack) + geom_histogram( aes(x=C,y=..density..),fill='blue' , binwidth=bw) + xlim(low,hi)
+grid.arrange(w1,w2,w3)
+require(DS705data)
+data()
+?t.test
+require(DS705data)
+data(HealthExam)
+dm <- HealthExam[HealthExam$Sex=='M',c("Height","Weight")]
+dm
+plot(Height,Weight,data=dm)
+plot(dm$Height,dm$Weight)
+cov(dm$Height,dm$Weight)
+cov(dm)
+cor(dm)
+require(MVN)
+dmm <- as.matrix(dm)
+dmm
+hzTest(dmm)
+mardiaTest(dmm)
+roystonTest(dmm)
+sqrt(cov(dm))
+1/600
+4*13
+52/1200
+?warning
+setwd("~/Google Drive/Gdrive_snap_May_15/MS Data Science/DS 705 /Class Materials/Weekly Content/week 06/download_week_06")
+source('anovaResampleFast.R')
+source('anovaResample.R')
+out10<-anovaResampleFast(shields$Diameter,shields$Machine,B=10000,method=2,var.equal=F)
+exit
+require(DS705data)
+data(shields)
+out10<-anovaResampleFast(shields$Diameter,shields$Machine,B=10000,method=2,var.equal=F)
+require(WRS2)
+?t1waybt
+out10<-anovaResampleFast(shields$Diameter,shields$Machine,B=10000,method=2,var.equal=T)
+out10<-anovaResampleFast(shields$Diameter,shields$Machine,B=10000,method=2,var.equal=F)
+x
+g
+x <- c(rnorm(20,0,1),rnorm(20,1,2),rnorm(20,2,4))
+g <- rep(c('a','b','c'),each=20)
+g
+out10<-anovaResampleFast(shields$Diameter,shields$Machine,B=10000,method=2,var.equal=T)
+out <- anovaResampleFast(x,g,B=10000,method-2,var.equal=F)
+out <- anovaResampleFast(x,g,B=10000,method=2,var.equal=F)
+x <- c(rnorm(20,0,1),rnorm(20,2,2),rnorm(20,4,4))
+out <- anovaResampleFast(x,g,B=10000,method=2,var.equal=F)
+x <- c(rnorm(20,0,1),rnorm(20,1.5,2),rnorm(20,3,4))
+out <- anovaResampleFast(x,g,B=10000,method=2,var.equal=F)
+x2 <- c(rexp(20),2*rexp(20),4*rexp(20))
+x2 <- c(rexp(20),2*rexp(20),4*rexp(20))
+out <- anovaResampleFast(x2,g,B=10000,method=2,var.equal=F)
+x2 <- c(rexp(20),1.5*rexp(20),3*rexp(20))
+out <- anovaResampleFast(x2,g,B=10000,method=2,var.equal=F)
+out <- anovaResampleFast(x2,g,B=10000,method=1,var.equal=F)
+out <- anovaResampleFast(x2,g,B=10000,method=1,var.equal=T)
+out <- anovaResampleFast(x2,g,B=10000,method=1,var.equal=T)
+1.88 sqrt(2)
+1.88*sqrt(2)
+sqrt( 25 - 4*2.05^2-.92^2)
+1.92*sqrt(2)
+sqrt(2)*.08*-1
+sqrt( 25 - 4*2.05^2-.92^2) - 2*sqrt(2)
+source('~/Desktop/portWineStains.R')
+study
+#Explore the data
+plot(response ~ treat, data=study)
+tapply(study$response, study$treat, sd) # Or with(study, tapply(response, treat, sd))
+#Exploring age group 6-11 further
+hist(as.numeric(group_611))
+boxplot(as.numeric(group_611))
+#Test data (equal variances ANOVA)
+results = aov(response ~ treat, data=study)
+summary(results)
+#Attempts to replicate Ott's QQ plot and p-value conclusions
+anova( stains.lm <- lm(response ~ treat, data=study) )
+summary(stains.lm)
+tapply(study$response,study$treat,shapiro.test)
+plot(response ~ treat, data=study)
+plot(response ~ treat, data=study)
+tapply(study$response, study$treat, length) # Or with(study, tapply(response, treat, sd))
+anovaResampleFast(response~treat,data=study,nboot=10000)
+tapply(study$response, study$treat, length) # Or with(study, tapply(response, treat, sd))
+anovaResampleFast(study$response~study$treat,nboot=10000)
+anovaResampleFast(study$response,study$treat,nboot=10000)
+anovaResampleFast(study$response,study$treat,B=10000,method=1,var.equal=TRUE)
+anovaResampleFast(study$response,study$treat,B=10000,method=2,var.equal=TRUE)
+con <- rbind( c(1,1,0), c(NA,0,0))
+con
+?any
+?is.na
+is.na(con)
+any(is.na(con))
+?.libPaths
+library(DS705data)
+?onewayComp
