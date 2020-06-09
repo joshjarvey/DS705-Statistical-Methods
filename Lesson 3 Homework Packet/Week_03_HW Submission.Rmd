@@ -246,7 +246,7 @@ qqline(skybird)
 ```
 
 
-Because the mean is greater than the median when reviewing the summary statistics of both sample data sets, this indicates a right-skew. This is further corroborated by reviewing the boxplot (shows outliers), histograms, and QQ Plots of both sample sets. Since the both samples demonstrate these non-normal characteristics, the Wilcoxon Rank Sum test will be more appropiate here.
+Because the mean is greater than the median when reviewing the summary statistics of both sample data sets, this indicates a right-skew. This is further corroborated by reviewing the boxplot (shows outliers), histograms, and QQ Plots of both sample sets. Since the both samples demonstrate these non-normal characteristics, the Wilcoxon Rank Sum test will be more appropriate here.
 
 ---
 
@@ -329,6 +329,8 @@ wilcox.test(omega,skybird,conf.level = 0.95, conf.int = TRUE)
 
 With 95% confidence, the shift in distributions of delay times for the last 10 year's worth of flights from Omega and Skybird airlines is between -0.39 and 0.28 hours. 
 
+Because the confidence interval includes 0, this could be the true difference in population distributions (i.e. no shift), therefore we cannot conclude there is a true shift. 
+
 ---
 
 ### Part 2f
@@ -347,7 +349,7 @@ What type of hypothesis testing error could have been made here?  Describe it in
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2g -|-|-|-|-|-|-|-|-|-|-|-
 
-Because we did not reject the null, we have the chance of creating a Type II error if the null is actually false in reality. This would mean that the difference in population median delay times for the last 10 year's worth of flights between Omega and Skybird were actually different (i.e. the confidence interval didnt include 0 within its range).
+Because we did not reject the null, we have the chance of creating a Type II error if the null is actually false in reality. This would mean that the difference in population median delay times for the last 10 year's worth of flights between Omega and Skybird were actually different (i.e. the confidence interval didn't include 0 within its range).
 
 ---
 
@@ -361,7 +363,7 @@ Construct a 95% bootstrap confidence interval to compare population medians for 
   #import required packages
 library(boot)
 
-  #create an auxilliary function to caculate the difference in medians.
+  #create an auxiliary function to calculate the difference in medians.
 bootMedianDiff <- function(d,i){
   medians = tapply(d[i,1], d[,2], median)
   medians[1]-medians[2]
@@ -375,4 +377,4 @@ boot.ci(boot.object, conf = 0.95, type = 'bca')
 
 ```
 
-The 95% confidence interval using the bootstrap medians and BCa method is wider than the Wilcoxon Rank Sums test. 
+The 95% confidence interval using the bootstrap medians and BCa method is wider than the Wilcoxon Rank Sums test, however it too contains 0 within its range, so the end interpretation will be the same. 

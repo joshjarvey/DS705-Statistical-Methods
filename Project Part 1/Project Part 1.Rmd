@@ -182,3 +182,58 @@ impute_bcOpen <- function(df, seed){
 ```{r, echo=FALSE, message=FALSE, results='hide'}
 loans = impute_bcOpen(loans, seed = 123456)
 ```
+
+# 4.0 Data Transformation
+
+In preparation for model fitting, we need to take a look at the distribution of our quantitative variables to understand their shape. Should a distribution appear skewed in either direction, we can attempt a transformation to make it more "normal" in shape.
+
+```{r, echo=FALSE, fig.width = 7, fig.height = 4}
+par(mfrow=c(1,2),mar=c(4,4,4,1))
+hist(loans$income, main = "Distribution of Income", xlab = "Dollars ($)")
+hist(log(loans$income), main = "Distribution of log(Income)", xlab = "Dollars (Log $)")
+par(mfrow=c(1,1))
+```
+
+A prime example of skewed data is the "income" variable. In the first histogram we see a severely right-skewed distribution, so we attempt a log() transformation. The results of the log(income) show in the next graph - these are much more normally distributed, so we will keep this transformation on the "income" variable.
+
+```{r,message=FALSE, echo=FALSE, results=FALSE, fig.width = 10, fig.height = 6}
+  #set up 4 rows of 4 columns. Give enough margin spacing with mar()
+par(mfrow=c(4,4),mar=c(4,4,4,1))
+  
+  #Line 1: amount & totalBal
+hist(loans$amount, main = "amount", xlab = "")
+hist(log(loans$amount), main = "log(amount)", xlab = "")
+hist(loans$totalBal, main = "totalBal", xlab = "")
+hist(log(loans$totalBal), main = "log(totalBal)", xlab = "")
+  #Line 2: totalRevLim & bcOpen
+hist(loans$totalRevLim, main = "totalRevLim", xlab = "")
+hist(log(loans$totalRevLim), main = "log(totalRevLim)", xlab = "")
+hist(loans$bcOpen, main = "bcOpen", xlab = "")
+hist(log(loans$bcOpen), main = "log(bcOpen)", xlab = "")
+  #Line 1: totalLim & total RevBal
+hist(loans$totalLim, main = "totalLim", xlab = "")
+hist(log(loans$totalLim), main = "log(totalLim)", xlab = "")
+hist(loans$totalRevBal, main = "totalRevBal", xlab = "")
+hist(log(loans$totalRevBal), main = "log(totalRevBal)", xlab = "")
+  #Line 1: totalBcLim & totalILim
+hist(loans$totalBcLim, main = "totalBcLim", xlab = "")
+hist(log(loans$totalBcLim), main = "log(totalBcLim)", xlab = "")
+hist(loans$totalIlLim, main = "totalIlLim", xlab = "")
+hist(log(loans$totalIlLim), main = "log(totalIlLim)", xlab = "")
+
+  #reset my graphs back to a 1x1.
+par(mfrow=c(1,1))
+```
+
+
+A look at the remaining dollars based variables suggest a log() transformation applied to each one with the exception of (loan) amount.
+
+```{r,message=FALSE, echo=FALSE, include=FALSE}
+  #creating a list of columns to transform
+cols_to_transform = c("totalBal","totalRevLim","bcOpen","totalLim","totalRevBal","totalBcLim","totalIlLim")
+  #because log(0) = -inf, add +1 to the values first just to ensure this doesnt occur. It's by such a small factor that it wont be a large impact on the results.
+loans[cols_to_transform] = loans[cols_to_transform]+1
+  #applying the log transform to the columns.
+loans[cols_to_transform] = lapply(loans[cols_to_transform], log)
+```
+
