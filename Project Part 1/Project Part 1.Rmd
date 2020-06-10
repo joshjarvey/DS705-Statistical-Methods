@@ -40,6 +40,8 @@ library(readr)
 library(dplyr)
 library(car)
 library(mice)
+library(ggformula)
+library(ggpubr)
 ```
 
 ```{r, echo=FALSE, message=FALSE}
@@ -192,13 +194,14 @@ par(mfrow=c(1,2),mar=c(4,4,4,1))
 hist(loans$income, main = "Distribution of Income", xlab = "Dollars ($)")
 hist(log(loans$income), main = "Distribution of log(Income)", xlab = "Dollars (Log $)")
 par(mfrow=c(1,1))
+loans$income = log(loans$income)
 ```
 
 A prime example of skewed data is the "income" variable. In the first histogram we see a severely right-skewed distribution, so we attempt a log() transformation. The results of the log(income) show in the next graph - these are much more normally distributed, so we will keep this transformation on the "income" variable.
 
-```{r,message=FALSE, echo=FALSE, results=FALSE, fig.width = 10, fig.height = 6}
+```{r,message=FALSE, echo=FALSE, results=FALSE, fig.width = 12, fig.height = 7}
   #set up 4 rows of 4 columns. Give enough margin spacing with mar()
-par(mfrow=c(4,4),mar=c(4,4,4,1))
+par(mfrow=c(5,4),mar=c(4,4,4,1))
   
   #Line 1: amount & totalBal
 hist(loans$amount, main = "amount", xlab = "")
@@ -210,17 +213,19 @@ hist(loans$totalRevLim, main = "totalRevLim", xlab = "")
 hist(log(loans$totalRevLim), main = "log(totalRevLim)", xlab = "")
 hist(loans$bcOpen, main = "bcOpen", xlab = "")
 hist(log(loans$bcOpen), main = "log(bcOpen)", xlab = "")
-  #Line 1: totalLim & total RevBal
+  #Line 3: totalLim & total RevBal
 hist(loans$totalLim, main = "totalLim", xlab = "")
 hist(log(loans$totalLim), main = "log(totalLim)", xlab = "")
 hist(loans$totalRevBal, main = "totalRevBal", xlab = "")
 hist(log(loans$totalRevBal), main = "log(totalRevBal)", xlab = "")
-  #Line 1: totalBcLim & totalILim
+  #Line 4: totalBcLim & totalILim
 hist(loans$totalBcLim, main = "totalBcLim", xlab = "")
 hist(log(loans$totalBcLim), main = "log(totalBcLim)", xlab = "")
 hist(loans$totalIlLim, main = "totalIlLim", xlab = "")
 hist(log(loans$totalIlLim), main = "log(totalIlLim)", xlab = "")
-
+  #Line 5: avgBal
+hist(loans$avgBal, main = "avgBal", xlab = "")
+hist(log(loans$avgBal), main = "log(avgBal)", xlab = "")
   #reset my graphs back to a 1x1.
 par(mfrow=c(1,1))
 ```
@@ -230,10 +235,37 @@ A look at the remaining dollars based variables suggest a log() transformation a
 
 ```{r,message=FALSE, echo=FALSE, include=FALSE}
   #creating a list of columns to transform
-cols_to_transform = c("totalBal","totalRevLim","bcOpen","totalLim","totalRevBal","totalBcLim","totalIlLim")
+cols_to_transform = c("totalBal","totalRevLim","bcOpen","totalLim","totalRevBal","totalBcLim","totalIlLim","avgBal")
   #because log(0) = -inf, add +1 to the values first just to ensure this doesnt occur. It's by such a small factor that it wont be a large impact on the results.
 loans[cols_to_transform] = loans[cols_to_transform]+1
   #applying the log transform to the columns.
 loans[cols_to_transform] = lapply(loans[cols_to_transform], log)
+rm(cols_to_transform)
+
 ```
+
+## 4.1 Data Exploration
+
+Our final step before model fitting is to explore some of the data within the variables to gain some intuition of distribution as it relates to the our outcome variable of Good vs. Bad.
+
+```{r,message=FALSE, echo=FALSE, fig.width = 7, fig.height = 4}
+  #create a side by side box plot that shows the distribution of loan amounts by the outcome
+bx_amount=gf_boxplot(amount~outcome, data=loans, color=~outcome, xlab="Loan Outcome", ylab="Loan Amount ($)", title="Distribution of Loan Amount by Outcome")
+
+  #create a side by side bar chart to see the distribution of loan term by outcome. 
+bar_term=gf_bar(~term, data = loans, fill = ~outcome, position = position_dodge(), title = "Distribution of Loan Term by Outcome")
+
+  #create a side by side bar chart to see the distribution of loan term by outcome. 
+bar_grade=gf_bar(~grade, data = loans, fill = ~outcome, position = position_dodge(), title = "Distribution of Loan Grade by Outcome")
+
+  #create a side by side box plot that shows the distribution of loan amounts by the outcome
+bx_rate=gf_boxplot(rate~outcome, data=loans, color=~outcome, xlab="Loan Outcome", ylab="Loan Rate (%)", title="Distribution of Loan Rate by Outcome")
+
+ggarrange(bx_amount,bx_rate, bar_grade, bar_term, ncol = 2, nrow = 2)
+
+```
+
+
+
+
 
