@@ -42,7 +42,7 @@ lapply(c("readr","dplyr","car","mice","ggformula","ggpubr"), require, character.
   #load the data
 loans = read_csv("loans50k.csv")
 ```
-Now prepare our response variable based on the status column of the existing dataset. We will discard any "in progress" loans, and only keep those that are "complete" - these three status reflect completed loans, leaving 34,655 observations remaining. 
+Now we can prepare our response variable based on the status column of the existing dataset. We will discard any "in progress" loans, and only keep those that are "complete" - these three status reflect completed loans, leaving 34,655 observations remaining: 
 ```{r, message=FALSE}
 loans = loans[loans$status %in% c("Fully Paid", "Charged Off", "Default"),]
 ```
@@ -116,7 +116,7 @@ loans$length = recode(loans$length,"c('< 1 year','1 year','2 years','3 years','4
 
 We now review the home variable, which explains the type of living arrangement: rent vs. mortgage vs. owning. There are only three categories here, and the frequencies for each category look to be above 5% of the total number of observations, so we wont be making any adjustments here.
 
-Finally, we have loan reason. Similar to the employment length variable, we will need to combine categories as some of these contain a very low number of observations. There also seems to be similar in nature categories such as "house" and "home improvement", so those will be a natural combination. The combined groups will be as follows:
+Finally, we have loan reason. Similar to the employment length and grade variable, we will need to combine categories using the recode() function, as some of these contain a very low number of observations. There also seems to be similar in nature categories such as "house" and "home improvement", so those will be a natural combination. The combined groups will be as follows:
 
 * "**Home Expense**" = home_improvement, house, moving, renewable_energy
 * "**Other**" = car, major_purchase, medical, other, small_business, vacation, wedding
@@ -173,7 +173,7 @@ par(mfrow=c(1,1))
 loans$income = log(loans$income)
 ```
 
-A prime example of skewed data is the "income" variable. In the first histogram we see a severely right-skewed distribution, so we attempt a log() transformation. The results of the log(income) show in the next graph - these are much more normally distributed, so we will keep this transformation on the "income" variable.
+A prime example of skewed data is the "income" variable. In the first histogram we see a severely right-skewed distribution, so we attempt a log() transformation. The results of the log(income) show in the graph to the right - these are now much more normally distributed, so we will keep this transformation on the "income" variable.
 
 ```{r,message=FALSE, echo=FALSE, include=FALSE, fig.width = 12, fig.height = 7}
   #set up 4 rows of 4 columns. Give enough margin spacing with mar()
@@ -233,14 +233,27 @@ bx_rate=gf_boxplot(rate~outcome, data=loans, color=~outcome, xlab="Loan Outcome"
 ggarrange(bx_amount,bx_rate, ncol = 2, nrow = 1)
 ```
 
-In the first boxplot we can see loan amounts (in $). Loans that have a "bad" outcome seem evenly distributed in their amounts, whereas "good" loans appear slightly skewed to the right. We perform a Wilcoxon Sum Rank test to check for significance between these distributions, and at the 95% significance level, there is enough evidence to conclude that the bad loan's median amount is larger than the good loan's median amount (p=2.2e-16).
+In the first boxplot we can see loan amounts (in $). Loans that have a "bad" outcome seem evenly distributed in their amounts, whereas "good" loans appear slightly skewed to the right. We perform a Wilcoxon Sum Rank test to check for significance between these distributions, and at the 95% level of confidence, there is enough evidence to conclude that the bad loan's median amount is at least \$1,000 greater than the good loan's median amount (p=2.2e-16).
 
-```{r,message=FALSE, echo=FALSE}
+```{r,message=FALSE, echo=FALSE,include=FALSE}
+#test if the median dollar amount of loans in the bad loan group is greater than the median dollar amount of loans in the good loan group.
+  #p1 = The median dollar amount of loans in the bad loan group
+  #p2 = The median dollar amount of loans in the good loan group
+  #H0: p1 <= p2
+  #H_a: p1 > p2
+  #alpha = 0.05
 wilcox.test(loans$amount~loans$outcome, alternative = "greater", conf.int = TRUE)
 ```
-The second boxplot display's loan percentage rate distribution. Both data sets appear to be generally normally distributed with a few outliers, however, similar to the above, the "bad" loans appear to have a higher median. We perform a Wilcoxon Sum Rank test to check for significance between these distributions, and at the 95% significance level, there is enough evidence to conclude that the bad loan's median rate is larger than the good loan's median rate (p=2.2e-16).
+The second boxplot display's loan percentage rate distribution. Both data sets appear to be generally normally distributed with a few outliers, however, similar to the above, the "bad" loans appear to have a higher median. We perform a Wilcoxon Sum Rank test to check for significance between these distributions, and at the 95% level of confidence, there is enough evidence to conclude that the bad loan's median rate is at least 2.99% greater than the good loan's median rate (p=2.2e-16).
 
-```{r,message=FALSE, echo=FALSE}
+```{r,message=FALSE, echo=FALSE,include=FALSE}
+#test if the median of percentage rates in the bad loan group is greater than the median of percentage rates in the good loan group.
+  #p1 = The median rate in the bad loan group
+  #p2 = The median rate in the good loan group
+  #H0: p1 <= p2
+  #H_a: p1 > p2
+  #alpha = 0.05
+
 wilcox.test(loans$rate~loans$outcome, alternative = "greater", conf.int = TRUE)
 ```
 
@@ -253,7 +266,7 @@ bar_term=gf_bar(~term, data = loans, fill = ~outcome, position = position_dodge(
 ggarrange(bar_grade, bar_term, ncol = 2, nrow = 1)
 ```
 Now we can look at the first bar graph that shows the distribution of bad vs. good outcomes based on letter grade of the loan. We see some disproportion, with lesser graded loans having a higher number of bad outcomes. To test if the distribution is truly different among categories, we will perform a chi squared goodness of fit test. At a 95% significance level, there is enough evidence to support that these distributions of bad loans are different by loan grade (p=2.2e-16).
-```{r,message=FALSE, echo=FALSE}
+```{r,message=FALSE, echo=FALSE,include=FALSE}
  #test if the number of "bad" loans is equal across each loan grade, or not equal to each other.
   #p1 = The proportion of bad outcomes for loan grade "A"
   #p2 = The proportion of bad outcomes for loan grade "B"
@@ -283,10 +296,16 @@ grades_test$expected
 grades_test
 ```
 
-Finally, we review the proportions of bad vs. good outcomes for the 36 and 60 month loan terms. Visually, there appears to be a much lower proportion of bad loan outcomes in the 36 month term vs. the 60 month term, so we perform a proportion test. At a 95% significance level, there is enough evidence to support the proportion of bad loans in the 36 month term group is less than the proportion of bad loans in the 60 month term group (p=2.2e-16).
+Finally, we review the proportions of bad vs. good outcomes for the 36 and 60 month loan terms. Visually, there appears to be a much lower proportion of bad loan outcomes in the 36 month term vs. the 60 month term, so we perform a proportion test. At a 95% level of confidence, there is enough evidence to support the proportion of bad loans in the 36 month term group is at least 18.07% less than the proportion of bad loans in the 60 month term group (p=2.2e-16).
 
-```{r,message=FALSE, echo=FALSE}
- 
+```{r,message=FALSE, echo=FALSE,include=FALSE}
+#test if the proportion of bad loans in 36 month term is less than the proportion of bad loans in the 60 month term.
+  #p1 = The proportion of bad loans in the 36 month term
+  #p2 = The proportion of bad loans in the 60 month term
+  #H0: p1 >= p2
+  #H_a: p1 < p2
+  #alpha = 0.05
+
   #get the number of bad records from 36 month term
 bad_36 = nrow(loans[loans$outcome == "Bad" & loans$term == "36 months",])
   #get the number of good records from 36 month term
@@ -296,7 +315,6 @@ good_36 = nrow(loans[loans$outcome == "Good" & loans$term == "36 months",])
 bad_60 = nrow(loans[loans$outcome == "Bad" & loans$term == "60 months",])
   #get the number of good records from 36 month term
 good_60 = nrow(loans[loans$outcome == "Good" & loans$term == "60 months",])
-
 
   #create a matrix of bad/good for 36/60 months
 term = matrix(c(bad_36,good_36,bad_60,good_60), ncol = 2, byrow = TRUE)
