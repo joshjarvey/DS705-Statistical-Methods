@@ -29,7 +29,8 @@ financial_ratings = matrix(c(70,150,66,81),nrow = 2, byrow=TRUE)
   #label the columns and rows accordingly.
 colnames(financial_ratings) = c("Outstanding", "Not Outstanding")
 rownames(financial_ratings) = c("Bank", "Credit Union")
-
+  #add sum margins to the table.
+addmargins(financial_ratings)
 ```
 
 ### Part 1b
@@ -43,8 +44,7 @@ For the population of all credit unions, construct and interpret a 95% confidenc
 prop.test(66,81, correct = TRUE)
 ```
 
-At a 95% significance level, the true population proportion of outstanding ratings for credit unions lies between 70.98% to 88.93%.
-
+At a 95% level of confidence, the true population proportion of outstanding ratings for credit unions lies between 70.98% to 88.93%.
 
 ### Part 1c  
 
@@ -63,7 +63,7 @@ prop.test(outstanding,not_outstanding, correct = FALSE)
 
 ```
 
-At a 95% significance level, the  population proportion of outstanding ratings for credit unions is 23.18% to 46.44% greater than the proportion of outstanding ratings for banks.  
+At a 95% level of confidence, the  population proportion of outstanding ratings for credit unions is 23.18% to 46.44% greater than the proportion of outstanding ratings for banks.  
 
 
 ### Part 1d
@@ -74,15 +74,15 @@ If one bank is selected randomly, what is the estimated risk of not being rated 
 
 ```{r}
   #pull the number of not outstanding ratings for banks
-bank_not_outstanding = financial_ratings[1,2]
+bank_not_outstanding = financial_ratings[1,2] #70
   #pull the number of outstanding ratings for banks
-bank_outstanding = financial_ratings[1,1]
+bank_outstanding = financial_ratings[1,1] #150
 
   #not outstanding / row total (i.e. outstanding + not outstanding). Multiply by 100 to get percent.
 bank_not_outstanding/(bank_outstanding + bank_not_outstanding)*100
 ```
 
-A bank has a 68.18% chance of reciving a non-outstanding rating. 
+A bank has a 68.18% chance of having a non-outstanding rating. 
 
 
 ### Part 1e 
@@ -93,15 +93,15 @@ If one credit union is selected randomly, what is the estimated risk of not bein
 
 ```{r}
   #pull the number of not outstanding ratings for credit unions
-creditUnion_not_outstanding = financial_ratings[2,2]
+creditUnion_not_outstanding = financial_ratings[2,2] #66
   #pull the number of outstanding ratings for credit unions
-creditUnion_outstanding = financial_ratings[2,1]
+creditUnion_outstanding = financial_ratings[2,1] #81
 
   #not outstanding / row total (i.e. outstanding + not outstanding). Multiply by 100 to get percent.
 creditUnion_not_outstanding/(creditUnion_outstanding + creditUnion_not_outstanding)*100
 ```
 
-A credit union has a 55.10% chance of reciving a non-outstanding rating. 
+A credit union has a 55.10% chance of having a non-outstanding rating. 
 
 
 ### Part 1f
@@ -163,18 +163,11 @@ Compute the estimated odds ratio of being rated as Outstanding for credit unions
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1i -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-#!!!IS THIS NEEDED????!!!! 
- #swap outstanding and not outstanding columns. To get proper odds ratio for "outstanding
-#financial_ratings = matrix(c(150,70,81,66),nrow = 2, byrow=TRUE)
-#colnames(financial_ratings) = c("Not Outstanding", "Outstanding")
-#rownames(financial_ratings) = c("Bank", "Credit Union")
-
   #odds ratio is setting credit union as the numerator (odds2), and bank as the denominator (odds1). 
 oddsRatio(financial_ratings, verbose = TRUE)
 ```
 
 The odds of being rated as outstanding for credit unions are 1.746 times the odds of an outstanding rating for banks. 
-
 
 ### Part 1j
 
@@ -196,7 +189,7 @@ oddsRatio(financial_ratings, verbose = TRUE)
 
 ```
 
-At a 95% significance level, the odds of an outstanding rating for a credit union are 1.134 to 2.688 times the odds of an outstanding rating for a bank.
+At a 95% significance level, the odds of an outstanding rating for a credit union are between 1.134 to 2.688 times more than that of the odds of an outstanding rating for a bank.
 
 
 ### Part 1l
@@ -255,11 +248,11 @@ Compute the expected cell counts and verify that they are all large enough for t
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-  #to check expected counts, we must first take the sum of all the observations. We then multiple the sum against each claimed probabilty and ensure they are at least 5 or greater. 
+  #to check expected counts, we must first take the sum of all the observations. We then multiple the sum against each claimed probability and ensure they are at least 5 or greater. 
 sum(market_purchase)*prob
 ```
 
-The expected cell counts are all greater than 5, therefore it is appropiate to perform the chi-squared goodness of fit test to this data. 
+The expected cell counts are all greater than 5, therefore it is appropriate to perform the chi-squared goodness of fit test to this data. 
 
 ### Part 2c
 
@@ -270,7 +263,7 @@ Display the data in a bar graph and comment on its features.
 ```{r}
   #create a barplot using the observed values sorted by age bracket. Set colors. 
 barplot(observed, names.arg = c("Under 18", "18 to 35", "36 to 50", "Over 50"),
-        ylab = "Count", col = c("purple", "blue", "red","green"))
+        ylab = "Count", col = c("purple", "blue", "red","green"), main = "Number of Online Shoppers by Age Group", xlab = "Age Group")
 
 ```
 
@@ -308,7 +301,7 @@ fisher.test(seatbelt)
 H_null: The proportion of Teens who wear seatbelts is equal to the proportion of Seniors who wear seatbelts.
 H_alternative: The proportion of Teens who wear seatbelts is not equal to the proportion of Seniors who wear seatbelts.
 
-At a 95% level of significance, there is not enough evidence to conclude that the proportion of Teens who wear seatbelts is equal to the proportion of Seniors that wear seatbelts (p-value = 0.06483).
+At a 95% level of significance, there is not enough evidence to conclude that the proportion of Teens who wear seatbelts isn't equal to the proportion of Seniors that wear seatbelts (p-value = 0.06483).
 
 ## Exercise 4
 
