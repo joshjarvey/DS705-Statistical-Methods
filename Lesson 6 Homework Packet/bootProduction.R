@@ -1,7 +1,7 @@
 # bootstrapping confidence intervals for most things in regression 
 # isn't all that hard when using the boot package
 #
-# it requires writing auxilliary functions for extracting 
+# it requires writing auxiliary functions for extracting 
 # the information you need
 #
 # bootstrapping a confidence interval for the population mean response (value of y)
