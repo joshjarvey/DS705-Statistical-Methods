@@ -1,0 +1,166 @@
+
+---
+title: 'Logistic Regression'
+author: "Josh Jarvey"
+date: "06/16/2020"
+output: word_document
+fontsize: 12pt
+---
+
+
+
+Create a Word document from this R Markdown file for the following exercises.  Submit the R markdown file and resulting Word document.   
+
+## Exercise 1
+
+A study was conducted whereby the type of anesthetic (A or B), nausea after the surgery (Yes or No), the amount of pain medication taken during the recovery period, and age for a random sample of 72 patients undergoing reconstructive knee surgery.  
+
+The data is in the file anesthesia.rda.
+
+### Part 1a
+
+Use R to create a two-way table with the type of anesthetic defining the rows and nausea after the surgery as the columns and also produce the output for a chi-square test for independence.
+
+Is there an association between these two categorical variables at a 5% level of significance?
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your answer to the question about an association.
+
+### Part 1b
+
+Obtain the output from R (including the Wald tests for coefficients - so use "summary" function) for the logistic regression model with nausea as the dependent variable and the type of anesthetic as the predictor variable.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+
+### Part 1c  
+
+What is the outcome of the hypothesis test that the coefficient of **anestheticB** is "zero" vs "not zero" at a 5% level of significance? (use the Wald test from the R output from the logistic regression you performed)
+
+*Note: When there is a categorical predictor variable with more than two categories, R will set 1 category as "baseline" (usually the category that comes first alphabetically), also known as the reference category.  So in this problem anesthetic A will be the baseline category.  The fit model will use two dummy variable anestheticB = 1 for anesthetic B and 0 otherwise.  Anesthetic A will be the reference category and is modeled in the output when anestheticB=0.*
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
+
+Replace this text with your answer.
+
+### Part 1d
+
+Convert the estimated coefficient of **anestheticB** to an odds ratio and interpret it in the context of the problem.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your written answer.
+
+### Part 1e
+
+Install the package "mosaic" (if you don't have it installed already), then load it.  Use the oddsRatio function to compute the odds ratio for having nausea for anesthetic A vs B.  You may have to refer back to Lesson 5 for details on odds ratios and the oddsRatio function in R.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+
+### Part 1f
+
+When logistic regression coefficients are negative, the interpretation sometimes has more impact when we switch the perspective and use the reciprocal of the exponentiated coefficient.  Find the odds ratio for having nausea for anesthetic A compared to anesthetic B by taking the reciprocal of the odds ratio that was computed in part **1d**. 
+
+Interpret this odds ratio in the context of the problem.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your interpretation here.
+
+### Part 1g
+    
+Compute the predicted probability of a reconstructive knee surgery patient having nausea after surgery when anesthetic A was used.
+    
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+----
+
+### Part 1h
+    
+Compute a 95% confidence interval for the predicted probability of a reconstructive knee surgery patient having nausea after surgery when anesthetic A was used.
+    
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1h -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+## Exercise 2
+
+Continue using the anesthesia.rda data set to do the following.
+
+### Part 2a
+
+Obtain the output from R (including the Wald tests for coefficients - so use "summary" function) for the logistic regression model with nausea as the dependent variable and the amount of pain medication taken as the predictor variable.  
+
+At $\alpha = 0.05$, is there a statistically significant relationship between nausea and the amount of pain medication taken?
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your written answer here.
+
+### Part 2b  
+
+Convert the estimated coefficient of **painmed** to an odds ratio and interpret it in the context of the problem.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your interpretation here.
+
+### Part 2c
+
+Compute the predicted probabilities of a reconstructive knee surgery patient having nausea in the recovery time after surgery for when 50 units of pain medication are used and also for when 100 units of pain medication are used.
+
+Comment on these two probabilities.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 2c -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+# Insert your R code here.
+
+```
+
+Replace this text with your written answer here.
