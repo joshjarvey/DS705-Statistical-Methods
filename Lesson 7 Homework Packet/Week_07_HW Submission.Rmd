@@ -26,11 +26,19 @@ Is there an association between these two categorical variables at a 5% level of
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #load the data set
+library(DS705data)
+data("anesthesia")
 
+  #create a table of drug type and sickness outcome.
+outcome = table(anesthesia$anesthetic, anesthesia$nausea)
+addmargins(outcome)
+
+  #testing independence between drug type and sickness outcome.
+chisq.test(outcome)
 ```
 
-Replace this text with your answer to the question about an association.
+At a 95% level of significance, there is enough evidence to suggest that the type of Anesthetic used and Nausea experienced are associated for knee surgery patients (p=0.004535).
 
 ### Part 1b
 
@@ -39,8 +47,9 @@ Obtain the output from R (including the Wald tests for coefficients - so use "su
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #creating a logistic regression of nausea as a function of anesthetic used. 
+model = glm(nausea~anesthetic, data = anesthesia, family = "binomial")
+summary(model)
 ```
 
 
@@ -52,7 +61,7 @@ What is the outcome of the hypothesis test that the coefficient of **anestheticB
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer.
+At a 95% level of significance, there is enough evidence to support the claim that the coefficient for anestheticB is different from 0 (p=0.00271).
 
 ### Part 1d
 
@@ -61,11 +70,11 @@ Convert the estimated coefficient of **anestheticB** to an odds ratio and interp
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #exponentiating the coefficients to get the odds ratio.
+exp(model$coefficients[2])
 ```
 
-Replace this text with your written answer.
+The odds of having a sickness after knee surgery with the use of anestheticB are 21.74 % as large as the odds of having sickness after knee surgery with the use of anestheticA. That is, they are 78.26% less!
 
 ### Part 1e
 
@@ -74,8 +83,9 @@ Install the package "mosaic" (if you don't have it installed already), then load
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+library(mosaic)
+  #calculating the odds ratio of having nausea for anesthetic A vs. B. OR = 4.6
+oddsRatio(outcome, verbose = TRUE)
 ```
 
 
@@ -88,11 +98,12 @@ Interpret this odds ratio in the context of the problem.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #exponentiating the coefficients to get the odds ratio.
+1/exp(model$coefficients)
 
 ```
 
-Replace this text with your interpretation here.
+The odds of having a sickness after knee surgery with the use of anestheticA are 4.6 times more likely than odds of having sickness after knee surgery with the use of anestheticB.
 
 ### Part 1g
     
@@ -101,8 +112,8 @@ Compute the predicted probability of a reconstructive knee surgery patient havin
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #when the use of anesthetic A, the probability of getting sick is 66.67%. This is the same thing as 26 Yes's / 39 total for A. 
+predict(model,data.frame(anesthetic = "A"), type = "response")
 ```
 
 ----
@@ -114,8 +125,18 @@ Compute a 95% confidence interval for the predicted probability of a reconstruct
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1h -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #allow standard error in the prediction.
+predicted_prob = predict(model,data.frame(anesthetic = "A"), se.fit = TRUE)
 
+  #set confidence interval to 95%
+C = 0.95
+  #calculate the critical cutoff edges (2.5 and 97.5%)
+crit = qnorm(1-(1-C)/2)
+  #calculate the lower and upper confidence interval bounds based on the fitted value and the standard error, using the desired confidence level
+lower = exp(predicted_prob$fit-crit*predicted_prob$se.fit)/(1+exp(predicted_prob$fit-crit*predicted_prob$se.fit))
+upper = exp(predicted_prob$fit+crit*predicted_prob$se.fit)/(1+exp(predicted_prob$fit+crit*predicted_prob$se.fit))
+  #print bounds
+c(lower,upper)
 ```
 
 ## Exercise 2
@@ -131,11 +152,12 @@ At $\alpha = 0.05$, is there a statistically significant relationship between na
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #create a 2nd model that uses pain med amount as the predictor variable. (AIC is better...).
+model2 = glm(nausea~painmed, data = anesthesia, family = "binomial")
+summary(model2)
 ```
 
-Replace this text with your written answer here.
+At a 95% level of significance, there is enough evidence to claim that the coefficient for the amount of pain medication administered as a predictor of sickness after knee surgery is different than 0 (p=2.20e-05). 
 
 ### Part 2b  
 
@@ -144,11 +166,11 @@ Convert the estimated coefficient of **painmed** to an odds ratio and interpret 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #converting log odds into normal odds. (take 1 - result, and that is your percentage. If its negative, then thats a decrease for every additional unit, whereas if its positive, then its in increase in probability). 
+exp(model2$coefficients[2])
 ```
 
-Replace this text with your interpretation here.
+The odds of having a sickness after knee surgery increase by 3.82% for each additional unit of pain medication administered. 
 
 ### Part 2c
 
@@ -159,8 +181,8 @@ Comment on these two probabilities.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #predict the probability of getting sick with 50 and 100 units of pain medication.  
+predict(model2,data.frame(painmed = c(50,100)), type = "response")
 ```
 
-Replace this text with your written answer here.
+Holding everything else constant, when a knee surgery patient is administered 50 units of pain medication, they have a 23.35% chance of getting sick post surgery. When a patient is administered 100 units of pain medication, they have a 66.51% chance of getting sick post surgery. 
