@@ -27,9 +27,11 @@ Does it appear that a linear model is at least possibly a plausible model for th
 
 ```{r}
 library(DS705data)
+library(ggformula)
 data("normtemp")
 normtemp = na.omit(normtemp)
-plot(normtemp$temp,normtemp$hr, main = "Heart Rate as a function of Body Temp",xlab = "Body Temp", ylab = "Heart Rate")
+
+gf_point(hr~temp,data = normtemp,title = "Heart Rate as a function of Body Temp",xlab = "Body Temp", ylab = "Heart Rate") + geom_smooth(method = "lm")
 ```
 
 From a visual perspective, there does appear to be a weak positive linear pattern between heart rate and body temp. It does seem pretty weak however. 
