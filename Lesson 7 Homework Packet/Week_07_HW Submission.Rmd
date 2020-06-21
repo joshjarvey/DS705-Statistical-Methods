@@ -38,7 +38,7 @@ addmargins(outcome)
 chisq.test(outcome)
 ```
 
-At a 95% level of significance, there is enough evidence to suggest that the type of Anesthetic used and Nausea experienced are associated for knee surgery patients (p=0.004535).
+At a 95% level of significance, there is enough evidence to suggest that the type of Anesthetic used and if nausea was experienced are associated for knee surgery patients (p=0.004535).
 
 ### Part 1b
 
