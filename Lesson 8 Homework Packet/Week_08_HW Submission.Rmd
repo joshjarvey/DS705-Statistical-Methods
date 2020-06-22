@@ -30,12 +30,13 @@ Load the data and use summary(rowtime) to see a numerical summary of the values 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #load the data and review a summary of the variables. 
 library(DS705data)
 data("rowtime")
 summary(rowtime)
 ```
 
-The response variable racetime is a quantitative variable because it is numerical and is continuous. Because this is a quantitative type, we will use a linear regression. As for the predictor variables, there is a mix of quantitative (tall, weight, armspan ,etc) as well as categorical: expvarsity (indicating if they have varsity experience?) and preexper (indicating if they have previous experience?). However, the categorical variables do not look like they are formatted properly, as they should be converted to factors prior to fitting the model.
+The response variable racetime is a quantitative variable because it is numerical and is continuous. Because this is a quantitative type, we will use a linear regression. As for the predictor variables, there is a mix of quantitative (tall, weight, armspan ,etc) as well as categorical: expvarsity (indicating if they have varsity experience?) and preexper (indicating if they have previous experience?).
 
 ### Part 1b
 
@@ -48,13 +49,20 @@ What is the $R^2_{adj}$ for the best first-order model?
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #import the regsubsets() function from the leaps library
 library(leaps)
+  #using the "full" number of variables denoted by y~., step forward until you've determine the best model with 8 predictors.
+    #nvmax is the number of variables to step toward. Obviously there may be increases or decreases to adjusted r2, so it might be best to allow it to go all the way to the max number of variables within the dataset and then just look at which one gives the best adjusted r2 (or whatever metric were interested in as the grading criteria).
 allmodels=regsubsets(racetime~.,data = rowtime, nvmax = 8)
+  #because "all" 8 of the models are stored, run summary to see the output. 
 summary(allmodels)
+
+  #the summary is ok, but this plot is where you can really see what model gives the best adjusted r2 measure. 
+plot(allmodels, scale = "adjr2")
 
 ```
 
-Replace this text with your answer here.
+Based on the output of the regsubsets() function, I will choose a model with 6 independent variables: tall, calfcir, tricep, meso, expvarsity, preexper - with an adjusted R2 score of 0.60. I choose this model because in comparing the models with 7 or 8 variables, the adjusted R2 score only increased by 0.10 for each additional variable. This didn't seem like a fair trade off (add more complexity for minor gains in explainability), so i will settle with a slightly lesser adjusted R2 score for a simpler model.
 
 ### Part 1c
 
@@ -65,11 +73,12 @@ Which independent variables are in this model?  What is the AIC value for this m
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #start with a "full" model denoted by y~.
+  #then do a backward step to remove variables from the equation until a best is reached. 
+step(lm(racetime~., data=rowtime), direction = "backward")
 ```
 
-Replace this text with your answer here.
+The best model selected using a backward step algorithm has an AIC of 497.22, and includes the variables: tall, calfcir, biceps, estffm, bestvj, legpower, meso, expvarsity, & preexper. 
  
 ### Part 1d
 
@@ -80,11 +89,16 @@ Which independent variables are in the model selected?  What is the AIC value fo
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #to begin the "forward" step function, we set a "null" model which is the y~1
+nullmodel = lm(racetime~1, data = rowtime)
+  #we set a "full" model to be the "cap" for the forward step function y~.
+fullmodel = lm(racetime~., data = rowtime)
+  #starting with the null model, add variables one at a time and test their impact, within the bounds of the lower and upper limits.
+step(nullmodel,scope = list(lower=nullmodel, upper=fullmodel), direction = "forward")
 
 ```
 
-Replace this text with your answer here.
+The best model selected using a foward step algorithm has an AIC of 497.65, and includes the variables: estffm, expvarsity, tall, preexper, biceps, meso, calfcir, & bestvj.
 
 ### Part 1e
 
@@ -95,11 +109,15 @@ So far, which first-order model is the "best" according to the AIC?  (remember, 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #regsubsets w/8 variables
+extractAIC(lm(formula = racetime~calfcir+biceps+bestvj+legpower+meso+ecto+expvarsity+preexper, data=rowtime))
+  #step backward (9 variables)
+extractAIC(lm(formula = racetime~tall+calfcir+biceps+estfm+bestvj+legpower+meso+expvarsity+preexper, data=rowtime))
+  #step forward (8 variables)
+extractAIC(lm(formula = racetime~estffm+expvarsity+tall+preexper+biceps+meso+calfcir+bestvj, data=rowtime))
 ```
 
-Replace this text with your answer here.
+The backward step() model containing 9 variables has the lowest AIC value of 497.2245.
 
 ### Part 1f
 
@@ -108,11 +126,13 @@ Find the VIF for each independent variable in the model produced by the forward 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #loading the car package for the vif() function
+library(car)
+  #checking the vif scores of the independent variables. greater than 10 suggests a collinearity problem.
+vif(lm(formula = racetime~tall+calfcir+biceps+estfm+bestvj+legpower+meso+expvarsity+preexper, data=rowtime))
 ```
 
-Replace this text with your answer here.
+There does appear to be a collinearity problem with the "legpower" variable because the vif score of ~18.57 is greater than 10. 
 
 ### Part 1g
 
@@ -137,7 +157,7 @@ pairs(rowtime[c(1,11,12,13,14)])
 pairs(rowtime[c(1,15,16,17,18)])
 ```
 
-Replace this text with your answer here.
+After studying these scatterplots of the dependent vs. independent variables for a while, I don't notice anything substantial that indicates a quadratic relationship. 
 
 ### Part 1h
 
@@ -158,11 +178,16 @@ and use step() to look for the best model containing up to any two-way interacti
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1h -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #storing the results of the forward step() model into a variable
+model = lm(racetime~estffm + expvarsity + tall + preexper + biceps + meso + calfcir + bestvj, data = rowtime)
+  #using that model as a starting point, check the combination of all interaction terms to see if they add additional value.
+  #the first . means all variables. the * means interaction, and the second . means all teams. So to summarize, check all terms interactions with all terms. 
+step(model, scope = .~.*., direction = "forward")
 ```
 
-Replace this text with your answer here.
+Using the forward step() function to test the combination of all term interactions, we have identified a better model with AIC of 491.18. This model is:
+
+racetime ~ estffm + expvarsity + tall + preexper + biceps + meso + calfcir + bestvj + tall:calfcir + estffm:bestvj
 
 ### Part 1i
 
@@ -173,11 +198,12 @@ If so, drop those predictors from the model if they are not involved in any inte
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1i -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+ #create a summary of the new model with the two additional interaction terms. 
+model_f = lm(racetime~estffm+expvarsity+tall+preexper+biceps+meso+calfcir+bestvj+tall:calfcir+estffm:bestvj, data=rowtime)
+summary(model_f)
 ```
 
-Replace this text with your answer here.
+Although the estffm variable is not significant on its own, it is considered significant when it is part of the interaction between estffm:bestvj, therefore i will not drop the individual term. This model results in staying the same, with an AIC of 491.18, and an Adjusted R2 of 0.6484.
 
 ### Part 1j 
 
@@ -192,12 +218,18 @@ Are the residuals of **Model F** normal?  Construct a histogram, normal probabil
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1j -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #create a histogram, qqplot, and boxplot of the residuals. 
+hist(model_f$residuals, xlab="Residuals", ylab = "Count", main = "Distribution of Residuals for Model_F")
+qqnorm(model_f$residuals, main = "QQ Plot Residuals of Model_F")
+qqline(model_f$residuals)
+boxplot(model_f$residuals, ylab = "Count", main = "Distribution of Residuals for Model_F")
+  #check normality of the residuals with the shapiro test. 
+shapiro.test(model_f$residuals)
 
 ```
 
 
-Replace this text with your answer here.
+After reviewing the graphs above and performing the Shapiro test for normality, the residuals of the fitted model_f appear to be normally distributed (shapiro's pvalue = 0.9911)
 
 
 ### Part 1k
@@ -207,12 +239,12 @@ Construct a residual plot for **Model F**. Do you see any patterns indicating po
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1k -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #create a residual plot of residuals vs. fitted values. 
+plot(model_f$fitted.values, model_f$residuals, xlab="Fitted Values", ylab = "Residuals", main = "Residual Plot for Model_F")
 ```
 
 
-Replace this text with your answer here.
+There doesn't appear to be any visual patterns that may indicate any violations for the model's assumptions. Perhaps an outlier or two, but more investigation would need to be done.  
 
 
 ### Part 1l
@@ -222,11 +254,13 @@ Perform the Bruesch-Pagan test for equal variances of the residuals at a 5% leve
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1l -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #load in the lmtest library
+library(lmtest)
+  #run the equal variance test.
+bptest(model_f)
 ```
 
-Replace this text with your answer here.
+At a 95% level of significance, there is not enough evidence to suggest that model_f's residuals are not equal (p-value = 0.3222). 
 
 ### Part 1m
 
@@ -234,7 +268,7 @@ How do you feel about this last model being the "best"?
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1m -|-|-|-|-|-|-|-|-|-|-|-
 
-Replace this text with your answer here.
+Given that all the assumptions check out, I feel pretty good about the model being the best as it stands today - the Adjusted R2 value on this final model is about 0.65 (thus this model should explain about 65% of the variability in NCAA D1 Women's row time performance) and the terms are not overly complicated or extraneous. 
 
 
 ## Exercise 2
@@ -262,9 +296,20 @@ Also fit the null model (intercept only) and use step() with forward selection t
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #load the farmpond dataset and build a logistic regression model for the RICH variable using all the other predictor variables.
+data("farmpond")
+  #building a full model (for the upper limit)
+full2model = glm(RICH~., data = farmpond, family = "binomial")
+  #building a null model (or starting point, for the lower bounds) so the "step forward" can add to it.
+null2model = glm(RICH~1, data = farmpond, family = "binomial")
+  #starting with the null model, add one variable at a time until you bottom out on the AIC score. 
+  #dont forget make the lower and upper a LIST type.
+step(null2model, scope = list(lower = null2model, upper = full2model), direction = "forward")
 ```
+
+The "best" model with an AIC score of 33.59 is:
+
+RICH ~ COND + TOTNITR + FISH
 
 ### Part 2b
 
@@ -272,8 +317,19 @@ Construct a classification table (also known as a confusion matrix) for the mode
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2b -|-|-|-|-|-|-|-|-|-|-|-
 
-```{r}
-# Insert your R code here.
+```{r echo=FALSE}
+model2 = glm(RICH~ COND + TOTNITR + FISH, data = farmpond, family = "binomial")
+predprob <- fitted(model2) # get predicted probabilities
+
+threshhold <- 0.5  # Set Y=1 when predicted probability exceeds this
+predRICH <- cut(predprob, breaks=c(-Inf, threshhold, Inf), 
+                labels=c("Sp Rich<4", "Sp Rich>=4"))  # Y=1 is "Sp Rich>=4" here
+
+cTab <- table(farmpond$RICH, predRICH) 
+addmargins(cTab)
+
+p <- sum(diag(cTab)) / sum(cTab)  # compute the proportion of correct classifications
+print(paste('Proportion correctly predicted = ', p)) 
 
 ```
 
