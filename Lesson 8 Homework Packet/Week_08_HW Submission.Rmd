@@ -333,7 +333,6 @@ print(paste('Proportion correctly predicted = ', p))
 
 ```
 
-
 ### Part 2c
 
 Compute McFadden's pseudo $R^2$ for the model identified in part 2a.
@@ -341,7 +340,10 @@ Compute McFadden's pseudo $R^2$ for the model identified in part 2a.
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
+  #load the function from the pscl package
+library(pscl)
+  #using the pR2 function to get the "McFaddens pseudo R2" value. This is like an R2 value for linear regression, but for logistic.
+pR2(model2)[4]
 
 ```
 
@@ -353,11 +355,14 @@ Conduct a Hosmer-Lemeshow test of goodness-of-fit for the model from part 2a.  U
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2d -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
-# Insert your R code here.
-
+  #load the function from the ResourceSelection package
+library(ResourceSelection)
+  #conduct the Hoslem-Lemeshow GOF test for logistic regression. This basically tests if the model is a good fit to the data.
+  #null = is a good fit; alt = is not a good fit.
+hoslem.test(farmpond$RICH, fitted(model2), g=5)
 ```
 
-Replace this text with your answer here.
+At a 95% level of significance, there is not enough evidence to suggest that the model is not a good fit to the data (p-value = 0.8252).
 
 
 
