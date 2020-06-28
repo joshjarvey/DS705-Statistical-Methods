@@ -402,16 +402,16 @@ Now that we've decided on a final model, we'll assess its accuracy on correctly 
 
 The table below shows the actual loan outcomes in the row labels, whereas the column labels represent the model's prediction on outcome. The square Where the row label and column label match is considered a "correct" prediction for our model, and is counted in our numerator for the accuracy calculation. Mismatching labels show where the model "incorrectly" predicted the outcome. For example, there were 5101 loans that the model predicted as having a "good" outcome, however those loans were actually marked as having a "bad" outcome.
 ```{r, echo=FALSE}
-predprob <- fitted(model) # get predicted probabilities
+predprob = fitted(model) # get predicted probabilities
 
-threshhold <- 0.5  # Set Y=1 when predicted probability exceeds this value.
-predGood <- cut(predprob, breaks=c(-Inf, threshhold, Inf), 
+threshold = 0.5  # Set Y=1 when predicted probability exceeds this value.
+predGood = cut(predprob, breaks=c(-Inf, threshold, Inf), 
                 labels=c("Bad", "Good"))  # Y=1 is "Good"
 
-cTab <- table(train$outcome, predGood) 
+cTab = table(train$outcome, predGood) 
 addmargins(cTab)
 
-p <- sum(diag(cTab)) / sum(cTab)  # compute the proportion of correct classifications
+p = sum(diag(cTab)) / sum(cTab)  # compute the proportion of correct classifications
 print(paste('Proportion correctly predicted = ', round(p,2))) 
 
 ```
@@ -421,16 +421,16 @@ To calculate accuracy, we take the sum of the correctly predicted observations a
 We complete this same process with the holdout testing sample, and determine the model performs almost as accurate on previously "unseen" data - 0.78, or 78% accurate. 
 
 ```{r, echo=FALSE}
-predprob <- predict(model,test, type = "response") # get predicted probabilities
+predprob = predict(model,test, type = "response") # get predicted probabilities
 
-threshhold <- 0.5  # Set Y=1 when predicted probability exceeds this value.
-predGood <- cut(predprob, breaks=c(-Inf, threshhold, Inf), 
+threshold = 0.5  # Set Y=1 when predicted probability exceeds this value.
+predGood = cut(predprob, breaks=c(-Inf, threshold, Inf), 
                 labels=c("Bad", "Good"))  # Y=1 is "Good"
 
-cTab <- table(test$outcome, predGood) 
+cTab = table(test$outcome, predGood) 
 addmargins(cTab)
 
-p <- sum(diag(cTab)) / sum(cTab)  # compute the proportion of correct classifications
+p = sum(diag(cTab)) / sum(cTab)  # compute the proportion of correct classifications
 print(paste('Proportion correctly predicted = ', round(p,2))) 
 ```
 
@@ -441,11 +441,59 @@ round(addmargins(cTab)[1]/addmargins(cTab)[7],2)
 round(addmargins(cTab)[5]/addmargins(cTab)[8],2)
 ```
 
-Digging one step deeper on our accuracy measures, we look at both the accuracy of the "bad" outcome loans and the "good" outcome loans separately. For "good" outcome loans, the models accuracy is a whopping 98%! However, the model only predicts "bad" outcome loans with an accuracy of about 9% - not necessarily admirable. We used a default threshold of 0.50 on the predicted probabilities and when to kick them into the good or bad bucket, however this unbalanced result does seem to indicate another look at the threhold limit.
+Digging one step deeper on our accuracy measures, we look at both the accuracy of the "bad" outcome loans and the "good" outcome loans separately. For "good" outcome loans, the models accuracy is a whopping 98%! However, the model only predicts "bad" outcome loans with an accuracy of about 9% - not necessarily admirable. We used a default threshold of 0.50 on the predicted probabilities and when to kick them into the good or bad bucket, however this unbalanced result does seem to indicate another look at the threshold is in order.
 
-# 6.0 - Balancing for threshold
+# 6.0 - Balancing the threshold for better results
 
+In the last section we noticed a pretty unbalanced accuracy between the good and bad outcomes. In this section we will explore the accuracy trade off between good and bad outcomes, and see if we can identify an optimal threshold value using a trade-off curve.
 
+To get started, we create a custom function that repurposes the code used to build the contingency tables in the previous section. The function will take the vector of predicted probability output from the model, along with a threshold value. It will then calculate and return the current threshold used and the three accuracy scores: overall accuracy, bad outcome accuracy, and good outcome accuracy.
+
+```{r}
+calc_accuracy <- function(probabilties, threshold){
+  predGood = cut(probabilties, breaks=c(-Inf, threshold, Inf),labels=c("Bad", "Good"))
+  
+  cTab = table(test$outcome, predGood) 
+  addmargins(cTab)
+  overall_acc = round(sum(diag(cTab))/sum(cTab),2)
+  bad_acc = round(addmargins(cTab)[1]/addmargins(cTab)[7],2)
+  good_acc = round(addmargins(cTab)[5]/addmargins(cTab)[8],2)
+  
+  return(list(threshold,overall_acc,bad_acc,good_acc))
+}
+```
+
+An empty dataframe containing four columns is created, and a for-loop is used to populate the data frame for each value of a possible threshold setting from 0.01 to 1.00. Below are the first six rows:
+
+```{r,message=FALSE, echo=FALSE}
+  #create an empty dataframe of 4 columns
+accuracy_tradeoff = data.frame(matrix(ncol = 4, nrow = 0))
+  #populate the dataframe with accuracy calculations with threshold values ranging from 0.01 to 1.00.
+for (index in seq(0.00, 1.00, 0.01)){
+  accuracy_tradeoff = rbind(accuracy_tradeoff, calc_accuracy(predprob,index)) 
+}
+  #change column headers for ease of use later on.
+accuracy_tradeoff = setNames(accuracy_tradeoff, c("threshold", "overall_acc", "bad_acc", "good_acc"))
+  #look at the first 6 rows.
+head(accuracy_tradeoff)
+```
+
+Now we can plot the resulting dataframe onto a single line plot. With threshold along the x-axis, each variables accuracy value is plotted along the y-axis and given a unique color. Where the lines intercept, this is our optimal selection of the threshold value for the accuracy measure.
+
+```{r, echo=FALSE,fig.width = 4, fig.height = 4}
+gf_line(overall_acc~threshold, data = accuracy_tradeoff, color = "blue") %>%
+gf_line(bad_acc~threshold, data = accuracy_tradeoff, color = "red") %>%
+gf_line(good_acc~threshold, data = accuracy_tradeoff, color = "green") %>% 
+ gf_labs(x="Threshold", y="Accuracy", title= "Accuracy Curves") %>%
+ gf_hline(color = "black", yintercept = ~ 0.66) %>%
+ gf_vline(color = "black", xintercept = ~ 0.78)
+```
+
+The black lines pinpoint this optimal value for threshold, which occurs at 0.78. The corresponding accuracies are as follows:
+
+* **Overall** Accuracy: 0.66
+* **Bad** Outcome Accuracy: 0.65
+* **Good** Outcome Accuracy: 0.66
 
 
 
