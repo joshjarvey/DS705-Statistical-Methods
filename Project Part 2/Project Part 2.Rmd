@@ -67,11 +67,10 @@ Below are a list of the other variables we'll remove from the dataset in the ord
 * "**debtIncRat**": Any ratios are a calculation of existing data within this set, so it will be removed since it provides no extra information.
 * "**revolRatio**": Any ratios are a calculation of existing data within this set, so it will be removed since it provides no extra information.
 * "**totalAcc**": Total accounts (including closed) - We're only interested in open accounts that are currently active. 
-* "**totalPaid**": Total amount repaid to the bank. This comes after a loan is issued, so it cannot be used as a predictor. 
 * "**bcRatio**": Any ratios are a calculation of existing data within this set, so it will be removed since it provides no extra information.\
 
 ```{r, echo=FALSE, message=FALSE}
-loans = subset(loans, select = -c(loanID,employment,verified,state,debtIncRat,revolRatio,totalAcc,totalPaid,bcRatio))
+loans = subset(loans, select = -c(loanID,employment,verified,state,debtIncRat,revolRatio,totalAcc,bcRatio))
 ```
 
 ## 3.2 Feature Engineering
@@ -346,9 +345,11 @@ set.seed(123)
   #randomly select 80% of the rows from the dataset.
 training_data = sample(seq_len(nrow(loans)),size = floor(0.80*nrow(loans)))
   #the 80% selected go into the train dataset
-train =loans[training_data,]
+train = loans[training_data,]
   #the remaining rows go into the test dataset
-test =loans[-training_data,]
+test = loans[-training_data,]
+
+train = subset(train, select = -c(totalPaid))
   #keeping things tidy
 rm(training_data)
 ```
@@ -462,7 +463,7 @@ rm(cTab)
 
 Digging one step deeper on our accuracy measures, we look at both the accuracy of the "bad" outcome loans and the "good" outcome loans separately. For "good" outcome loans, the models accuracy is a whopping 98%! However, the model only predicts "bad" outcome loans with an accuracy of about 9% - not necessarily admirable. We used a default threshold of 0.50 on the predicted probabilities and when to kick them into the good or bad bucket, however this unbalanced result does seem to indicate another look at the threshold is in order.
 
-# 6.0 - Balancing the threshold for better results
+# 6.0 - Balancing The Threshold For Better Results
 
 In the last section we noticed a pretty unbalanced accuracy between the good and bad outcomes. In this section we will explore the accuracy trade off between good and bad outcomes, and see if we can identify an optimal threshold value using a trade-off curve.
 
@@ -556,4 +557,101 @@ The black lines pinpoint this optimal value for threshold which occurs at 0.78, 
 * **Overall** Accuracy: 0.66
 * **Bad** Outcome Accuracy: 0.65
 * **Good** Outcome Accuracy: 0.66
+
+# 7.0 - Optmizing for Profit
+
+In this section we will explore the trade off between prediction threshold selection and loan profit. Similar to the previous section, we will calculate "profit" (defined as the total amount paid on the loan, minus the original loan amount) as a function of all possible threshold values between 0-1. Once profit is calculated for each threshold value, we will plot the curve and decide which threshold value maximizes profit returned. 
+
+## 7.1 - Calculating Maximum Profit
+
+To get us started, we will create a custom function that takes in both the predicted probabilities from the "test" holdout sample as well as a threshold value, and will return the calculated profit and the threshold value used. The function only focuses on those loans that the model *predicted* as having a "good" outcome per the given threshold, and predicted "bad" outcome loans are removed under the assumption those would be denied if the model was in production. Don't forget - there are some "bad" loans that the model *predicted* as "good", therefore the sum of all of these *predicted* "good" loans will include positive and negative profits. 
+
+```{r}
+calc_profit <- function(probabilties, threshold){
+  predGood = cut(probabilties, breaks=c(-Inf, threshold, Inf),labels=c("Bad", "Good"))
+  test_no_bad = test[which(predGood == "Good"),c("amount","totalPaid")]
+  test_no_bad$profit = round(test_no_bad$totalPaid - test_no_bad$amount,2)
+  return(list(threshold,sum(test_no_bad$profit)))
+}
+```
+
+Now we calculate the profit for each potential threshold value. The first six rows of the profit table are displayed below, along with the plotted profit curve:
+
+```{r,message=FALSE, echo=FALSE}
+  #create an empty dataframe of 2 columns
+profit_tradeoff = data.frame(matrix(ncol = 2, nrow = 0))
+  #populate the dataframe with profit calculations with threshold values ranging from 0.01 to 1.00.
+for (index in seq(0.00, 1.00, 0.01)){
+  profit_tradeoff = rbind(profit_tradeoff, calc_profit(predprob,index))
+}
+  #change column headers for ease of use later on.
+profit_tradeoff = setNames(profit_tradeoff, c("threshold", "profit"))
+  #look at the first 6 rows.
+head(profit_tradeoff)
+  #keeping things tidy
+rm(index)
+```
+```{r,message=FALSE, echo=FALSE, results='hide'}
+  #find profit and threshold of the observation with the highest profit. 
+profit_tradeoff$profit[which.max(profit_tradeoff$profit)]
+profit_tradeoff$threshold[which.max(profit_tradeoff$profit)]
+```
+
+```{r, echo=FALSE,fig.width = 5, fig.height = 3.5}
+  #create the line plot with accuracy as a function of the threshold, colored by the outcome in the dataframe. Add intercept lines. 
+gf_line(profit~threshold, data = profit_tradeoff, color = "dark green") %>%
+ gf_labs(x="Threshold", y="Profit (in $)", title= "Profit Curve") %>%
+  #hline @ $3,531,357
+ gf_hline(color = "black", yintercept = ~ profit[which.max(profit)]) %>%
+  #vline @ 0.69
+ gf_vline(color = "black", xintercept = ~ threshold[which.max(profit)])
+```
+
+The threshold that optimizes profit of the *predicted* "good" outcome loans is 0.69, with a total of about $3.5M.
+
+## 7.2 - Model vs. Current State - Comparision of Profits
+
+Now that we have determined the potential maximum profit when the model is in use and is "filtering" out the predicted bad loans, we can compute the ratio of profit between what the model produces vs. current state. In the code below, we again calculate the maximum profit produced by the model, and divide this by the same profit using the entire test data set (i.e. "current state"):
+
+```{r,message=FALSE, echo=FALSE}
+profit_with_model = profit_tradeoff$profit[which.max(profit_tradeoff$profit)]
+profit_without_model = sum(test$totalPaid-test$amount)
+profit_with_model/profit_without_model
+```
+
+This turns out to be about 3.8 times greater. When we multiply by 100, we get about a 380% increase in overall profit when the model is in production (optimized for profit) compared to the baseline - wow!
+
+Now we compare both the model's and baseline's profit number against a "perfect" model's (i.e. that could predict "bad" outcome loans with 100% accuracy) profit number - this would be considered our total theoretical profit:
+
+```{r}
+profit_perfect=sum(test$totalPaid[test$outcome=="Good"]-test$amount[test$outcome=="Good"]);print(profit_perfect)
+round(profit_with_model/profit_perfect,2)
+round(profit_without_model/profit_perfect,2)
+round(profit_with_model/profit_perfect-profit_without_model/profit_perfect,2)
+```
+
+In the code above, we calculate profit under the guise of the "perfect" model (filter out all the bad outcome loans in the test dataset) - this is about $11.7M. Next, we divide the previously calculated profit from both the model and the current state by this \$11.7M figure and we see that the model accounts for ~30% of the total theoretical profits, whereas the current state only accounts for ~8% of this theoretical profit. We can conclude that the use of the model increases profits by a whopping 22%!
+
+Finally, we compare optimal profits (represented by the purple line) vs. optimal accuracy (represented by the green line) to illustrate the trade off between the two:
+
+```{r, echo=FALSE}
+accuracy = gf_line(accuracy~threshold, data = accuracy_tradeoff, color = ~outcome) %>%
+ gf_vline(color = "purple", xintercept = ~ 0.69) %>% 
+ gf_vline(color = "Orange", xintercept = ~ 0.78) + theme(legend.position = "none")
+
+profits = gf_line(profit~threshold, data = profit_tradeoff, color = "dark green") %>%
+ gf_vline(color = "purple", xintercept = ~ 0.69) %>% 
+ gf_vline(color = "Orange", xintercept = ~ 0.78)
+
+ggarrange(profits, accuracy, ncol = 1, nrow = 2)
+```
+```{r}
+accuracy_tradeoff[which(accuracy_tradeoff$threshold=="0.69" | accuracy_tradeoff$threshold=="0.78"),]
+
+```
+
+TO-DO: need to compute the differences between these two thresholds and summarize the trade off in accuracies
+
+
+
 
