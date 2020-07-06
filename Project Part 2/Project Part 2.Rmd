@@ -461,7 +461,7 @@ round(addmargins(cTab)[5]/addmargins(cTab)[8],2)
 rm(cTab)
 ```
 
-Digging one step deeper on our accuracy measures, we look at both the accuracy of the "bad" outcome loans and the "good" outcome loans separately. For "good" outcome loans, the models accuracy is a whopping 98%! However, the model only predicts "bad" outcome loans with an accuracy of about 9% - not necessarily admirable. We used a default threshold of 0.50 on the predicted probabilities and when to kick them into the good or bad bucket, however this unbalanced result does seem to indicate another look at the threshold is in order.
+Digging one step deeper on our accuracy measures, we look at both the accuracy of the "bad" outcome loans and the "good" outcome loans separately. For "good" outcome loans, the models accuracy is a whopping 98%! However, the model only predicts "bad" outcome loans with an accuracy of about 9% - not necessarily admirable. We used a default threshold of 0.50 on the predicted probabilities for when to kick them into the good or bad bucket, however this unbalanced result does seem to indicate another look at the threshold is in order.
 
 # 6.0 - Balancing The Threshold For Better Results
 
@@ -514,7 +514,7 @@ calc_bad_accuracy <- function(probabilties, threshold){
 }
 ```
 
-An empty dataframe containing three columns is created, and a for-loop is used to populate the data frame for each value of a possible threshold setting from 0.01 to 1.00. Below are the first six rows:
+An empty "stacked" dataframe containing three columns is created, and a for-loop is used to populate the data frame for each value of a possible threshold setting from 0.01 to 1.00. Below are the first six rows:
 
 ```{r,message=FALSE, echo=FALSE}
   #create an empty dataframe of 3 columns
@@ -558,13 +558,17 @@ The black lines pinpoint this optimal value for threshold which occurs at 0.78, 
 * **Bad** Outcome Accuracy: 0.65
 * **Good** Outcome Accuracy: 0.66
 
+From a purely theoretical perspective it's important our model is as accurate as possible among all three categories. However, this might not be the most appropriate measure of performance per the business use case - in the next section we'll explore another way to look at model optimization.
+
 # 7.0 - Optmizing for Profit
 
-In this section we will explore the trade off between prediction threshold selection and loan profit. Similar to the previous section, we will calculate "profit" (defined as the total amount paid on the loan, minus the original loan amount) as a function of all possible threshold values between 0-1. Once profit is calculated for each threshold value, we will plot the curve and decide which threshold value maximizes profit returned. 
+In this section we will explore the trade off between prediction threshold selection and loan profit. Similar to the previous section with accuracies, we will calculate "profit" (defined as the total amount paid on the loan, minus the original loan amount) as a function of all possible threshold values between 0-1. Once profit is calculated at each threshold, we will plot the curve and decide which threshold value maximizes profit returned. We will also look at the trade off between this new optimization objective vs. the previous accuracy objective.
 
 ## 7.1 - Calculating Maximum Profit
 
-To get us started, we will create a custom function that takes in both the predicted probabilities from the "test" holdout sample as well as a threshold value, and will return the calculated profit and the threshold value used. The function only focuses on those loans that the model *predicted* as having a "good" outcome per the given threshold, and predicted "bad" outcome loans are removed under the assumption those would be denied if the model was in production. Don't forget - there are some "bad" loans that the model *predicted* as "good", therefore the sum of all of these *predicted* "good" loans will include positive and negative profits. 
+To get us started, we will create a custom function that uses the predicted probabilities from the "test" holdout sample as calculated in section 5.3. For each threshold value, it will return the calculated profit using that value. The function only focuses on those loans that the model *predicted* as having a "good" outcome per the given threshold, and predicted "bad" outcome loans are removed under the assumption those would be denied if the model was in production. 
+
+Don't forget - there are some "bad" loans that the model *predicted* as "good", therefore some of these *predicted* "good" loans will include "bad" loans that carry a negative difference.
 
 ```{r}
 calc_profit <- function(probabilties, threshold){
@@ -575,7 +579,7 @@ calc_profit <- function(probabilties, threshold){
 }
 ```
 
-Now we calculate the profit for each potential threshold value. The first six rows of the profit table are displayed below, along with the plotted profit curve:
+Now we calculate the profit for each threshold value. The first six rows of the this table are displayed below, along with the plotted profit curve:
 
 ```{r,message=FALSE, echo=FALSE}
   #create an empty dataframe of 2 columns
@@ -607,11 +611,11 @@ gf_line(profit~threshold, data = profit_tradeoff, color = "dark green") %>%
  gf_vline(color = "black", xintercept = ~ threshold[which.max(profit)])
 ```
 
-The threshold that optimizes profit of the *predicted* "good" outcome loans is 0.69, with a total of about $3.5M.
+As we did in the previous section, we identify the threshold that optimizes profit of the predicted "good" outcome loans using the black lines. This comes out to a threshold value of 0.69, with a total of amount of profit at ~$3.5M.
 
-## 7.2 - Model vs. Current State - Comparision of Profits
+## 7.2 - Model & Optimization Evaluation
 
-Now that we have determined the potential maximum profit when the model is in use and is "filtering" out the predicted bad loans, we can compute the ratio of profit between what the model produces vs. current state. In the code below, we again calculate the maximum profit produced by the model, and divide this by the same profit using the entire test data set (i.e. "current state"):
+Now that we have determined the potential maximum profit when the model is in use and is "filtering" out its predicted bad loans, we can compute the ratio of profit between what the model produces vs. current state (no model in use). We used the previously discovered maximum profit produced by the model (\$3.5M), and divide this by the profit of the entire test data set (i.e. "current state"):
 
 ```{r,message=FALSE, echo=FALSE}
 profit_with_model = profit_tradeoff$profit[which.max(profit_tradeoff$profit)]
@@ -619,39 +623,97 @@ profit_without_model = sum(test$totalPaid-test$amount)
 profit_with_model/profit_without_model
 ```
 
-This turns out to be about 3.8 times greater. When we multiply by 100, we get about a 380% increase in overall profit when the model is in production (optimized for profit) compared to the baseline - wow!
+We get about a 3.8 times greater profit (e.g. 380%) when the model is in production and optimized for profit compared to the baseline - wow!
 
-Now we compare both the model's and baseline's profit number against a "perfect" model's (i.e. that could predict "bad" outcome loans with 100% accuracy) profit number - this would be considered our total theoretical profit:
+To get a more holistic view of what the current state process and the model is capturing, we compare their profit's against a "perfect" model's (i.e. one that predicts "bad" outcome loans with 100% accuracy) profit - this comparision would be considered a ratio of our total theoretical profits:
 
-```{r}
+```{r,message=FALSE,results='hide'}
 profit_perfect=sum(test$totalPaid[test$outcome=="Good"]-test$amount[test$outcome=="Good"]);print(profit_perfect)
-round(profit_with_model/profit_perfect,2)
-round(profit_without_model/profit_perfect,2)
+round(profit_with_model/profit_perfect,2); round(profit_without_model/profit_perfect,2)
 round(profit_with_model/profit_perfect-profit_without_model/profit_perfect,2)
 ```
 
-In the code above, we calculate profit under the guise of the "perfect" model (filter out all the bad outcome loans in the test dataset) - this is about $11.7M. Next, we divide the previously calculated profit from both the model and the current state by this \$11.7M figure and we see that the model accounts for ~30% of the total theoretical profits, whereas the current state only accounts for ~8% of this theoretical profit. We can conclude that the use of the model increases profits by a whopping 22%!
+The code above results in a "perfect" model (filter out all the bad outcome loans in the test dataset) generating about $11.7M. Next, we divide the previously calculated profit from both the model and the current state by this \$11.7M figure and we see that the maximum profit model is producing about ~30% of the total theoretical profits, whereas the current state only accounts for ~8% of this theoretical profit. Thus, we can conclude that the use of the model, optimize for maximum profit, increases profits by a whopping 22% over the baseline!
 
-Finally, we compare optimal profits (represented by the purple line) vs. optimal accuracy (represented by the green line) to illustrate the trade off between the two:
+Finally, we compare optimizing for profits (represented by the purple line) vs. optimizing for accuracy (represented by the orange line) using the graphic below to illustrate the trade off between the two:
 
 ```{r, echo=FALSE}
+  #recreating the first plot of the optimization for profit. Adding threshold lines at max profit and max accuracy.
 accuracy = gf_line(accuracy~threshold, data = accuracy_tradeoff, color = ~outcome) %>%
  gf_vline(color = "purple", xintercept = ~ 0.69) %>% 
  gf_vline(color = "Orange", xintercept = ~ 0.78) + theme(legend.position = "none")
 
-profits = gf_line(profit~threshold, data = profit_tradeoff, color = "dark green") %>%
+  #recreating the first plot of the optimization for accuracy Adding threshold lines at max profit and max accuracy.
+profits = gf_line(profit~threshold, data = profit_tradeoff, color = "black") %>%
  gf_vline(color = "purple", xintercept = ~ 0.69) %>% 
  gf_vline(color = "Orange", xintercept = ~ 0.78)
 
+  #arrange the graphics in one column
 ggarrange(profits, accuracy, ncol = 1, nrow = 2)
 ```
-```{r}
-accuracy_tradeoff[which(accuracy_tradeoff$threshold=="0.69" | accuracy_tradeoff$threshold=="0.78"),]
 
+We can easily see that there is a difference in all three accuracies when maximizing for profit vs. accuracy. Below is a table with the numbers at these given threshold values:
+
+```{r,echo=FALSE,message=FALSE}
+  #show  accuracies of when to optimizing for profit and for accuracy.
+acc_profit = accuracy_tradeoff[which(accuracy_tradeoff$threshold=="0.69" | accuracy_tradeoff$threshold=="0.78"),]
+  #add column to display type and display
+acc_profit$objective = acc_profit$objective[1:3] = "profit"; acc_profit$objective[4:6] = "accuracy"; 
+  #add line color to the table
+acc_profit$line.color[acc_profit$outcome=="overall"] = "blue"
+acc_profit$line.color[acc_profit$outcome=="good"] = "green"
+acc_profit$line.color[acc_profit$outcome=="bad"] = "red"
+acc_profit$line.color[acc_profit$threshold=="0.69"] = "black"
+  #put accuracy first, then profit
+acc_profit[order(acc_profit$objective),]
 ```
 
-TO-DO: need to compute the differences between these two thresholds and summarize the trade off in accuracies
+```{r,echo=FALSE,message=FALSE,results='hide'}
+#When shifting from a model that is based on accuracy to a model that is based on profit:
+  #overall accuracy gain 9%
+0.75-0.66
+  #good accuracy gain 17%
+0.84-0.67
+  #bad accuracy loss -21%
+0.44-0.65
 
+profit_decrease=profit_tradeoff$profit[profit_tradeoff$threshold=="0.78"]-profit_tradeoff$profit[profit_tradeoff$threshold=="0.69"]
+profit_decrease
+profit_with_model+profit_decrease
+profit_decrease/profit_perfect
+```
 
+When shifting from a model that is optimized for accuracy in exchange for a model that is optimized on profit:
 
+- Our overall accuracy increases by 9%
+- Our "good" accuracy to predict good loans increased by 17%
+- Our "bad" accuracy to predict bad loans decreased by -21%
 
+Yet, if we trade off profit for accuracy and allow the threshold value to remain at 0.78, our model's maximum profit decreases by about -$576k to \$2.9M, which is equivalent to a decrease of about 5% of total theoretical profits (the model's profit in this mode accounts for about 25% of total theoretical profit, instead of 30% when it was designed for maximizing profit).
+
+# 8.0 - Summary & Conclusion
+
+In this study we took a look at building a logistic regression model to predict loan outcome ("good" or "bad") based on a maximum of 30 different variables. We parsed down this initial list of variables based on a couple guiding criteria - database identifiers and free form entry variables were removed, as well as ratio and calculated variables that were products of existing columns and added no additional information to the objective. We then explored the remaining variable's distributions and took appropriate action in either combining categorical values where applicable, or transforming skewed quantitative variables. Finally, we reviewed missing data conditions and imputed values where applicable. Those observations unable to be imputed were removed.
+
+Next we separated out the dataset into two sets of data - a training & testing dataset (80/20% respectively). This allows us to fit our model using the training data, and evaluate our model's ability on the test data. Then we began the step of model fitting: first we check for collinearity and remove variables that demonstrate collinearity until the VIF scores of remaining variables are agreeable (<10). We fit the model using a stepwise regression technique, allowing the algorithm to identify the "best" fitting model using AIC as the estimator. We then reviewed model summary and removed any remaining non-significant variables. 
+
+Finally, we put our model to the test data and check its performance by measuring its ability to predict the correct outcome - this is it's accuracy score. Next we optimize our model's "threshold" setting (e.g. the cutoff for "good" vs. "bad" outcomes) using two different objectives: one that identifies the maximum accuracy scores attainable vs. one that maximizes loan profit for the bank. We illustrate the trade off between optimization objectives both numerically with a comparison analysis, and visually with line graphs. The results of these analyses are listed in the charts below.
+
+**Accuracy Tradeoff by Optimization Objective**:
+
+| Objective | Overall | Good | Bad |
+| --- | :---: | :---: | :---: |
+| Accuracy   | 66% | 67%  | 65%  |
+| Profit     | 75% | 84%  | 44%  |
+| Difference | +9% | +17% | -21% |
+
+**Profit Tradeoff by Optimization Objective**:
+
+| Objective | Profit $ | %-of Max Theoretical |
+| --- | :---: | :---: | :---: |
+| Baseline  | 0.9M  |8%   |
+| Accuracy  | 2.9M  |25%  |
+| Profit    | 3.5M  |30%  |
+| "Perfect" | 11.7M |100% |
+
+Overall, we'd recommend the model that's optimized for accuracy vs. one that is geared toward profit. This provides an overall increase to profits against the baseline by about \$2.0M. The tradeoff against gearing toward profit is a difference of 5% of theoretical profits (~$0.6M) in exchange for a +21% accuracy increase in its ability to correctly predict "bad" outcome loans. We feel this is the more conservative, yet responsible decision to make as it is should prove more resilient to economic factors and unpredictable events where "bad" loans tend to increase. We are still seeing an ability to double profits with the deployment of the model into production!
