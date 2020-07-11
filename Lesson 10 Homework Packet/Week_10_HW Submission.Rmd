@@ -1,8 +1,8 @@
 
 ---
-title: 'Multiple Testing'
+title: "Multiple Testing"
 author: "Josh Jarvey"
-date: "07/09/2020
+date: "07/09/2020"
 output: word_document
 fontsize: 12pt
 ---
@@ -38,7 +38,7 @@ Using the p-values from above how many discoveries are made?  If the testing wer
 sum(P<0.05)
 ```
 
-If the tests were working perfectly, we would expect 100 discoveries made. 
+If the tests were working perfectly, we would expect 100 discoveries made. 900 from the mean 0 population would not be rejected, whereas the 100 rejections would be from the mean 3 population (since the null is mean=0)
 
 ---
 
@@ -49,23 +49,26 @@ If no correction (PCER) is made for multiple testing, then compute the Type I er
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #PCER - FALSE means reject null (a discovery)
+  #there is no correction to this P value of 0.05.
 test = P > 0.05
 test0 = test[1:T0]
 test1 = test[(T0+1):(T0+T1)]
+  #count the number TRUE and FALSE (i.e. discoveries) in each population: 40 in population 1, 89 in population 2 (now there are some type II errors occurring in the 2nd population sample)
 summary(test0)
 summary(test1)
 
 #type I error rate
 sum(test0==FALSE)/T0
 
-##type II error rate
+#type II error rate
 sum(test1==FALSE)/T1
 
-##False discovery rate (FDR)
+#False discovery rate (FDR)
 sum(test0==FALSE)/(sum(test0==FALSE)+sum(test1==FALSE))
 ```
 
-Replace text with answer.
+The type I error rate (~4%) is as expected per the P-value we set at the beginning of the code block of 0.05 (5%). This means we should expect type I error rate to be at or below this 5% threshold.
 
 ---
 
@@ -76,6 +79,8 @@ Now attempt to control the family-wise error rate (FWER) using Bonferroni correc
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #PCER - FALSE means reject null (a discovery)
+  #there is no correction to this P value of 0.05.
 btest = p.adjust(P,method = "bonf") > 0.05
 btest0 = btest[1:T0]
 btest1 = btest[(T0+1):(T0+T1)]
@@ -92,7 +97,7 @@ sum(btest1==FALSE)/T1
 sum(btest0==FALSE)/(sum(btest0==FALSE)+sum(btest1==FALSE))
 ```
 
-Replace text with answer.
+The bonferroni correction has accounted for all Type I errors with its extreme conservative approach (pvalue is much smaller to pass the test). However, this has lead to an overcompensation and increased the number of false discoveries in the second population with mean 3 - there are now 83 in the TRUE category.
 
 ---
 
@@ -119,7 +124,7 @@ sum(bhtest1==FALSE)/T1
 sum(bhtest0==FALSE)/(sum(bhtest0==FALSE)+sum(bhtest1==FALSE))
 ```
 
-There is no difference between the normal bonferroni and the bonferroni-holm method. 
+There is no difference between the normal bonferroni and the bonferroni-holm method (however i would reccomend the latter since it is more powerful than the plain bonferroni).
 
 ---
 
@@ -156,7 +161,7 @@ sum(fdrt1==FALSE)/T1
 sum(fdrt0==FALSE)/(sum(fdrt0==FALSE)+sum(fdrt1==FALSE))
 ```
 
-Replace text with answer.
+In this example with the Benjamin-Hochberg correction vs. the Bonferroni, we "trade" a few type I errors (0 to 3 in this example) for a reduction of type II errors (83 to 42 in this example). It does a nice job controlling our overall false discovery rate (FDR) by keeping it under the 5% specified (~4.9%)
 
 ---
 
@@ -166,7 +171,7 @@ A pharmaceutical company is doing preliminary hypothesis testing of hundreds of 
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 2 -|-|-|-|-|-|-|-|-|-|-|-
 
-Not correcting the p-value here would allow for too many type I errors (which would waste time), yet because this is exploratory, using a Bonferroni is too conservative and may cause too many type II errors (actually missing compounds that could be important) - so my final answer is going to be C) FDR! 
+Not correcting the p-value here would allow for too many type I errors (which would waste time), yet because this is exploratory, using a Bonferroni is too conservative and may cause too many type II errors (actually missing compounds that could be important) - so my final answer is going to be C) FDR, or the benjamin-hochberg correction! 
 
 ---
 
@@ -203,6 +208,7 @@ Make a boxplot of RPM~Type.  Is it reasonable to assume the RPM distributions ar
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3a -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #create a boxplot of the car RPM by type.
 boxplot(RPM~Type, data = Cars93, xlab = "Car Type", main = "Distribution of RPM by vehicle type")
 ```
 
@@ -240,7 +246,7 @@ Repeat 3b, but this time use Bonferroni correction.
 with(Cars93, pairwise.t.test(RPM,Type, p.adjust.method = "bonf", pool.sd = TRUE)$p.value) < 0.05
 ```
 
-There are 4 significant differences out of 10 possible pairs, but Type I errors are now less than 0.05 because the Bonferonni correction method was applied to the p-values. Mean RPM for vehicle type "Lg" is significantly different than for "Cm", "Md", "Sm", "Sp". 
+There are 4 significant differences out of 10 possible pairs, but Type I errors are now, on average, 5% or less because the Bonferonni correction method was applied to the p-values. Mean RPM for vehicle type "Lg" is significantly different than for "Cm", "Md", "Sm", "Sp". 
 
 ---
 
@@ -289,7 +295,7 @@ Simultaneous confidence intervals increase the width of the individual intervals
 
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3f  -|-|-|-|-|-|-|-|-|-|-|-
 
-The Tukey-Kramer has tighter confidence intervals when compared to the Bonferroni corrected CI's, therefore I would suggest the Tukey-Kramer since it has more accuracy in identifying the range for the true difference in population means. 
+The Tukey-Kramer has tighter confidence intervals when compared to the Bonferroni corrected CI's, therefore I would suggest the Tukey-Kramer since it has more accuracy (not as conservative with guarding against the Type I error) in identifying the range for the true difference in population means. 
 
 ---
 
@@ -300,6 +306,7 @@ Even when you're using a parametric procedure (one that assumes normality for in
 ### -|-|-|-|-|-|-|-|-|-|-|- Answer 3g -|-|-|-|-|-|-|-|-|-|-|-
 
 ```{r}
+  #using onewaycomp() to conduct a bootstrapped Tukey-Kramer test (adjust=one.step)
 onewayComp(RPM~Type,data = Cars93,var.equal = TRUE,adjust = "one.step", nboot = 10000)$comp[,c(2,3,6,7)]
 ```
 
