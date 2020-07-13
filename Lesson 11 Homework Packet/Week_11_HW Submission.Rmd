@@ -1,0 +1,204 @@
+
+---
+title: 'Dimension Reduction - PCA and Exploratory Factor Analysis'
+author: "Josh Jarvey"
+date: "07/13/2020"
+output: word_document
+fontsize: 12pt
+---
+
+Create a Word document from this R Markdown file for the following exercises.  Submit the R markdown file and resulting Word document.   
+
+## Exercise 1
+
+A researcher was interested in learning what motivates international fans when they watch U.S. sports.  A questionnaire was created in which respondents reported their score for 42 "importance factors" about fan motivation by circling the number that indicates why they watch, read, and/or discuss U.S. sports (5=Very High, 4=High, 3=Average, 2=Low, 1=Very Low).   
+
+The fans were categorized on issues such as gender, interest in U.S. sports, and the media source from which their information comes.  Four hundred surveys were completed for the study.
+
+The data is in the file ifanmot.rda and the survey is in the file IFM_Survey.docx.
+
+### Part 1a
+
+Conduct Bartlett's test for sphericity on the responses for the 42 survey questions found in columns 1 through 42 of the file ifanmot.rda.  State the null and alternative hypothesis and report on the results.  Note, in the R function, n represents the sample size of the data that was used to create the correlation/covariance matrix.
+
+Is factor analysis warranted based on this measure?
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1a -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+  #loading the necessary packages, and the dataset
+library(DS705data)
+library(psych)
+data("ifanmot")
+
+  #create a correlation matrix of all 42 survey questions among each other
+matx = cor(ifanmot[1:42])
+  #complete a bartlett test to see if the correlation matrix is "spherical", which tests if the matrix is the identity matrix
+cortest.bartlett(matx,n=400)
+```
+
+H_0 = The correlation matrix is the identity matrix
+H_a = The correlation matrix is not the identity matrix
+
+Conclusion: At the 5% level of significance, there is enough evidence to suggest that the correlation matrix is not the identity matrix (p-value=0). We can continue with our factor analysis. 
+
+### Part 1b
+
+Compute the Kaiser-Meyer-Olkin (KMO) Measure of Sampling Adequacy (MSA) for the responses for the 42 survey questions found in columns 1 through 42 of the file ifanmot.rda.  
+
+Is the overall MSA value acceptable for factor analysis?
+
+Should any questionnaire items be dropped from the factor analysis because of low MSA values?  If so which ones?
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1b -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+  #complete the KMO factor adequacy check - those variables that are lower than 0.50 should be removed. There are none in this example.
+  #note: capital K M O (lower case does not work)
+KMO(matx)
+```
+
+The overall MSA is "superb" with a score of 0.93. Additionally, there are no variables that should be dropped from this factor analysis, using the 0.50 value as a cut off threshold (those that would be below 0.50 would indicate they could be dropped and stand on their own).
+
+### Part 1c  
+
+Use R to create a scree plot for the questionnaire items that you deemed to be appropriate for the factor analysis from the previous question.  Use the scree plot to answer the questions below.  (You may need to print the eigenvalues using code like *output$sdev^2* to see which ones are over 1) 
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1c -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+  #complete a principal component analysis using all 42 questions to get the eigenvalues. 
+output = princomp(ifanmot[,1:42], cor = TRUE)
+  #create the scree plot using the output from the above step. Where the line starts to flatten out, this is the number of factors to consider.
+plot(output, type = "lines")
+  #kaiser's rule is the dotted line, but this dataset has >30 variables, so we will focus on the knee of the scree plot to determine factors, 3
+abline(h=1, lty=2)
+
+  #extract the eigen values from the $sdev vector. Check for those that are greater than 1 (kaiser's rule) - there are 9.
+print(sum((output$sdev^2)>1))
+
+```
+
+##### Where would you say the "knee" is in the scree plot?  
+
+The "knee" of the scree plot begins at the 3rd factor, as the line begins to "straighten out" after that (slopes are minimal).
+
+##### How many factors does the knee in the scree plot suggest extracting?
+
+The knee in the scree plot suggests 3 factors to explore.
+
+##### How many components have eigenvalues (aka variances, latent roots) greater than 1?
+
+There are 9 components that have an eigenvalue greater than 1. 
+
+##### How many factors does this suggest extracting?
+
+If we were to follow Kaiser's rule, then this would suggest 9 factors to be extracted.
+
+##### Is the Kaiser Rule (eigenvalues >1) recommended for this data set?  Explain.
+
+We will not use Kaiser's Rule because there are greater than 30 variables in this data set. 
+
+### Part 1d
+
+Use a principal components extraction with the varimax rotation to extract 3 factors.  Print the output with factor loadings under 0.5 suppressed and sort the loadings.  (Note - in the video the columns were labeled PC1, PC2, etc., but the newer version of principal() uses RC1, RC2, etc.)
+
+Answer the questions below.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1d -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+  #extract the factors using the principal() function from the psych package
+  #per the above steps, we identified 3 factors we'd like to extract. We'll use varimax rotation as well.
+fa.out = principal(ifanmot[,1:42],nfactors = 3,rotate = "varimax")
+  #print.psych() gives more relevant ouput. We want to see all the variables and what their factor scores are.
+  #cut off the ones below 0.50 (since they are not strong enough), and sort them.
+print.psych(fa.out, cut=0.50, sort = TRUE)
+
+```
+
+##### What is the cumulative variance explained (as a percent)?  
+
+The cumulative variance explained is determined by adding up each's factors "proportion var". This then displayed in the last factor's "cumulative var" column, which in this example is 0.48 - or 48%.
+
+##### Is this considered an acceptable percent of total variation?
+
+This would not be considered an acceptable percent of total variation since we use a 60% cutoff. 
+
+### Part 1e
+
+Use a principal components extraction with the varimax rotation to extract 9 factors.  Print the output with factor loadings under 0.5 suppressed and sort the loadings.
+
+Answer the questions below.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1e -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+  #extract the factors using the principal() function from the psych package
+  #per the above steps, we identified 9 factors we'd like to extract. We'll use varimax rotation as well.
+fa.out2 = principal(ifanmot[,1:42],nfactors = 9,rotate = "varimax")
+  #print.psych() gives more relevant ouput. We want to see all the variables and what their factor scores are.
+  #cut off the ones below 0.50 (since they are not strong enough), and sort them.
+print.psych(fa.out2,cut=0.50, sort = TRUE)
+
+```
+
+##### What is the cumulative variance explained (as a percent)?  
+
+When implementing Kaiser's Rule and using 9 factors, the cumulative variance explained is now 0.67 - or 67%.
+
+##### Is this considered an acceptable percent of total variation?
+
+Now that we have a cumulative variance explained that is above 60%, we have an acceptable number of factors extracted. 
+
+### Part 1f
+
+Read the questions in the survey (IFM Survey.docx) for the groups of items that load onto each factor and put a comprehensive label on each of the 9 factors from the most recent factor analysis (extracting 9 factors with principal components and a varimax rotation).
+
+For consistency assign the following 9 labels to the most appropriate factors:
+
+**Artistic, Boredom, Entertainment, Fun, Gambling, Identification, Loyalty, Patriotism, Social**
+
+Factors 1 through 9 move from left to right in the sorted output (even though the columns labels PC1-PC9 in the output are not in order). 
+
+I have labeled the second factor (labeled PC9 in the R output) for you as "Social". Look at the survey items that correspond to the second factor (Q11, Q14, Q18, Q19, Q20, and Q35) and see if that label makes sense.
+
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1f -|-|-|-|-|-|-|-|-|-|-|-
+
+Factor 1: Fun
+
+Factor 2: Social
+
+Factor 3: Identification
+
+Factor 4: Patriotism
+
+Factor 5: Artistic
+
+Factor 6: Loyalty
+
+Factor 7: Gambling
+
+Factor 8: Entertainment
+
+Factor 9: Boredom
+
+### Part 1g
+    
+Combine the factor scores produced by the 9-factor solution with the original data frame.  Also, rename the factor scores using the labels you assigned previously.  Some R code to begin this has been provided.  Add to it to complete this request.
+    
+### -|-|-|-|-|-|-|-|-|-|-|- Answer 1g -|-|-|-|-|-|-|-|-|-|-|-
+
+```{r}
+require(psych)
+require(DS705data)
+data(ifanmot)
+fan <- principal(ifanmot[,1:42],nfactors=9,rotate="varimax")
+fulldata <- cbind(ifanmot,fan$scores)
+require(plyr)
+fulldata <- rename(fulldata,c("RC1"="Fun","RC9"="Social","RC5"="Identification","RC3"="Patriotism","RC4"="Artistic","RC7"="Loyalty","RC2"="Gambling","RC6"="Entertainment","RC8"="Boredom"))  # REPLACE the ? with your factor labels
+
+head(fulldata[,43:54])
+```
+
+
