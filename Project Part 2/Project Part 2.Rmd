@@ -338,7 +338,7 @@ In this part, we will begin the steps of building our logistic regression model 
 
 ## 5.1 Train/Test Data Split
 
-Before we build our model, we will split our single data frame into two distinct data frames - one that will be used to fit (i.e. train) the model, and the other that will be used to test the model's accuracy. 
+Before we build our model, we will split our single data frame into two distinct, random, data frames - one that will be used to fit (i.e. train) the model at 80% of the original dataset, and the other that will be used to test the model's accuracy with the remaining 20% of the data. This technique of cross-validation helps to curtail issues with model overfitting/underfitting.
 
 ```{r,message=FALSE, echo=FALSE,include=FALSE}
 set.seed(123)
@@ -356,7 +356,7 @@ rm(training_data)
 
 ## 5.2 Model Building and Variable Selection
 
-Next we check for collinearity among variables, and remove the variable that has the highest "VIF" score above 10 using the vif() function from the "car" package. After we remove the variable we rebuild the model and check VIF scores again, removing the next highest VIF score above 10. This process is repeated until there are no more variables above 10.
+Now that we have our datasets separated, we can begin the process of fitting the model. First, we check for collinearity among variables, and remove the variable that has the highest "VIF" score above 10 using the vif() function from the "car" package. After we remove the variable we rebuild the model and check VIF scores again, removing the next highest VIF score above 10. This process is repeated until there are no more variables above 10.
 
 ```{r,message=FALSE, echo=TRUE, results='hide'}
 fullmodel = glm(outcome~., data = train, family = "binomial")
@@ -377,7 +377,7 @@ fullmodel = glm(outcome~., data = subset(train, select = -c(totalBal, amount, to
 vif(fullmodel) #there are no other VIF score > 10, so proceed.
 ```
 
-Now we build the model using a stepwise technique with the forward direction. This technique starts with a null (i.e. blank) model and is bounded in potential variables by the full model we discovered in the previous step. With each iteration, the algorithm assesses how adding one variable to the null model from the full model will affect the AIC score of the null model. Each variable is considered and tested within the iteration, and the variable that decreases AIC the most is the one that is selected and added to the model. This process continues until the algorithm detects that adding any of the remaining variables would increase the AIC score, which indicates the process has reached its "best" version of the model it can find. 
+After removing features for collinearity, we build the model using a stepwise technique with the forward direction. This technique starts with a null (i.e. blank) model and is bounded in potential variables by the full model we discovered in the previous step. With each iteration, the algorithm assesses how adding one variable to the null model from the full model will affect the AIC score of the null model. Each variable is considered and tested within the iteration, and the variable that decreases AIC the most is the one that is selected and added to the model. This process continues until the algorithm detects that adding any of the remaining variables would increase the AIC score, which indicates the process has reached its "best" version of the model it can find. 
 
 ```{r,message=FALSE, results='hide'}
 nullmodel = glm(outcome~1, data = train, family = "binomial")
@@ -385,7 +385,7 @@ nullmodel = glm(outcome~1, data = train, family = "binomial")
 step(nullmodel, scope = list(lower = nullmodel, upper = fullmodel), direction = "forward")
 ```
 
-The model that the process has identified as the "best" model is listed: outcome ~ grade + term + accOpen24 + home + income + payment + bcOpen + delinq2yr + avgBal + totalIlLim + rate + totalRevLim + totalRevBal + inq6mth.
+The model that the process has identified as the "best" model is listed: **outcome ~ grade + term + accOpen24 + home + income + payment + bcOpen + delinq2yr + avgBal + totalIlLim + rate + totalRevLim + totalRevBal + inq6mth**.
 
 We look at the model summary and check variable significance. TotalIlLim and inq6mth does not appear to be significant, therefore we will remove it from our model.
 
@@ -414,9 +414,9 @@ rm(nullmodel,fullmodel)
 
 ## 5.3 Model Evaluation
 
-Now that we've decided on a final model, we'll assess its accuracy on correctly predicting loan outcome on the training dataset. 
+Now that we've decided on a final model, we'll assess its accuracy on correctly predicting loan outcome using the training dataset. 
 
-The table below shows the actual loan outcomes in the row labels, whereas the column labels represent the model's prediction on outcome. The square Where the row label and column label match is considered a "correct" prediction for our model, and is counted in our numerator for the accuracy calculation. Mismatching labels show where the model "incorrectly" predicted the outcome. For example, there were 5101 loans that the model predicted as having a "good" outcome, however those loans were actually marked as having a "bad" outcome.
+The table below shows the actual loan outcomes in the row labels, whereas the column labels represent the model's prediction on outcome. The square where the row label and column label match is considered a "correct" prediction for our model, and is counted in our numerator for the accuracy calculation. Mismatching labels show where the model "incorrectly" predicted the outcome. For example, there were 5101 loans that the model predicted as having a "good" outcome, however those loans were truly "bad" outcome loans.
 ```{r, echo=FALSE}
 predprob = fitted(model) # get predicted probabilities
 
@@ -432,7 +432,7 @@ print(paste('Proportion correctly predicted = ', round(p,2)))
 
 ```
 
-To calculate accuracy, we take the sum of the correctly predicted observations and divide it by the total number of observations. In this case (506 + 20271)/26265 = 0.79, or 79% accurate.
+To calculate overall accuracy, we take the sum of the correctly predicted observations and divide it by the total number of observations. In this case (506 + 20271)/26265 = 0.79, or 79% accurate.
 
 We complete this same process with the holdout testing sample, and determine the model performs almost as accurate on previously "unseen" data - 0.78, or 78% accurate. 
 
@@ -461,9 +461,9 @@ round(addmargins(cTab)[5]/addmargins(cTab)[8],2)
 rm(cTab)
 ```
 
-Digging one step deeper on our accuracy measures, we look at both the accuracy of the "bad" outcome loans and the "good" outcome loans separately. For "good" outcome loans, the models accuracy is a whopping 98%! However, the model only predicts "bad" outcome loans with an accuracy of about 9% - not necessarily admirable. We used a default threshold of 0.50 on the predicted probabilities for when to kick them into the good or bad bucket, however this unbalanced result does seem to indicate another look at the threshold is in order.
+Digging one step deeper on our accuracy measures, we look at both the accuracy of the "bad" outcome loans and the "good" outcome loans separately. For "good" outcome loans, the models accuracy is a whopping 98%! However, the model only predicts "bad" outcome loans with an accuracy of about 9% - not necessarily admirable. We used a default threshold of 0.50 on the predicted probabilities for when to kick them into the good or bad bucket, however this unbalanced result does seem to indicate another look at the model's probability threshold is in order.
 
-# 6.0 - Balancing The Threshold For Better Results
+# 6.0 - Balancing The Threshold For Maximum Accuracy
 
 In the last section we noticed a pretty unbalanced accuracy between the good and bad outcomes. In this section we will explore the accuracy trade off between good and bad outcomes, and see if we can identify an optimal threshold value using a trade-off curve.
 
@@ -472,11 +472,9 @@ To get started, we create a custom function that repurposes the code used to bui
 ```{r}
 calc_overall_accuracy <- function(probabilties, threshold){
   predGood = cut(probabilties, breaks=c(-Inf, threshold, Inf),labels=c("Bad", "Good"))
-  
   cTab = table(test$outcome, predGood) 
   addmargins(cTab)
   overall_acc = round(sum(diag(cTab))/sum(cTab),2)
-  
   return(list(threshold,overall_acc,"overall"))
 }
 ```
@@ -514,7 +512,7 @@ calc_bad_accuracy <- function(probabilties, threshold){
 }
 ```
 
-An empty "stacked" dataframe containing three columns is created, and a for-loop is used to populate the data frame for each value of a possible threshold setting from 0.01 to 1.00. Below are the first six rows:
+An empty "stacked" dataframe containing three columns is created, and a for-loop is used to populate the data frame for each value of a possible threshold setting from 0.00 to 1.00 in 0.01 increments. Below are the first six rows:
 
 ```{r,message=FALSE, echo=FALSE}
   #create an empty dataframe of 3 columns
@@ -533,7 +531,7 @@ head(accuracy_tradeoff)
 rm(index)
 ```
 
-Now we can plot the resulting dataframe onto a single line plot. With threshold along the x-axis, each variable's accuracy value is plotted along the y-axis and given a unique color. Where the lines intercept, this is our optimal selection of the threshold value for the accuracy measure.
+We can plot the resulting dataframe onto a single line plot. With threshold along the x-axis, each variable's accuracy value is plotted along the y-axis and given a unique color. Where the lines intercept, this is our optimal selection of the threshold value for the accuracy measure.
 
 ```{r, echo=FALSE,fig.width = 6, fig.height = 4}
   #pull out good/bad accuracies into their own dataframe this will be used to set the black vertical and horizontal lines, which pinpoint the optimal threshold value. 
@@ -554,21 +552,21 @@ rm(bad,good)
 
 The black lines pinpoint this optimal value for threshold which occurs at 0.78, with the corresponding accuracies as follows:
 
-* **Overall** Accuracy: 0.66
-* **Bad** Outcome Accuracy: 0.65
-* **Good** Outcome Accuracy: 0.66
+* *Overall* Accuracy: 0.66
+* *Bad Outcome* Accuracy: 0.65
+* *Good Outcome* Accuracy: 0.66
 
 From a purely theoretical perspective it's important our model is as accurate as possible among all three categories. However, this might not be the most appropriate measure of performance per the business use case - in the next section we'll explore another way to look at model optimization.
 
 # 7.0 - Optmizing for Profit
 
-In this section we will explore the trade off between prediction threshold selection and loan profit. Similar to the previous section with accuracies, we will calculate "profit" (defined as the total amount paid on the loan, minus the original loan amount) as a function of all possible threshold values between 0-1. Once profit is calculated at each threshold, we will plot the curve and decide which threshold value maximizes profit returned. We will also look at the trade off between this new optimization objective vs. the previous accuracy objective.
+In this section we will explore the trade off between prediction threshold selection and loan profit. Similar to the previous section with accuracies, we will calculate "profit" (defined as the total amount paid on the loan, minus the original loan amount) as a function of all possible threshold values between 0.00-1.00. Once profit is calculated at each threshold, we will plot the curve and decide which threshold value maximizes profit returned. We will also look at the trade off between this new optimization objective vs. the previous accuracy objective.
 
 ## 7.1 - Calculating Maximum Profit
 
 To get us started, we will create a custom function that uses the predicted probabilities from the "test" holdout sample as calculated in section 5.3. For each threshold value, it will return the calculated profit using that value. The function only focuses on those loans that the model *predicted* as having a "good" outcome per the given threshold, and predicted "bad" outcome loans are removed under the assumption those would be denied if the model was in production. 
 
-Don't forget - there are some "bad" loans that the model *predicted* as "good", therefore some of these *predicted* "good" loans will include "bad" loans that carry a negative difference.
+Don't forget - there are some truly "bad" loans that the model *predicted* as "good", which of course will lower the total profit as they calculated for each threshold. 
 
 ```{r}
 calc_profit <- function(probabilties, threshold){
@@ -611,11 +609,11 @@ gf_line(profit~threshold, data = profit_tradeoff, color = "dark green") %>%
  gf_vline(color = "black", xintercept = ~ threshold[which.max(profit)])
 ```
 
-As we did in the previous section, we identify the threshold that optimizes profit of the predicted "good" outcome loans using the black lines. This comes out to a threshold value of 0.69, with a total of amount of profit at ~$3.5M.
+As we did in the previous section, we identify the threshold that maximizes profit of the *predicted* "good" outcome loans using the black lines - a threshold of 0.69, with a total of amount of profit at ~$3.5M.
 
 ## 7.2 - Model & Optimization Evaluation
 
-Now that we have determined the potential maximum profit when the model is in use and is "filtering" out its predicted bad loans, we can compute the ratio of profit between what the model produces vs. current state (no model in use). We used the previously discovered maximum profit produced by the model (\$3.5M), and divide this by the profit of the entire test data set (i.e. "current state"):
+Now that we have determined the potential maximum profit when the model is in use and is "filtering" out its predicted bad loans, we can compute the ratio of profit between what the model produces vs. current state (no model in use). We used the \$3.5M calculated in the previous step, and divide this by the profit of the entire test data set (i.e. "current state"):
 
 ```{r,message=FALSE, echo=FALSE}
 profit_with_model = profit_tradeoff$profit[which.max(profit_tradeoff$profit)]
@@ -623,9 +621,9 @@ profit_without_model = sum(test$totalPaid-test$amount)
 profit_with_model/profit_without_model
 ```
 
-We get about a 3.8 times greater profit (e.g. 380%) when the model is in production and optimized for profit compared to the baseline - wow!
+We get about a 3.8 times *greater* profit (e.g. 380%) when the model is in production and optimized for profit compared to the baseline - wow!
 
-To get a more holistic view of what the current state process and the model is capturing, we compare their profit's against a "perfect" model's (i.e. one that predicts "bad" outcome loans with 100% accuracy) profit - this comparision would be considered a ratio of our total theoretical profits:
+To get a more holistic view of what the current state process and the model is capturing, we compare their profit's against a "perfect" model's (i.e. one that predicts "bad" outcome loans with 100% accuracy) profit - this comparison would be considered a ratio of our total theoretical profits:
 
 ```{r,message=FALSE,results='hide'}
 profit_perfect=sum(test$totalPaid[test$outcome=="Good"]-test$amount[test$outcome=="Good"]);print(profit_perfect)
@@ -660,10 +658,10 @@ acc_profit = accuracy_tradeoff[which(accuracy_tradeoff$threshold=="0.69" | accur
   #add column to display type and display
 acc_profit$objective = acc_profit$objective[1:3] = "profit"; acc_profit$objective[4:6] = "accuracy"; 
   #add line color to the table
-acc_profit$line.color[acc_profit$outcome=="overall"] = "blue"
-acc_profit$line.color[acc_profit$outcome=="good"] = "green"
-acc_profit$line.color[acc_profit$outcome=="bad"] = "red"
-acc_profit$line.color[acc_profit$threshold=="0.69"] = "black"
+acc_profit$curve.color[acc_profit$outcome=="overall"] = "blue"
+acc_profit$curve.color[acc_profit$outcome=="good"] = "green"
+acc_profit$curve.color[acc_profit$outcome=="bad"] = "red"
+acc_profit$curve.color[acc_profit$threshold=="0.69"] = "black"
   #put accuracy first, then profit
 acc_profit[order(acc_profit$objective),]
 ```
@@ -686,8 +684,8 @@ profit_decrease/profit_perfect
 When shifting from a model that is optimized for accuracy in exchange for a model that is optimized on profit:
 
 - Our overall accuracy increases by 9%
-- Our "good" accuracy to predict good loans increased by 17%
-- Our "bad" accuracy to predict bad loans decreased by -21%
+- Our accuracy to predict "good" loans increased by 17%
+- Our accuracy to predict "bad" loans decreased by -21%
 
 Yet, if we trade off profit for accuracy and allow the threshold value to remain at 0.78, our model's maximum profit decreases by about -$576k to \$2.9M, which is equivalent to a decrease of about 5% of total theoretical profits (the model's profit in this mode accounts for about 25% of total theoretical profit, instead of 30% when it was designed for maximizing profit).
 
