@@ -1,0 +1,204 @@
+
+---
+title: "Final Exam"
+author: "DS 705"
+output:
+  word_document: default
+  pdf_document: default
+fontsize: 12pt
+---
+
+Unlike the Homework RMD files, this one doesn't contain all of the questions.  Rather we want you to read the questions on D2L and use this RMD file to record your R code that you used to answer each question.  This file must knit correctly.  After you submit the D2L quiz, then upload this RMD file and the knitted version of this file to the Final Exam dropbox on D2L.
+
+## Questions 1-16
+
+You do not need to submit any work with these questions.  Just answer them in D2L.
+
+## Problem 1 - Questions 17-21
+
+You're going to analyze the data in BirdPecks.rda and answer the questions in D2l.  Put all of your R in the chunk below:
+
+```{r}
+  #load in the dataset
+library(DS705data)
+data("BirdPecks")
+
+  #create a boxplot of the number of pecks by feed group.
+boxplot(pecks~group,data = BirdPecks, main = "Distribution of Chicken Pecks between Low Sodium and Regular Feed")
+  #pull out the vector of pecks for low sodium feed
+group1 = BirdPecks$pecks[BirdPecks$group==1]
+  #pull out the vector of pecks for normal feed
+group2 = BirdPecks$pecks[BirdPecks$group==2]
+  #create a histogram of the chickens with low sodium feed
+hist(group1, main = "Distribution of Chicken Pecks - Normal Feed", xlab = "Number of Pecks", ylab = "Count of Chickens")
+  #create a histogram of the chickens with normal feed
+hist(group2, main = "Distribution of Chicken Pecks - Low Sodium Feed", xlab = "Number of Pecks", ylab = "Count of Chickens")
+
+  #test for normality in the low sodium feed
+shapiro.test(group1)
+  #test for normality in the normal feed
+shapiro.test(group2)
+
+  #complete a test with intervals for shift in median pecks between low sodium feed and normal feed - 90% confidence level 
+wilcox.test(group1,group2, data = BirdPecks,conf.level = 0.90, conf.int = TRUE)
+
+  #keeping things tidy
+rm(group1, group2)
+```
+
+---
+
+## Problem 2 - Questions 22-26
+
+Analyze StrengthSpeed.rda and put your R below:
+
+```{r}
+  #load in the dataset
+library(DS705data)
+data("StrengthSpeed")
+  #calculating the difference between sprint times after the regiment, minus sprint times before regiment
+  #note: if the difference in speeds is NEGATIVE, then this means they performed the sprint faster.
+difference = StrengthSpeed$after - StrengthSpeed$before
+
+  #visually inspect the boxplot and histogram of the difference in sprint times - these normal normally distributed
+boxplot(difference)
+hist(difference)
+  #generating a qqplot
+qqnorm(difference)
+qqline(difference)
+
+  #test for normality, cannot reject the null
+shapiro.test(difference)
+
+  #after reviewing the conditions - we will use the paired t-test
+  #we test that the after speed is less than the before speed (i.e. they've improved their sprint times)
+t.test(StrengthSpeed$after,StrengthSpeed$before, alternative = "less", paired = TRUE)
+
+  #keeping things tidy
+rm(difference)
+```
+
+---
+
+## Problem 3 - Questions 27-36
+
+Analyze GroupHLT scores and put your R here:
+
+```{r}
+  #storing the HLT score data into vectors
+win = c(79, 76, 74, 70, 81, 85, 73, 78, 69, 72, 83, 89, 72, 79, 75)
+lose = c(78, 96, 85, 91, 77,103, 72, 93, 98, 86, 70, 110, 70, 91, 99)
+
+  #creating a boxplot of HLT scores for win vs. lose
+boxplot(win, lose, main = "HLT score distribution post football match", xlab="Win vs. Lose", ylab="HLT Score")
+  #creating histograms of both win and lose
+hist(win, main = "Distribution of HLT score - Win", xlab = "HLT Score")
+hist(lose, main = "Distribution of HLT score - Lose", xlab = "HLT Score")
+  #generating a qqplot
+qqnorm(win)
+qqline(win)
+qqnorm(lose)
+qqline(lose)
+  #testing HLT score normality for win and lose. 
+shapiro.test(win)
+shapiro.test(lose)
+
+  #complete the t.test to test if there is a difference in HLT scores between the win vs. lost population
+t.test(win,lose,alternative = "two.sided")
+  
+  #generate a confidence interval for the lose population. 
+t.test(lose, conf.level = 0.95)$conf.int
+
+  #load the bootstrap package
+library(boot)
+  #create the auxiliary function to calculate the mean of the resamples.
+bootMean <- function(x,i){
+  return(mean(x[i]))
+}
+  #set seed for reproducability
+set.seed(123)
+  #complete 10000 bootstraps to create my sampling distribution for my parameter of interest (population mean for the "lose" group).
+boot.object = boot(lose, bootMean, R=10000)
+  #calculate the bca confidence interval
+boot.ci(boot.object, conf = 0.95, type = "bca")
+
+  #keeping things tidy
+rm(lose, win, bootMean)
+
+```
+
+---
+
+## Problem 4 - Questions 37-41
+
+Analyze the data in treadware.rda and put your R here:
+
+```{r}
+
+```
+
+---
+
+## Problem 5 - Questions 42-59
+
+Analyze the data in diamond.rda and include your R here:
+
+```{r}
+
+```
+
+---
+
+## Problem 6 - Questions 60- 66
+
+Analyze the data in Shells.rda and include your R here:
+
+```{r}
+
+```
+
+---
+
+## Problem 7 - Questions 67-70
+
+Analyze the "Primary News Source for Americans" data described in the problem statement.  Put your R below:
+
+```{r}
+
+```
+
+---
+
+## Problem 8 - Questions 71-75
+
+Analyze the data in cheese.rda and put your R below:
+
+```{r}
+
+```
+
+---
+
+## Problem 9 - Questions 76-90
+
+Analyze the data in careerbarrier.rda and put your R below:
+
+```{r}
+
+```
+
+---
+
+## Problem 10 - Questions 91-98
+
+Analyze the data on seat postion vs. nausea described in the problem.  Put your R below:
+
+```{r}
+
+```
+
+---
+
+## Question 99
+
+Make sure both this RMD and the resulting knitted Word document are uploaded to the Dropbox "Final Exam R Code."

@@ -359,8 +359,7 @@ rm(training_data)
 Now that we have our datasets separated, we can begin the process of fitting the model. First, we check for collinearity among variables, and remove the variable that has the highest "VIF" score above 10 using the vif() function from the "car" package. After we remove the variable we rebuild the model and check VIF scores again, removing the next highest VIF score above 10. This process is repeated until there are no more variables above 10.
 
 ```{r,message=FALSE, echo=TRUE, results='hide'}
-fullmodel = glm(outcome~., data = train, family = "binomial")
-vif(fullmodel)
+fullmodel = glm(outcome~., data = train, family = "binomial"); vif(fullmodel)
 ```
 
 ```{r,message=FALSE, echo=FALSE, results='hide'}
@@ -381,7 +380,6 @@ After removing features for collinearity, we build the model using a stepwise te
 
 ```{r,message=FALSE, results='hide'}
 nullmodel = glm(outcome~1, data = train, family = "binomial")
-
 step(nullmodel, scope = list(lower = nullmodel, upper = fullmodel), direction = "forward")
 ```
 
@@ -471,10 +469,9 @@ To get started, we create a custom function that repurposes the code used to bui
 
 ```{r}
 calc_overall_accuracy <- function(probabilties, threshold){
-  predGood = cut(probabilties, breaks=c(-Inf, threshold, Inf),labels=c("Bad", "Good"))
-  cTab = table(test$outcome, predGood) 
-  addmargins(cTab)
-  overall_acc = round(sum(diag(cTab))/sum(cTab),2)
+  predGood=cut(probabilties,breaks=c(-Inf,threshold,Inf),labels=c("Bad","Good"))
+  cTab=table(test$outcome,predGood); addmargins(cTab)
+  overall_acc=round(sum(diag(cTab))/sum(cTab),2)
   return(list(threshold,overall_acc,"overall"))
 }
 ```
@@ -512,7 +509,7 @@ calc_bad_accuracy <- function(probabilties, threshold){
 }
 ```
 
-An empty "stacked" dataframe containing three columns is created, and a for-loop is used to populate the data frame for each value of a possible threshold setting from 0.00 to 1.00 in 0.01 increments. Below are the first six rows:
+An empty "stacked" dataframe containing three columns is created, and a for-loop is used to populate the data frame for each value of a possible threshold setting from 0.00 to 1.00 in 0.01 increments.
 
 ```{r,message=FALSE, echo=FALSE}
   #create an empty dataframe of 3 columns
@@ -525,15 +522,13 @@ for (index in seq(0.00, 1.00, 0.01)){
 }
   #change column headers for ease of use later on.
 accuracy_tradeoff = setNames(accuracy_tradeoff, c("threshold", "accuracy","outcome"))
-  #look at the first 6 rows.
-head(accuracy_tradeoff)
   #keeping things tidy
 rm(index)
 ```
 
 We can plot the resulting dataframe onto a single line plot. With threshold along the x-axis, each variable's accuracy value is plotted along the y-axis and given a unique color. Where the lines intercept, this is our optimal selection of the threshold value for the accuracy measure.
 
-```{r, echo=FALSE,fig.width = 6, fig.height = 4}
+```{r, echo=FALSE,fig.width = 5, fig.height = 3.0}
   #pull out good/bad accuracies into their own dataframe this will be used to set the black vertical and horizontal lines, which pinpoint the optimal threshold value. 
 good=accuracy_tradeoff[accuracy_tradeoff$outcome == "good",]
 bad=accuracy_tradeoff[accuracy_tradeoff$outcome == "bad",]
@@ -577,7 +572,7 @@ calc_profit <- function(probabilties, threshold){
 }
 ```
 
-Now we calculate the profit for each threshold value. The first six rows of the this table are displayed below, along with the plotted profit curve:
+Now we calculate the profit for each threshold value, and plot the profit curve:
 
 ```{r,message=FALSE, echo=FALSE}
   #create an empty dataframe of 2 columns
@@ -588,18 +583,18 @@ for (index in seq(0.00, 1.00, 0.01)){
 }
   #change column headers for ease of use later on.
 profit_tradeoff = setNames(profit_tradeoff, c("threshold", "profit"))
-  #look at the first 6 rows.
-head(profit_tradeoff)
+
   #keeping things tidy
 rm(index)
 ```
+
 ```{r,message=FALSE, echo=FALSE, results='hide'}
   #find profit and threshold of the observation with the highest profit. 
 profit_tradeoff$profit[which.max(profit_tradeoff$profit)]
 profit_tradeoff$threshold[which.max(profit_tradeoff$profit)]
 ```
 
-```{r, echo=FALSE,fig.width = 5, fig.height = 3.5}
+```{r, echo=FALSE,fig.width = 4.0, fig.height = 3.0}
   #create the line plot with accuracy as a function of the threshold, colored by the outcome in the dataframe. Add intercept lines. 
 gf_line(profit~threshold, data = profit_tradeoff, color = "dark green") %>%
  gf_labs(x="Threshold", y="Profit (in $)", title= "Profit Curve") %>%
@@ -623,15 +618,20 @@ profit_with_model/profit_without_model
 
 We get about a 3.8 times *greater* profit (e.g. 380%) when the model is in production and optimized for profit compared to the baseline - wow!
 
-To get a more holistic view of what the current state process and the model is capturing, we compare their profit's against a "perfect" model's (i.e. one that predicts "bad" outcome loans with 100% accuracy) profit - this comparison would be considered a ratio of our total theoretical profits:
+To get a more holistic view of what the current state process and the model is capturing, we compare their profit's against a "perfect" model's (i.e. one that predicts "bad" outcome loans with 100% accuracy) profit - this comparison would be considered a ratio of our total theoretical profits.
 
-```{r,message=FALSE,results='hide'}
-profit_perfect=sum(test$totalPaid[test$outcome=="Good"]-test$amount[test$outcome=="Good"]);print(profit_perfect)
-round(profit_with_model/profit_perfect,2); round(profit_without_model/profit_perfect,2)
+```{r,message=FALSE, echo=FALSE,results='hide'}
+  #calculate total theoretical profit by focusing on ALL good loans in the test set.
+profit_perfect=sum(test$totalPaid[test$outcome=="Good"]-test$amount[test$outcome=="Good"]); print(profit_perfect)
+  #calculate ratio of profit made with the model vs. theoretical profit.
+round(profit_with_model/profit_perfect,2) 
+  #calculate ratio of profit made using the baseline v.s theoretical profit. 
+round(profit_without_model/profit_perfect,2)
+  #difference in model vs. baseline
 round(profit_with_model/profit_perfect-profit_without_model/profit_perfect,2)
 ```
 
-The code above results in a "perfect" model (filter out all the bad outcome loans in the test dataset) generating about $11.7M. Next, we divide the previously calculated profit from both the model and the current state by this \$11.7M figure and we see that the maximum profit model is producing about ~30% of the total theoretical profits, whereas the current state only accounts for ~8% of this theoretical profit. Thus, we can conclude that the use of the model, optimize for maximum profit, increases profits by a whopping 22% over the baseline!
+Calculating a "perfect" model (filter out all the bad outcome loans in the test dataset) generates about $11.7M. Next, we divide the previously calculated profit from both the model and the current state by this \$11.7M figure and we see that the maximum profit model is producing about ~30% of the total theoretical profits, whereas the current state only accounts for ~8% of this theoretical profit. Thus, we can conclude that the use of the model, optimize for maximum profit, increases profits by a whopping 22% over the baseline!
 
 Finally, we compare optimizing for profits (represented by the purple line) vs. optimizing for accuracy (represented by the orange line) using the graphic below to illustrate the trade off between the two:
 
@@ -715,3 +715,5 @@ Finally, we put our model to the test data and check its performance by measurin
 | "Perfect" | 11.7M |100% |
 
 Overall, we'd recommend the model that's optimized for accuracy vs. one that is geared toward profit. This provides an overall increase to profits against the baseline by about \$2.0M. The tradeoff against gearing toward profit is a difference of 5% of theoretical profits (~$0.6M) in exchange for a +21% accuracy increase in its ability to correctly predict "bad" outcome loans. We feel this is the more conservative, yet responsible decision to make as it is should prove more resilient to economic factors and unpredictable events where "bad" loans tend to increase. We are still seeing an ability to double profits with the deployment of the model into production!
+
+Looking ahead, future iterations of the model could be attempted by including/excluding additional predictor variables and re-measuring the accuracy, profit, and tradeoff between the two. Other methods of feature engineering (combination of categorical variables, or other transformation techniques) could be tested to study the impact to the model's measures as well. With the model selected that optimizes accuracy, there is still 75% of theoretical profit to claim and explore!
