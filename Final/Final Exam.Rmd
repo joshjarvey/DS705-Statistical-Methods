@@ -134,7 +134,31 @@ rm(lose, win, bootMean)
 Analyze the data in treadware.rda and put your R here:
 
 ```{r}
+library(DS705data)
+library(car)
+data("treadwear")
+  #apply the mean() function to each "brand's" tirewear
+tapply(treadwear$wear,treadwear$brand,mean)
+  #apply the sd() function to each "brand's" tirewear
+tapply(treadwear$wear,treadwear$brand,sd)
 
+  #create a boxplot to visualize distributions and variances of tirewear by brand.
+boxplot(wear~brand, data = treadwear, main = "Treadwear by Tire Brand")
+
+  #apply the shapiro.test() function to each "brand's" tirewear to check normality
+tapply(treadwear$wear,treadwear$brand,shapiro.test)
+
+  #apply the levene test to check if variances are homogenous between sample groups. does not appear to be equal variance.
+leveneTest(wear~brand, data = treadwear)
+
+  #completing a "welch corrected" ANOVA. We select ANOVA because we have multiple populations. 
+  #We select welch corrected (var.equal=FALSE) because the variances do not appear to be equal after looking at the samples. 
+oneway.test(wear~brand, data = treadwear, var.equal = FALSE)
+
+  #use the custom function from the DS705Data package, complete a Games-Howell test.
+  #var.equals = FALSE means this is games-howell vs. the Tukey test.
+  #adjust = one.step makes this a games-howell or tukey test.
+onewayComp(wear~brand, data = treadwear, var.equal = FALSE, adjust = "one.step")$comp[,c(2,3,6,7)]
 ```
 
 ---
@@ -144,7 +168,45 @@ Analyze the data in treadware.rda and put your R here:
 Analyze the data in diamond.rda and include your R here:
 
 ```{r}
+  #load the diamond dataset and necessary libraries
+library(DS705data)
+library(lmtest)
+data("diamond")
 
+  #creating a scatterplot to visualize the relationship between price and carat. 
+plot(price~carat, data = diamond, main = "Diamond Price as a function of Carat", xlab = "Weight (in Carat)", ylab = "Price (in $)")
+
+  #create a linear regression model with price as a function of carat weight
+model = lm(price~carat, data = diamond)
+summary(model)
+
+  #test the correlation coefficient between price and carat
+with(diamond, cor.test(price, carat, conf.level = 0.99))
+
+  #calculating the 95% CI for the regression model. 
+confint(model)
+
+  #create a histogram of the residuals
+hist(model$residuals, main = "Distribution of model residuals", xlab = "Residuals")
+  #create a QQ plot of the residuals
+qqnorm(model$residuals)
+qqline(model$residuals)
+  #create a boxplot of the residuals
+boxplot(model$residuals, main = "Distribution of model residuals", ylab = "Residuals")
+  #test residuals for normality.
+shapiro.test(model$residuals)
+
+  #plot the residuals vs. fitted values to visualize variance. 
+plot(model$fitted.values, model$residuals, main = "Residual Plot", ylab = "Residuals", xlab = "Fitted Values")
+
+  #perform the BP test to check for equal variance. 
+bptest(model)
+
+  #calculate the R^2 (coefficient of determination). This is also calculated directly from the summary() command as well.
+(cor.test(diamond$price,diamond$carat, method = "pearson")$estimate)^2
+
+  #keeping things tidy
+rm(model)
 ```
 
 ---
@@ -154,7 +216,34 @@ Analyze the data in diamond.rda and include your R here:
 Analyze the data in Shells.rda and include your R here:
 
 ```{r}
+  #loading necessary libraries and dataset.
+library(DS705data)
+library(HH)
+data("shells")
 
+  #starting with a full model, do stepwise comparison using the "both" direction. 
+  #AIC is -121.99
+model = step(lm(Y~., data=shells), direction = "both", trace = FALSE)
+  #checking the results of the model
+summary(model)
+  #checking the AIC of the model
+extractAIC(model)
+  #checking for collinearity between predictor variables. 
+vif(model)
+
+  #creating a 2nd order term using X2.
+X2_sqrd = shells$X2^2
+  #fit the second model that uses a second order term
+modelB = lm(Y~X1 + X2 + X2_sqrd + X4 + X6, data = shells)
+  #check results of the modelB
+summary(modelB)
+  #checking the AIC of the modelB
+extractAIC(modelB)
+
+### adjusted R^2 is within the summary statement....
+
+  #keeping things tidy
+rm(model,modelB, X2_sqrd)
 ```
 
 ---
@@ -164,7 +253,16 @@ Analyze the data in Shells.rda and include your R here:
 Analyze the "Primary News Source for Americans" data described in the problem statement.  Put your R below:
 
 ```{r}
+  #loading the data into R
+observed = c(38,20,15,42)
+proportion = c(0.45,0.18,0.16,0.21)
+  #completing the chi-sq goodness of fit test to test the population proportions against stated proportions
+test = chisq.test(x=observed,p=proportion); test
+  #double checking expected values to ensure there is no category below 5. There are none.
+test$expected
 
+  #keeping things tidy
+rm(test, observed, proportion)
 ```
 
 ---
@@ -174,7 +272,37 @@ Analyze the "Primary News Source for Americans" data described in the problem st
 Analyze the data in cheese.rda and put your R below:
 
 ```{r}
+  #load the required library and dataset.
+library(DS705data)
+data("cheese")
 
+  #create a new factor variable that puts not acceptable as the 0, and acceptable as 1 (since alphabetically, it was mismatched)
+cheese$taste2 = ifelse(cheese$taste=="Not Acceptable",0,1)
+
+  #create a logistic regression model with taste2 as a function of acetic and person
+model = glm(taste2~acetic + person, data = cheese, family = "binomial")
+summary(model)
+
+  #convert the logit number to an odds ratio number. 
+exp(model$coefficients[2])
+
+  #using the model, predict the probability an "acceptable" response.
+newdata = data.frame(acetic=6,person="Child")
+predict(model,newdata,type = "response")
+
+  #using the standard error, we can create a confidence interval for this prediction.
+out = predict(model,newdata,se.fit = TRUE)
+  #CI = 95%
+C = 0.95
+crit = qnorm(1-(1-C)/2)
+
+  #create the CI bounds and display.
+lower = exp(out$fit-crit*out$se.fit)/(1+exp(out$fit-crit*out$se.fit))
+upper = exp(out$fit+crit*out$se.fit)/(1+exp(out$fit+crit*out$se.fit))
+c(lower,upper)
+
+  #keeping things tidy
+rm(model,out,C,crit,lower,upper,newdata)
 ```
 
 ---
