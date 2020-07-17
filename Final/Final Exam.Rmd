@@ -1,7 +1,7 @@
 
 ---
 title: "Final Exam"
-author: "DS 705"
+author: "Josh Jarvey - DS 705"
 output:
   word_document: default
   pdf_document: default
@@ -312,7 +312,33 @@ rm(model,out,C,crit,lower,upper,newdata)
 Analyze the data in careerbarrier.rda and put your R below:
 
 ```{r}
+  #loading the required libraries and the dataset
+library(DS705data)
+library(psych)
+data("careerbarrier")
+  #creating a correlation matrix using the variables from the dataset
+matrx = cor(careerbarrier)
+  #testing if the correlation matrix is the identity matrix, which would indicate factor analysis is not useful here.
+cortest.bartlett(matrx,n=76)
 
+  #now that factor analysis shows promise, conducting KMO() analysis to calculate the MSA score to see overall score, but also if there are any variables that stand on their own and dropped from the factor analysis.
+KMO(matrx)
+
+  #"money" has a MSA score of <0.50, so we drop it and perform the KMO() analysis again.
+matrx2 = cor(careerbarrier[,-1])
+KMO(matrx2)
+
+  #create a scree plot to check "knee" (where the line starts to even out - 3), and number of eigenvalues greater than 1 (the dotted line) - 5.
+output = princomp(matrx2, cor = TRUE)
+plot(output, type = "lines")
+abline(h=1, lty=2)
+
+  #perform the PCA using the varimax rotation. Suppress factor loadings under 0.50, and sort them by the most variance first. 
+fa.out = principal(matrx2,nfactors = 5, rotate = "varimax")
+print.psych(fa.out,cut = 0.5, sort = TRUE)
+
+  #keeping things tidy
+rm(matrx,matrx2,output,fa.out)
 ```
 
 ---
@@ -322,7 +348,44 @@ Analyze the data in careerbarrier.rda and put your R below:
 Analyze the data on seat postion vs. nausea described in the problem.  Put your R below:
 
 ```{r}
+  #loading necessary packages
+library(mosaic)
+  #create a matrix to store the data within. first row is nausea, second row is no nausea. 
+bus = matrix(c(98,110,161,264,321,280),nrow = 2, byrow=TRUE)
+  #label the columns and rows accordingly.
+colnames(bus) = c("Front", "Middle", "Rear")
+rownames(bus) = c("Nausea", "No Nausea")
+  #add sum margins to the table so we can perform the chisq test for independence.
+addmargins(bus)
 
+  #perform the chisq test of independence.
+result = chisq.test(bus); result
+  #double checking there are no expected counts less than 5, otherwise we'd need to use fisher exact test. 
+result$expected
+
+  #setting up the difference in front vs back. for nausea and no nausea 
+diff_nausea = abs(bus[1,1] - bus[1,3])
+diff_no_nausea = abs(bus[2,1] - bus[2,3])
+diff = c(diff_nausea,diff_no_nausea)
+  #pulling totals in own vector
+total = c(369,865)
+
+  #performing the prop test in differences between front vs. back for no nausea vs. nausea respectively. 
+prop.test(diff,total, correct = FALSE, conf.level = 0.90)
+
+  #create a matrix to store the data within. first row is nausea, second row is no nausea. 
+bus2 = matrix(c(98,161,264,280),nrow = 2, byrow=TRUE)
+  #label the columns and rows accordingly.
+colnames(bus2) = c("Rear", "Front")
+rownames(bus2) = c("Nausea", "No Nausea")
+  #add sum margins to the table so we can calculate the odds ratio.
+addmargins(bus2)
+
+  #compute the odds ratio using the mosaic package. 
+oddsRatio(bus2, verbose = TRUE)
+
+  #keeping things tidy
+rm(diff,diff_nausea, diff_no_nausea,total,bus,bus2,result)
 ```
 
 ---
