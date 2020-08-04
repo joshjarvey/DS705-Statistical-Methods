@@ -61,7 +61,7 @@ data("StrengthSpeed")
 difference = StrengthSpeed$after - StrengthSpeed$before
 
   #visually inspect the boxplot and histogram of the difference in sprint times - these normal normally distributed
-boxplot(difference)
+boxplot(difference, main = "Distribution of difference in 100m speed times")
 hist(difference)
   #generating a qqplot
 qqnorm(difference)
@@ -123,7 +123,7 @@ boot.object = boot(lose, bootMean, R=10000)
 boot.ci(boot.object, conf = 0.95, type = "bca")
 
   #keeping things tidy
-rm(lose, win, bootMean)
+rm(lose, win, bootMean, boot.object)
 
 ```
 
